@@ -3,9 +3,12 @@
 namespace Kaishiyoku\HeraRssCrawler;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Kaishiyoku\HeraRssCrawler\Models\Feedly\Result;
+use Kaishiyoku\HeraRssCrawler\Models\Feedly\SearchResponse;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\CssSelector\CssSelectorConverter;
 use Symfony\Component\DomCrawler\Crawler;
@@ -28,6 +31,11 @@ class HeraRssCrawler
     private $converter;
 
     /**
+     * @var string
+     */
+    private const FEEDLY_API_BASE_URL = 'https://cloud.feedly.com/v3';
+
+    /**
      * HeraRssCrawler constructor.
      * @param string $url
      */
@@ -41,17 +49,49 @@ class HeraRssCrawler
 
     public function discoverFeedUrl()
     {
-        $response = $this->httpClient->get($this->url);
+        $html = null;
 
+        try {
+            $response = $this->httpClient->get($this->url);
+            $html = $response->getBody()->getContents();
+        } catch (RequestException $e) {
+            return collect();
+        }
+
+        // discover by using content type
         $urls = $this->discoverFeedUrlByContentType($response);
 
+        // discover by using link element crawler
         if ($urls->isEmpty()) {
-            $urls = $this->discoverFeedUrlByCrawler($response->getBody()->getContents());
+            $urls = $this->discoverFeedUrlByHtmlHeadElements($html);
+        }
+
+        // discover by using anchor element crawler
+        if ($urls->isEmpty()) {
+            $url = $this->discoverFeedUrlByHtmlAnchorElements($html);
+        }
+
+        // discover by using Feedly
+        if ($urls->isEmpty()) {
+            $urls = $this->discoverFeedUrlByFeedly($this->url);
         }
 
         return $urls->map(function ($url) {
             return normalizeUrl($url);
         })->values();
+    }
+
+    private function discoverFeedUrlByFeedly($url)
+    {
+        $response = $this->httpClient->get(self::FEEDLY_API_BASE_URL . '/search/feeds', [
+            'query' => ['query' => $url],
+        ]);
+
+        $searchResponse = SearchResponse::fromJson(json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR));
+
+        return $searchResponse->getResults()->map(function (Result $result) {
+            return $result->getFeedUrl();
+        });
     }
 
     private function discoverFeedUrlByContentType(ResponseInterface $response): Collection
@@ -66,18 +106,6 @@ class HeraRssCrawler
         }
 
         return collect();
-    }
-
-    private function discoverFeedUrlByCrawler($html)
-    {
-        $urls = $this->discoverFeedUrlByHtmlHeadElements($html);
-
-        // fallback: search for links with rss in its content or href
-        if ($urls->isEmpty()) {
-            return $this->discoverFeedUrlByHtmlAnchorElements($html);
-        }
-
-        return $urls;
     }
 
     private function discoverFeedUrlByHtmlHeadElements($html)

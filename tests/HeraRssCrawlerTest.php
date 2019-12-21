@@ -34,7 +34,7 @@ class HeraRssCrawlerTest extends TestCase
             ],
             'Anime2You' => [
                 'https://www.anime2you.de',
-                [],
+                ['http://www.anime2you.de/feed'],
             ],
             'blog :: Brent -> [String]' => [
                 'https://byorgey.wordpress.com/',
@@ -46,7 +46,7 @@ class HeraRssCrawlerTest extends TestCase
             ],
             'Hacker News: Newest (min. 100 points)' => [
                 'https://news.ycombinator.com/newest',
-                [],
+                ['http://hnrss.org/newest?points=100'],
             ],
             'Laravel News' => [
                 'https://laravel-news.com/',
@@ -59,6 +59,10 @@ class HeraRssCrawlerTest extends TestCase
             'Welt - Politcs' => [
                 'https://www.welt.de/feeds/section/politik.rss',
                 ['https://www.welt.de/feeds/section/politik.rss']
+            ],
+            'Non-existent website' => [
+                'https://www.nonexistent-website.dev',
+                [],
             ],
         ];
     }

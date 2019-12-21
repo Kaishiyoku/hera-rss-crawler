@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Str;
-
 if (!function_exists('isValidUrl')) {
     function isValidUrl($url)
     {
