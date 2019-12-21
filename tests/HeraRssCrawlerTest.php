@@ -30,7 +30,7 @@ class HeraRssCrawlerTest extends TestCase
             ],
             'FAZ' => [
                 'https://www.faz.net',
-                ['https://www.faz.net/rss/aktuell/'],
+                ['https://www.faz.net/rss/aktuell'],
             ],
             'Anime2You' => [
                 'https://www.anime2you.de',
@@ -38,11 +38,11 @@ class HeraRssCrawlerTest extends TestCase
             ],
             'blog :: Brent -> [String]' => [
                 'https://byorgey.wordpress.com/',
-                ['https://byorgey.wordpress.com/feed/', 'https://byorgey.wordpress.com/comments/feed/'],
+                ['https://byorgey.wordpress.com/feed', 'https://byorgey.wordpress.com/comments/feed'],
             ],
             'Echo JS' => [
                 'http://www.echojs.com/',
-                ['http://www.echojs.com//rss'],
+                ['http://www.echojs.com/rss'],
             ],
             'Hacker News: Newest (min. 100 points)' => [
                 'https://news.ycombinator.com/newest',
@@ -50,11 +50,11 @@ class HeraRssCrawlerTest extends TestCase
             ],
             'Laravel News' => [
                 'https://laravel-news.com/',
-                ['https://feed.laravel-news.com/'],
+                ['https://feed.laravel-news.com'],
             ],
             'Unknown Worlds Entertainment' => [
                 'https://unknownworlds.com/',
-                ['https://unknownworlds.com/feed/', 'https://unknownworlds.com/homepage-2/feed/'],
+                ['https://unknownworlds.com/feed', 'https://unknownworlds.com/homepage-2/feed'],
             ],
             'Welt - Politcs' => [
                 'https://www.welt.de/feeds/section/politik.rss',
