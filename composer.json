@@ -1,0 +1,34 @@
+{
+  "name": "kaishiyoku/hera-rss-crawler",
+  "description": "Modern library to handle RSS/Atom feeds",
+  "homepage": "https://github.com/kaishiyoku/hera-rss-crawler",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Andreas Wiedel",
+      "email": "dev@andreas-wiedel.de",
+      "homepage": "https://andreas-wiedel.de"
+    }
+  ],
+  "require": {
+    "php": "^7.2",
+    "ext-iconv": "*",
+    "ext-dom": "*",
+    "ext-xml": "*",
+    "ext-libxml": "*",
+    "ext-SimpleXML": "*",
+    "zendframework/zendxml": "1.2.0"
+  },
+  "require-dev": {
+    "phpdocumentor/reflection-docblock": "4.3.2",
+    "symfony/yaml": "4.4.1",
+    "phpunit/phpunit": "7.5.1",
+    "spatie/phpunit-snapshot-assertions": "2.0.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Kaishiyoku\\HeraRssCrawler\\": "src/"
+    }
+  }
+}
