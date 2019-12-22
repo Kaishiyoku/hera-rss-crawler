@@ -14,7 +14,7 @@
   "require": {
     "php": "^7.2",
     "ext-json": "*",
-    "zendframework/zendxml": "1.2.0",
+    "zendframework/zendxml": "^1.2",
     "symfony/dom-crawler": "^5.0",
     "symfony/css-selector": "^5.0",
     "guzzlehttp/guzzle": "^6.5",
@@ -23,10 +23,10 @@
     "zendframework/zend-feed": "^2.12"
   },
   "require-dev": {
-    "phpdocumentor/reflection-docblock": "4.3.2",
-    "symfony/yaml": "4.4.1",
-    "phpunit/phpunit": "7.5.1",
-    "spatie/phpunit-snapshot-assertions": "2.0.0",
+    "phpdocumentor/reflection-docblock": "^4.3",
+    "symfony/yaml": "^5.0",
+    "phpunit/phpunit": "^8.5",
+    "spatie/phpunit-snapshot-assertions": "^3.0",
     "symfony/var-dumper": "^5.0"
   },
   "autoload": {
