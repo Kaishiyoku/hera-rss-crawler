@@ -76,10 +76,10 @@ class HeraRssCrawler
         }
 
         $discoveryFns = collect([
-            function ($responseContainer) { return $this->discoverFeedUrlByContentType($responseContainer); }, // discover by using content type
-            function ($responseContainer) { return $this->discoverFeedUrlByHtmlHeadElements($responseContainer); }, // discover by using link element crawler
-            function ($responseContainer) { return $this->discoverFeedUrlByHtmlAnchorElements($responseContainer); }, // discover by using anchor element crawler
-            function ($responseContainer) { return $this->discoverFeedUrlByFeedly($responseContainer); }, // discover by using Feedly
+            function ($responseContainer) { return $this->discoverFeedUrlByContentType($responseContainer); },
+            function ($responseContainer) { return $this->discoverFeedUrlByHtmlHeadElements($responseContainer); },
+            function ($responseContainer) { return $this->discoverFeedUrlByHtmlAnchorElements($responseContainer); },
+            function ($responseContainer) { return $this->discoverFeedUrlByFeedly($responseContainer); },
         ]);
 
         $urls = $discoveryFns->reduce(function (Collection $carry, $discoveryFn) use ($responseContainer) {
