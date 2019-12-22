@@ -4,7 +4,10 @@ namespace Kaishiyoku\HeraRssCrawler\Models\Rss;
 
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 use Kaishiyoku\HeraRssCrawler\HeraRssCrawler;
+use ReflectionException;
+use TypeError;
 use Zend\Feed\Reader\Entry\AbstractEntry;
 use Zend\Feed\Reader\Entry\Atom;
 use Zend\Feed\Reader\Entry\Rss;
@@ -371,12 +374,13 @@ class Item
     /**
      * @param AbstractEntry $zendFeedItem
      * @return Item
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
     public static function fromZendFeedItem($zendFeedItem): Item
     {
         if (!$zendFeedItem instanceof Rss && !$zendFeedItem instanceof  Atom) {
-            throw new \InvalidArgumentException('given feed item neither is from a Rss or Atom feed');
+            throw new InvalidArgumentException('given feed item neither is from a Rss or Atom feed');
         }
 
         $feedItem = new Item();
@@ -390,7 +394,7 @@ class Item
 
         try {
             $feedItem->setContent($zendFeedItem->getContent());
-        } catch (\TypeError $e) {
+        } catch (TypeError $e) {
             // no content available
             $feedItem->setContent('');
         }

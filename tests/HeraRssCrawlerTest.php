@@ -16,7 +16,9 @@ class HeraRssCrawlerTest extends TestCase
 
     /**
      * @dataProvider websiteProvider
-     * @covers HeraRssCrawler::discoverFeedUrls()
+     * @covers       HeraRssCrawler::discoverFeedUrls()
+     * @param $url
+     * @param $expectedUrls
      */
     public function testDiscoverFeedUrl($url, $expectedUrls)
     {
@@ -33,7 +35,8 @@ class HeraRssCrawlerTest extends TestCase
 
     /**
      * @dataProvider feedProvider
-     * @covers HeraRssCrawler::discover()
+     * @covers       HeraRssCrawler::discover()
+     * @param $feedUrls
      */
     public function testParse($feedUrls)
     {
