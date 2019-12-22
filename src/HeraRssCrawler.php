@@ -2,6 +2,7 @@
 
 namespace Kaishiyoku\HeraRssCrawler;
 
+use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Arr;
@@ -9,9 +10,15 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Kaishiyoku\HeraRssCrawler\Models\Feedly\Result;
 use Kaishiyoku\HeraRssCrawler\Models\Feedly\SearchResponse;
+use Kaishiyoku\HeraRssCrawler\Models\Rss\Feed;
+use Kaishiyoku\HeraRssCrawler\Models\Rss\Item;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\CssSelector\CssSelectorConverter;
 use Symfony\Component\DomCrawler\Crawler;
+use Zend\Feed\Reader\Collection\Category;
+use Zend\Feed\Reader\Entry\Rss;
+use Zend\Feed\Reader\Feed\FeedInterface;
+use Zend\Feed\Reader\Reader;
 
 class HeraRssCrawler
 {
@@ -47,7 +54,18 @@ class HeraRssCrawler
         $this->url = $url;
     }
 
-    public function discoverFeedUrl()
+    /**
+     * @return Feed
+     */
+    public function parse(): Feed
+    {
+        $content = $this->httpClient->get($this->url)->getBody()->getContents();
+        $zendFeed = Reader::importString($content);
+
+        return Feed::fromZendFeed($zendFeed);
+    }
+
+    public function discoverFeedUrls()
     {
         $html = null;
 

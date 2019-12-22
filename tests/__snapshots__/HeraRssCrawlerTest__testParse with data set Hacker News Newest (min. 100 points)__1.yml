@@ -1,0 +1,7 @@
+title: 'Hacker News: Newest'
+copyright: null
+description: 'Hacker News RSS'
+feedUrl: 'https://hnrss.org/newest?points=100'
+id: 'https://news.ycombinator.com/newest'
+language: null
+url: 'https://news.ycombinator.com/newest'
