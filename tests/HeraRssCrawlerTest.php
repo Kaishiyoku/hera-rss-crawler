@@ -5,14 +5,18 @@ namespace Kaishiyoku\HeraRssCrawler;
 use PHPUnit\Framework\TestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
+/**
+ * @covers HeraRssCrawler
+ */
 class HeraRssCrawlerTest extends TestCase
 {
     use MatchesSnapshots;
 
     /**
      * @dataProvider websiteProvider
+     * @covers HeraRssCrawler::discoverFeedUrl()
      */
-    public function testCrawlsWebsite($url, $expectedUrls)
+    public function testDiscoverFeedUrl($url, $expectedUrls)
     {
         $heraRssCrawler = new HeraRssCrawler($url);
 
