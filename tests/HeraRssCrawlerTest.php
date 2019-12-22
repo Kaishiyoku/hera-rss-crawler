@@ -52,8 +52,6 @@ class HeraRssCrawlerTest extends TestCase
 
             $this->assertMatchesSnapshot($feedArr);
 
-//            $this->assertNotEmpty($feed->getCategories());
-//            $this->assertNotEmpty($feed->getAuthors());
             $this->assertNotEmpty($feed->getCreatedAt());
             $this->assertNotEmpty($feed->getUpdatedAt());
             $this->assertGreaterThanOrEqual(0, $feed->getItems()->count());

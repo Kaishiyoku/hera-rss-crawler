@@ -2,7 +2,6 @@
 
 namespace Kaishiyoku\HeraRssCrawler;
 
-use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Arr;
@@ -10,14 +9,10 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Kaishiyoku\HeraRssCrawler\Models\Feedly\Result;
 use Kaishiyoku\HeraRssCrawler\Models\Feedly\SearchResponse;
+use Kaishiyoku\HeraRssCrawler\Models\ResponseContainer;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\Feed;
-use Kaishiyoku\HeraRssCrawler\Models\Rss\Item;
-use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\CssSelector\CssSelectorConverter;
 use Symfony\Component\DomCrawler\Crawler;
-use Zend\Feed\Reader\Collection\Category;
-use Zend\Feed\Reader\Entry\Rss;
-use Zend\Feed\Reader\Feed\FeedInterface;
 use Zend\Feed\Reader\Reader;
 
 class HeraRssCrawler
@@ -67,42 +62,40 @@ class HeraRssCrawler
 
     public function discoverFeedUrls()
     {
-        $html = null;
+        $responseContainer = null;
 
         try {
             $response = $this->httpClient->get($this->url);
-            $html = $response->getBody()->getContents();
+            $responseContainer = new ResponseContainer($this->url, $response);
         } catch (RequestException $e) {
             return collect();
         }
 
-        // discover by using content type
-        $urls = $this->discoverFeedUrlByContentType($response);
+        $discoveryFns = collect([
+            function ($responseContainer) { return $this->discoverFeedUrlByContentType($responseContainer); }, // discover by using content type
+            function ($responseContainer) { return $this->discoverFeedUrlByHtmlHeadElements($responseContainer); }, // discover by using link element crawler
+            function ($responseContainer) { return $this->discoverFeedUrlByHtmlAnchorElements($responseContainer); }, // discover by using anchor element crawler
+            function ($responseContainer) { return $this->discoverFeedUrlByFeedly($responseContainer); }, // discover by using Feedly
+        ]);
 
-        // discover by using link element crawler
-        if ($urls->isEmpty()) {
-            $urls = $this->discoverFeedUrlByHtmlHeadElements($html);
-        }
+        $urls = $discoveryFns->reduce(function (Collection $carry, $discoveryFn) use ($responseContainer) {
+            // only get the firstly fetched urls
+            if ($carry->isEmpty()) {
+                return $discoveryFn($responseContainer);
+            }
 
-        // discover by using anchor element crawler
-        if ($urls->isEmpty()) {
-            $url = $this->discoverFeedUrlByHtmlAnchorElements($html);
-        }
-
-        // discover by using Feedly
-        if ($urls->isEmpty()) {
-            $urls = $this->discoverFeedUrlByFeedly($this->url);
-        }
+            return $carry;
+        }, collect());
 
         return $urls->map(function ($url) {
             return normalizeUrl($url);
         })->unique()->values();
     }
 
-    private function discoverFeedUrlByFeedly($url)
+    private function discoverFeedUrlByFeedly(ResponseContainer $responseContainer)
     {
         $response = $this->httpClient->get(self::FEEDLY_API_BASE_URL . '/search/feeds', [
-            'query' => ['query' => $url],
+            'query' => ['query' => $responseContainer->getRequestUrl()],
         ]);
 
         $searchResponse = SearchResponse::fromJson(json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR));
@@ -112,9 +105,9 @@ class HeraRssCrawler
         });
     }
 
-    private function discoverFeedUrlByContentType(ResponseInterface $response): Collection
+    private function discoverFeedUrlByContentType(ResponseContainer $responseContainer): Collection
     {
-        $contentTypeMixedValue = Arr::get($response->getHeaders(), 'Content-Type');
+        $contentTypeMixedValue = Arr::get($responseContainer->getResponse()->getHeaders(), 'Content-Type');
 
         $contentType = is_array($contentTypeMixedValue) ? Arr::first($contentTypeMixedValue) : $contentTypeMixedValue;
 
@@ -126,9 +119,9 @@ class HeraRssCrawler
         return collect();
     }
 
-    private function discoverFeedUrlByHtmlHeadElements($html)
+    private function discoverFeedUrlByHtmlHeadElements(ResponseContainer $responseContainer)
     {
-        $crawler = new Crawler($html);
+        $crawler = new Crawler($responseContainer->getResponse()->getBody()->getContents());
         $nodes = $crawler->filterXPath($this->converter->toXPath('head > link[type="application/rss+xml"], head > link[type="application/atom+xml"]'));
 
         return collect($nodes->each(function (Crawler $node) {
@@ -136,9 +129,9 @@ class HeraRssCrawler
         }));
     }
 
-    private function discoverFeedUrlByHtmlAnchorElements($html)
+    private function discoverFeedUrlByHtmlAnchorElements(ResponseContainer $responseContainer)
     {
-        $crawler = new Crawler($html);
+        $crawler = new Crawler($responseContainer->getResponse()->getBody()->getContents());
         $nodes = $crawler->filterXPath($this->converter->toXPath('a'));
 
         return collect($nodes->each(function (Crawler $node) {
