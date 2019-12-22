@@ -78,7 +78,7 @@ class HeraRssCrawler
 
         return $urls->map(function ($url) {
             return normalizeUrl($url);
-        })->values();
+        })->unique()->values();
     }
 
     private function discoverFeedUrlByFeedly($url)
