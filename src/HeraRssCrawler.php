@@ -11,6 +11,10 @@ use Kaishiyoku\HeraRssCrawler\Models\Feedly\Result;
 use Kaishiyoku\HeraRssCrawler\Models\Feedly\SearchResponse;
 use Kaishiyoku\HeraRssCrawler\Models\ResponseContainer;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\Feed;
+use Kaishiyoku\HeraRssCrawler\Models\Rss\Item;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionMethod;
 use Symfony\Component\CssSelector\CssSelectorConverter;
 use Symfony\Component\DomCrawler\Crawler;
 use Zend\Feed\Reader\Reader;
@@ -150,5 +154,26 @@ class HeraRssCrawler
         }
 
         return $this->url . '/' . $href;
+    }
+
+    /**
+     * @param Item $item
+     * @param string $algo
+     * @param string $delimiter
+     * @return string
+     * @throws ReflectionException
+     */
+    public static function generateChecksumForFeedItem(Item $item, string $algo = 'sha256', string $delimiter = '|'): string
+    {
+        $class = new ReflectionClass(Item::class);
+        $allValuesConcatenated = trim(collect($class->getMethods(ReflectionMethod::IS_PUBLIC))
+            ->filter(function (ReflectionMethod $method) {
+                return Str::startsWith($method->getName(), 'get') && $method->getName() != 'getChecksum';
+            })
+            ->reduce(function ($carry, ReflectionMethod $method) use ($item, $delimiter) {
+                return $carry . $delimiter . $method->invoke($item);
+            }, ''), $delimiter);
+
+        return hash($algo, $allValuesConcatenated);
     }
 }

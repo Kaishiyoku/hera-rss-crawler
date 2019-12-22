@@ -4,12 +4,18 @@ namespace Kaishiyoku\HeraRssCrawler\Models\Rss;
 
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Kaishiyoku\HeraRssCrawler\HeraRssCrawler;
 use Zend\Feed\Reader\Entry\AbstractEntry;
 use Zend\Feed\Reader\Entry\Atom;
 use Zend\Feed\Reader\Entry\Rss;
 
 class Item
 {
+    /**
+     * @var string
+     */
+    private $checksum;
+
     /**
      * @var Collection<string>
      */
@@ -89,6 +95,22 @@ class Item
      * @var string
      */
     private $type;
+
+    /**
+     * @return string
+     */
+    public function getChecksum(): string
+    {
+        return $this->checksum;
+    }
+
+    /**
+     * @param string $checksum
+     */
+    public function setChecksum(string $checksum): void
+    {
+        $this->checksum = $checksum;
+    }
 
     /**
      * @return Collection
@@ -382,6 +404,8 @@ class Item
         $feedItem->setLinks(collect($zendFeedItem->getLinks()));
         $feedItem->setPermalink($zendFeedItem->getPermalink() == null ? '' : $zendFeedItem->getPermalink()); // TODO: investigate; why can a permalink be empty? maybe we should discard those items
         $feedItem->setType($zendFeedItem->getType());
+
+        $feedItem->setChecksum(HeraRssCrawler::generateChecksumForFeedItem($feedItem));
 
         return $feedItem;
     }
