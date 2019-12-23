@@ -16,6 +16,17 @@ class HeraRssCrawlerTest extends TestCase
     use MatchesSnapshots;
 
     /**
+     * @var HeraRssCrawler|null
+     */
+    private $heraRssCrawler;
+
+    protected function setUp(): void
+    {
+        $this->heraRssCrawler = new HeraRssCrawler();
+    }
+
+
+    /**
      * @dataProvider websiteProvider
      * @covers       HeraRssCrawler::discoverFeedUrls()
      * @param $url
@@ -24,13 +35,7 @@ class HeraRssCrawlerTest extends TestCase
      */
     public function testDiscoverFeedUrl($url, $expectedUrls): void
     {
-        $heraRssCrawler = new HeraRssCrawler($url);
-
-        $actual = $heraRssCrawler->discoverFeedUrls();
-
-        if ($actual->count() != count($expectedUrls)) {
-            dd($actual);
-        }
+        $actual = $this->heraRssCrawler->discoverFeedUrls($url);
 
         $this->assertEquals($expectedUrls, $actual->toArray());
     }
@@ -44,9 +49,7 @@ class HeraRssCrawlerTest extends TestCase
     public function testParse($feedUrls): void
     {
         foreach ($feedUrls as $key => $feedUrl) {
-            $heraRssCrawler = new HeraRssCrawler($feedUrl);
-
-            $feed = $heraRssCrawler->parse();
+            $feed = $this->heraRssCrawler->parse($feedUrl);
 
             $feedArr = [
                 'title' => $feed->getTitle(),

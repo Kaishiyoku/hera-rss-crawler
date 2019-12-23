@@ -14,7 +14,6 @@ use Kaishiyoku\HeraRssCrawler\Models\ResponseContainer;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\Feed;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\FeedItem;
 use ReflectionClass;
-use ReflectionException;
 use ReflectionMethod;
 use Symfony\Component\CssSelector\CssSelectorConverter;
 use Symfony\Component\DomCrawler\Crawler;
@@ -22,11 +21,6 @@ use Zend\Feed\Reader\Reader;
 
 class HeraRssCrawler
 {
-    /**
-     * @var string|null
-     */
-    private $url;
-
     /**
      * @var Client|null
      */
@@ -42,39 +36,35 @@ class HeraRssCrawler
      */
     private const FEEDLY_API_BASE_URL = 'https://cloud.feedly.com/v3';
 
-    /**
-     * HeraRssCrawler constructor.
-     * @param string $url
-     */
-    public function __construct(string $url)
+    public function __construct()
     {
         $this->httpClient = new Client();
         $this->converter = new CssSelectorConverter();
-
-        $this->url = $url;
     }
 
     /**
+     * @param string $url
      * @return Feed
      */
-    public function parse(): Feed
+    public function parse(string $url): Feed
     {
-        $content = $this->httpClient->get($this->url)->getBody()->getContents();
+        $content = $this->httpClient->get($url)->getBody()->getContents();
         $zendFeed = Reader::importString($content);
 
         return Feed::fromZendFeed($zendFeed);
     }
 
     /**
+     * @param string $url
      * @return Collection<string>
      */
-    public function discoverFeedUrls(): Collection
+    public function discoverFeedUrls(string $url): Collection
     {
         $responseContainer = null;
 
         try {
-            $response = $this->httpClient->get($this->url);
-            $responseContainer = new ResponseContainer($this->url, $response);
+            $response = $this->httpClient->get($url);
+            $responseContainer = new ResponseContainer($url, $response);
         } catch (RequestException $e) {
             return collect();
         }
@@ -129,7 +119,7 @@ class HeraRssCrawler
 
         // the given url itself already is a rss feed
         if (Str::startsWith($contentType, ['application/rss+xml', 'application/atom+xml'])) {
-            return collect([$this->url]);
+            return collect([$responseContainer->getRequestUrl()]);
         }
 
         return collect();
@@ -144,8 +134,8 @@ class HeraRssCrawler
         $crawler = new Crawler($responseContainer->getResponse()->getBody()->getContents());
         $nodes = $crawler->filterXPath($this->converter->toXPath('head > link[type="application/rss+xml"], head > link[type="application/atom+xml"]'));
 
-        return collect($nodes->each(function (Crawler $node) {
-            return $this->transformNodeToUrl($node);
+        return collect($nodes->each(function (Crawler $node) use ($responseContainer) {
+            return $this->transformNodeToUrl($responseContainer->getRequestUrl(), $node);
         }));
     }
 
@@ -158,18 +148,20 @@ class HeraRssCrawler
         $crawler = new Crawler($responseContainer->getResponse()->getBody()->getContents());
         $nodes = $crawler->filterXPath($this->converter->toXPath('a'));
 
-        return collect($nodes->each(function (Crawler $node) {
-            return $this->transformNodeToUrl($node);
+        return collect($nodes->each(function (Crawler $node) use ($responseContainer) {
+            return $this->transformNodeToUrl($responseContainer->getRequestUrl(), $node);
         }))->filter(function ($url) {
             return Str::contains($url, 'rss');
         });
     }
 
     /**
-     * @var Crawler $node
+     *
+     * @param string $baseUrl
+     * @param Crawler $node
      * @return string
      */
-    private function transformNodeToUrl(Crawler $node): string
+    private function transformNodeToUrl(string $baseUrl, Crawler $node): string
     {
         $href = $node->attr('href');
 
@@ -177,14 +169,14 @@ class HeraRssCrawler
             return $href;
         }
 
-        return $this->url . '/' . $href;
+        return $baseUrl . '/' . $href;
     }
 
     /**
      * @param FeedItem $feedItem
      * @param string $algo
      * @param string $delimiter
-     * @return ?string
+     * @return string|null
      */
     public static function generateChecksumForFeedItem(FeedItem $feedItem, string $algo = 'sha256', string $delimiter = '|'): ?string
     {
