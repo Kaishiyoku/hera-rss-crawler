@@ -43,31 +43,36 @@ class HeraRssCrawlerTest extends TestCase
      * @dataProvider feedProvider
      * @covers       HeraRssCrawler::parseFeed()
      * @param array $feedUrls
+     * @param array $expectedValues
      * @return void
      */
-    public function testParseFeed(array $feedUrls): void
+    public function testParseFeed(array $feedUrls, array $expectedValues): void
     {
         foreach ($feedUrls as $key => $feedUrl) {
             $feed = $this->heraRssCrawler->parseFeed($feedUrl);
 
-            $feedArr = [
-                'title' => $feed->getTitle(),
-                'copyright' => $feed->getCopyright(),
-                'description' => $feed->getDescription(),
-                'feedUrl' => $feed->getFeedUrl(),
-                'id' => $feed->getId(),
-                'language' => $feed->getLanguage(),
-                'url' => $feed->getUrl(),
-            ];
+            if ($expectedValues[$key]) {
+                $feedArr = [
+                    'title' => $feed->getTitle(),
+                    'copyright' => $feed->getCopyright(),
+                    'description' => $feed->getDescription(),
+                    'feedUrl' => $feed->getFeedUrl(),
+                    'id' => $feed->getId(),
+                    'language' => $feed->getLanguage(),
+                    'url' => $feed->getUrl(),
+                ];
 
-            $this->assertMatchesSnapshot($feedArr);
+                $this->assertMatchesSnapshot($feedArr);
 
-            $this->assertNotEmpty($feed->getCreatedAt());
-            $this->assertNotEmpty($feed->getUpdatedAt());
-            $this->assertGreaterThanOrEqual(0, $feed->getFeedItems()->count());
+                $this->assertNotEmpty($feed->getCreatedAt());
+                $this->assertNotEmpty($feed->getUpdatedAt());
+                $this->assertGreaterThanOrEqual(0, $feed->getFeedItems()->count());
 
-            if ($feed->getFeedItems()->isNotEmpty()) {
-                $this->assertNotEmpty($feed->getFeedItems()->first()->getChecksum());
+                if ($feed->getFeedItems()->isNotEmpty()) {
+                    $this->assertNotEmpty($feed->getFeedItems()->first()->getChecksum());
+                }
+            } else {
+                $this->assertNull($feed);
             }
         }
     }
@@ -139,6 +144,21 @@ class HeraRssCrawlerTest extends TestCase
         $faviconUrl = $this->heraRssCrawler->discoverFavicon($url);
 
         $this->assertEquals($expectedFaviconUrl, $faviconUrl);
+    }
+
+    /**
+     * @dataProvider feedProvider
+     * @covers       HeraRssCrawler::checkIfConsumableFeed()
+     * @param array $feedUrls
+     * @param array $expectedValues
+     */
+    public function testCheckIfConsumableFeed(array $feedUrls, array $expectedValues): void
+    {
+        foreach ($feedUrls as $key => $feedUrl) {
+            $isConsumableFeed = $this->heraRssCrawler->checkIfConsumableFeed($feedUrl);
+
+            $this->assertEquals($expectedValues[$key], $isConsumableFeed);
+        }
     }
 
     /**
@@ -300,15 +320,24 @@ class HeraRssCrawlerTest extends TestCase
                 [
                     'https://newsfeed.zeit.de/index',
                 ],
+                [
+                    true,
+                ],
             ],
             'FAZ' => [
                 [
                     'https://www.faz.net/rss/aktuell',
                 ],
+                [
+                    true,
+                ],
             ],
             'Anime2You' => [
                 [
                     'http://www.anime2you.de/feed'
+                ],
+                [
+                    true,
                 ],
             ],
             'blog :: Brent -> [String]' => [
@@ -316,20 +345,33 @@ class HeraRssCrawlerTest extends TestCase
                     'https://byorgey.wordpress.com/feed',
                     'https://byorgey.wordpress.com/comments/feed'
                 ],
+                [
+                    true,
+                    true,
+                ],
             ],
             'Echo JS' => [
                 [
                     'http://www.echojs.com/rss'
+                ],
+                [
+                    true,
                 ],
             ],
             'Hacker News: Newest (min. 100 points)' => [
                 [
                     'http://hnrss.org/newest?points=100'
                 ],
+                [
+                    true,
+                ],
             ],
             'Laravel News' => [
                 [
                     'https://feed.laravel-news.com'
+                ],
+                [
+                    true,
                 ],
             ],
             'Unknown Worlds Entertainment' => [
@@ -337,10 +379,17 @@ class HeraRssCrawlerTest extends TestCase
                     'https://unknownworlds.com/feed',
                     'https://unknownworlds.com/homepage-2/feed'
                 ],
+                [
+                    true,
+                    true,
+                ],
             ],
             'Welt - Politcs' => [
                 [
                     'https://www.welt.de/feeds/section/politik.rss'
+                ],
+                [
+                    true,
                 ],
             ],
             'TrekCast' => [
@@ -350,11 +399,21 @@ class HeraRssCrawlerTest extends TestCase
                     'https://www.startrek-index.de/trekcast/comments/feed',
                     'https://www.startrek-index.de/trekcast/feed/podcast',
                 ],
+                [
+                    true,
+                    true,
+                    true,
+                    true,
+                ],
             ],
             'Stephan Wiesner Blog' => [
                 [
                     'https://www.stephanwiesner.de/blog/feed',
                     'https://www.stephanwiesner.de/blog/comments/feed',
+                ],
+                [
+                    true,
+                    true,
                 ],
             ],
             'Shiroku' => [
@@ -363,10 +422,18 @@ class HeraRssCrawlerTest extends TestCase
                     'https://shiroutang.blogspot.com/feeds/posts/default?alt=rss',
                     'https://www.blogger.com/feeds/7456002711322960081/posts/default',
                 ],
+                [
+                    true,
+                    true,
+                    true,
+                ],
             ],
             'React' => [
                 [
                     'https://facebook.github.io/react/feed.xml'
+                ],
+                [
+                    true,
                 ],
             ],
             'PHP' => [
@@ -374,10 +441,17 @@ class HeraRssCrawlerTest extends TestCase
                     'https://www.php.net/releases/feed.php',
                     'https://www.php.net/feed.atom',
                 ],
+                [
+                    true,
+                    true,
+                ],
             ],
             'PHP Internals' => [
                 [
                     'https://phpinternals.news/feed.rss',
+                ],
+                [
+                    true,
                 ],
             ],
             'Nutrition Facts' => [
@@ -388,11 +462,30 @@ class HeraRssCrawlerTest extends TestCase
                     'https://nutritionfacts.org/videos/feed/podcast',
                     'http://nutritionfacts.org/feed/podcast',
                 ],
+                [
+                    true,
+                    true,
+                    true,
+                    true,
+                    true,
+                ],
             ],
             'JRock News' => [
                 [
                     'https://jrocknews.com/feed',
                     'https://jrocknews.com/comments/feed',
+                ],
+                [
+                    true,
+                    true,
+                ],
+            ],
+            'Non-existent website' => [
+                [
+                    'https://www.nonexistent-website.dev',
+                ],
+                [
+                    false,
                 ],
             ],
         ];

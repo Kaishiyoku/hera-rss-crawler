@@ -45,14 +45,18 @@ class HeraRssCrawler
 
     /**
      * @param string $url
-     * @return Feed
+     * @return Feed|null
      */
-    public function parseFeed(string $url): Feed
+    public function parseFeed(string $url): ?Feed
     {
-        $content = $this->httpClient->get($url)->getBody()->getContents();
-        $zendFeed = Reader::importString($content);
+        try {
+            $content = $this->httpClient->get($url)->getBody()->getContents();
+            $zendFeed = Reader::importString($content);
 
-        return Feed::fromZendFeed($zendFeed);
+            return Feed::fromZendFeed($zendFeed);
+        } catch (Exception $e) {
+            return null;
+        }
     }
 
     /**
@@ -139,6 +143,17 @@ class HeraRssCrawler
         }
 
         return $faviconUrls->first();
+    }
+
+    /**
+     * @param string $url
+     * @return bool
+     */
+    public function checkIfConsumableFeed(string $url): bool
+    {
+        $feed = $this->parseFeed($url);
+
+        return $feed instanceof Feed;
     }
 
     /**
@@ -239,7 +254,6 @@ class HeraRssCrawler
 
             return Hash::hash($algo, $allValuesConcatenated);
         } catch (Exception $e) {
-            print($e);
             return null;
         }
     }
