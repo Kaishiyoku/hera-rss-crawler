@@ -40,14 +40,14 @@ class HeraRssCrawlerTest extends TestCase
 
     /**
      * @dataProvider feedProvider
-     * @covers       HeraRssCrawler::parse()
+     * @covers       HeraRssCrawler::parseFeed()
      * @param $feedUrls
      * @return void
      */
-    public function testParse($feedUrls): void
+    public function testParseFeed($feedUrls): void
     {
         foreach ($feedUrls as $key => $feedUrl) {
-            $feed = $this->heraRssCrawler->parse($feedUrl);
+            $feed = $this->heraRssCrawler->parseFeed($feedUrl);
 
             $feedArr = [
                 'title' => $feed->getTitle(),

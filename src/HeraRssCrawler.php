@@ -46,7 +46,7 @@ class HeraRssCrawler
      * @param string $url
      * @return Feed
      */
-    public function parse(string $url): Feed
+    public function parseFeed(string $url): Feed
     {
         $content = $this->httpClient->get($url)->getBody()->getContents();
         $zendFeed = Reader::importString($content);
