@@ -5,10 +5,16 @@ namespace Kaishiyoku\HeraRssCrawler\Models\Rss;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Kaishiyoku\HeraRssCrawler\Helper;
+use Kaishiyoku\HeraRssCrawler\HeraRssCrawler;
 use Zend\Feed\Reader\Feed\FeedInterface;
 
 class Feed
 {
+    /**
+     * @var string
+     */
+    private $checksum;
+
     /**
      * @var Collection<string>
      */
@@ -70,6 +76,22 @@ class Feed
     private $feedItems;
 
     /**
+     * @return string
+     */
+    public function getChecksum(): string
+    {
+        return $this->checksum;
+    }
+
+    /**
+     * @param string $checksum
+     */
+    public function setChecksum(string $checksum): void
+    {
+        $this->checksum = $checksum;
+    }
+
+    /**
      * @return Collection
      */
     public function getCategories(): Collection
@@ -82,7 +104,9 @@ class Feed
      */
     public function setCategories(Collection $categories): void
     {
-        $this->categories = Helper::trimOrDefaultNull($categories);
+        $this->categories = $categories->map(function ($category) {
+            return Helper::trimOrDefaultNull($category);
+        });
     }
 
     /**
@@ -289,6 +313,7 @@ class Feed
         }
 
         $feed->setFeedItems($feedItems);
+        $feed->setChecksum(HeraRssCrawler::generateChecksumForFeed($feed));
 
         return $feed;
     }

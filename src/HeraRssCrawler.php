@@ -257,4 +257,28 @@ class HeraRssCrawler
             return null;
         }
     }
+
+    public static function generateChecksumForFeed(Feed $feed, string $delimiter = '|', string $algo = Hash::SHA_256): ?string
+    {
+        try {
+            $class = new ReflectionClass(Feed::class);
+            $allValuesConcatenated = trim(collect($class->getMethods(ReflectionMethod::IS_PUBLIC))
+                ->filter(function (ReflectionMethod $method) {
+                    return Str::startsWith($method->getName(), 'get') && $method->getName() !== 'getChecksum';
+                })
+                ->reduce(function ($carry, ReflectionMethod $method) use ($feed, $delimiter) {
+                    if ($method->getName() === 'getFeedItems') {
+                        return $carry . $delimiter . $method->invoke($feed)->reduce(function ($carry, FeedItem $feedItem) use ($delimiter) {
+                            return $carry . $delimiter . self::generateChecksumForFeedItem($feedItem);
+                        });
+                    }
+
+                    return $carry . $delimiter . $method->invoke($feed);
+                }, ''), $delimiter);
+
+            return Hash::hash($algo, $allValuesConcatenated);
+        } catch (Exception $e) {
+            return null;
+        }
+    }
 }

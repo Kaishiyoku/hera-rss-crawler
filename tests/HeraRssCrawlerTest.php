@@ -64,6 +64,7 @@ class HeraRssCrawlerTest extends TestCase
 
                 $this->assertMatchesSnapshot($feedArr);
 
+                $this->assertNotEmpty($feed->getChecksum());
                 $this->assertNotEmpty($feed->getCreatedAt());
                 $this->assertNotEmpty($feed->getUpdatedAt());
                 $this->assertGreaterThanOrEqual(0, $feed->getFeedItems()->count());
@@ -99,24 +100,7 @@ class HeraRssCrawlerTest extends TestCase
     {
         $expected = '0339bfd7b25e3ae5bc304a5d64a8474baac5eb30036356534a29802bf5ad2e5f';
 
-        $feedItem = new FeedItem();
-        $feedItem->setCategories(collect(['Zeitgeschehen']));
-        $feedItem->setAuthors(collect(['ZEIT ONLINE: Zeitgeschehen - Alena Kammer']));
-        $feedItem->setTitle('Gabun: Piraten töten Kapitän und entführen Matrosen');
-        $feedItem->setCommentCount(0);
-        $feedItem->setCommentFeedLink(null);
-        $feedItem->setCommentLink(null);
-        $feedItem->setCreatedAt(Carbon::parse('2019-12-22 18:28:44.0 +00:00'));
-        $feedItem->setUpdatedAt(Carbon::parse('2019-12-22 18:28:44.0 +00:00'));
-        $feedItem->setDescription('<a href="https://www.zeit.de/gesellschaft/zeitgeschehen/2019-12/gabun-piraterie-angriff-libreville-entfuehrung"><img style="float:left; margin-right:5px" src="https://img.zeit.de/gesellschaft/zeitgeschehen/2019-12/gabun-libreville-hafen-piraterie-angriff/wide__148x84"></a> Im Hafen der Hauptstadt Libreville haben Piraten vier Schiffe überfallen. Nach Angaben der Regierung wurde ein Kapitän getötet und vier Matrosen wurden entführt.');
-        $feedItem->setEnclosureUrl(null);
-        $feedItem->setEncoding('UTF-8');
-        $feedItem->setId('{urn:uuid:a56e1e5f-a630-4cd6-aa51-cdb896904ee9}');
-        $feedItem->setLinks(collect(['https://www.zeit.de/gesellschaft/zeitgeschehen/2019-12/gabun-piraterie-angriff-libreville-entfuehrung']));
-        $feedItem->setPermalink('https://www.zeit.de/gesellschaft/zeitgeschehen/2019-12/gabun-piraterie-angriff-libreville-entfuehrung');
-        $feedItem->setType('rss-20');
-        $feedItem->setContent('');
-        $feedItem->setChecksum('not important here');
+        $feedItem = self::getSampleFeedItem();
 
         $this->assertEquals($expected, HeraRssCrawler::generateChecksumForFeedItem($feedItem));
 
@@ -129,6 +113,34 @@ class HeraRssCrawlerTest extends TestCase
 
         $this->assertEquals($expectedSha512, HeraRssCrawler::generateChecksumForFeedItem($feedItem, '__', Hash::SHA_512));
         $this->assertNotEquals($expectedSha512, HeraRssCrawler::generateChecksumForFeedItem($feedItem, '--', Hash::SHA_512));
+    }
+
+    /**
+     * @covers HeraRssCrawler::generateChecksumForFeed()
+     * @return void
+     */
+    public function testGenerateChecksumForFeed(): void
+    {
+        $expected = 'bdf1e989928f2d8cd519352a3055e7c5378c9958a4fb7888710817fea3a0d8e4';
+
+        $feed = self::getSampleFeed();
+
+        $this->assertEquals($expected, HeraRssCrawler::generateChecksumForFeed($feed));
+
+        $feed2 = clone $feed;
+        $feed2->setTitle('Title has changed');
+
+        $this->assertNotEquals($expected, HeraRssCrawler::generateChecksumForFeed($feed2));
+
+        $expectedSha512 = '9686bb2bcf1c68d40b4555bc09a278adbd604b56681470110efd505b2851daac0bbfa6c7ca21dbf10587c347a04195507accb349f02e4696960a52cdf50eb5ee';
+
+        $feed3 = clone $feed;
+        $feed3->setFeedItems(collect([self::getSampleFeedItem(), self::getSampleFeedItem()]));
+
+        $this->assertNotEquals($expected, HeraRssCrawler::generateChecksumForFeed($feed3));
+
+        $this->assertEquals($expectedSha512, HeraRssCrawler::generateChecksumForFeed($feed, '__', Hash::SHA_512));
+        $this->assertNotEquals($expectedSha512, HeraRssCrawler::generateChecksumForFeed($feed, '--', Hash::SHA_512));
     }
 
     /**
@@ -159,6 +171,55 @@ class HeraRssCrawlerTest extends TestCase
 
             $this->assertEquals($expectedValues[$key], $isConsumableFeed);
         }
+    }
+
+    /**
+     * @return Feed
+     */
+    private static function getSampleFeed(): Feed
+    {
+        $feed = new Feed();
+        $feed->setDescription('Lorem ipsum.');
+        $feed->setCreatedAt(Carbon::parse('2019-12-22 18:28:44.0 +00:00'));
+        $feed->setUpdatedAt(Carbon::parse('2019-12-22 18:28:44.0 +00:00'));
+        $feed->setTitle('Test');
+        $feed->setAuthors(collect(['John Doe', 'Jane Doe']));
+        $feed->setCategories(collect(['A', 'B']));
+        $feed->setCopyright('None');
+        $feed->setFeedItems(collect([self::getSampleFeedItem()]));
+        $feed->setFeedUrl('https://google.com');
+        $feed->setId('Sample-ID');
+        $feed->setLanguage('en');
+        $feed->setUrl('https://google.com');
+
+        return $feed;
+    }
+
+    /**
+     * @return FeedItem
+     */
+    private static function getSampleFeedItem(): FeedItem
+    {
+        $feedItem = new FeedItem();
+        $feedItem->setCategories(collect(['Zeitgeschehen']));
+        $feedItem->setAuthors(collect(['ZEIT ONLINE: Zeitgeschehen - Alena Kammer']));
+        $feedItem->setTitle('Gabun: Piraten töten Kapitän und entführen Matrosen');
+        $feedItem->setCommentCount(0);
+        $feedItem->setCommentFeedLink(null);
+        $feedItem->setCommentLink(null);
+        $feedItem->setCreatedAt(Carbon::parse('2019-12-22 18:28:44.0 +00:00'));
+        $feedItem->setUpdatedAt(Carbon::parse('2019-12-22 18:28:44.0 +00:00'));
+        $feedItem->setDescription('<a href="https://www.zeit.de/gesellschaft/zeitgeschehen/2019-12/gabun-piraterie-angriff-libreville-entfuehrung"><img style="float:left; margin-right:5px" src="https://img.zeit.de/gesellschaft/zeitgeschehen/2019-12/gabun-libreville-hafen-piraterie-angriff/wide__148x84"></a> Im Hafen der Hauptstadt Libreville haben Piraten vier Schiffe überfallen. Nach Angaben der Regierung wurde ein Kapitän getötet und vier Matrosen wurden entführt.');
+        $feedItem->setEnclosureUrl(null);
+        $feedItem->setEncoding('UTF-8');
+        $feedItem->setId('{urn:uuid:a56e1e5f-a630-4cd6-aa51-cdb896904ee9}');
+        $feedItem->setLinks(collect(['https://www.zeit.de/gesellschaft/zeitgeschehen/2019-12/gabun-piraterie-angriff-libreville-entfuehrung']));
+        $feedItem->setPermalink('https://www.zeit.de/gesellschaft/zeitgeschehen/2019-12/gabun-piraterie-angriff-libreville-entfuehrung');
+        $feedItem->setType('rss-20');
+        $feedItem->setContent('');
+        $feedItem->setChecksum('not important here');
+
+        return $feedItem;
     }
 
     /**
