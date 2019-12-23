@@ -119,6 +119,11 @@ class HeraRssCrawlerTest extends TestCase
         $feedItem2->setTitle('Title has changed');
 
         $this->assertNotEquals($expected, HeraRssCrawler::generateChecksumForFeedItem($feedItem2));
+
+        $expectedSha512 = 'b122c686c6d1d55bd30c2b07196f1763477ce66d0e3fb88382a7e50e2be251a7d6b063a53f948bbaf036dfa2d3444d8ac2d15d73a004b012fd161a096d3773d1';
+
+        $this->assertEquals($expectedSha512, HeraRssCrawler::generateChecksumForFeedItem($feedItem, '__', Hash::SHA_512));
+        $this->assertNotEquals($expectedSha512, HeraRssCrawler::generateChecksumForFeedItem($feedItem, '--', Hash::SHA_512));
     }
 
     /**

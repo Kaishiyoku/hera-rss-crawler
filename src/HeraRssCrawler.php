@@ -221,11 +221,11 @@ class HeraRssCrawler
 
     /**
      * @param FeedItem $feedItem
-     * @param string $algo
      * @param string $delimiter
+     * @param string $algo
      * @return string|null
      */
-    public static function generateChecksumForFeedItem(FeedItem $feedItem, string $algo = 'sha256', string $delimiter = '|'): ?string
+    public static function generateChecksumForFeedItem(FeedItem $feedItem, string $delimiter = '|', string $algo = Hash::SHA_256): ?string
     {
         try {
             $class = new ReflectionClass(FeedItem::class);
@@ -237,8 +237,9 @@ class HeraRssCrawler
                     return $carry . $delimiter . $method->invoke($feedItem);
                 }, ''), $delimiter);
 
-            return hash($algo, $allValuesConcatenated);
+            return Hash::hash($algo, $allValuesConcatenated);
         } catch (Exception $e) {
+            print($e);
             return null;
         }
     }
