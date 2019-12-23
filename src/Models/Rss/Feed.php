@@ -4,6 +4,7 @@ namespace Kaishiyoku\HeraRssCrawler\Models\Rss;
 
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Kaishiyoku\HeraRssCrawler\Helper;
 use Zend\Feed\Reader\Feed\FeedInterface;
 
 class Feed
@@ -81,7 +82,7 @@ class Feed
      */
     public function setCategories(Collection $categories): void
     {
-        $this->categories = $categories;
+        $this->categories = Helper::trimOrDefaultNull($categories);
     }
 
     /**
@@ -97,7 +98,9 @@ class Feed
      */
     public function setAuthors(Collection $authors): void
     {
-        $this->authors = $authors;
+        $this->authors = $authors->map(function ($author) {
+            return Helper::trimOrDefaultNull($author);
+        });
     }
 
     /**
@@ -113,7 +116,7 @@ class Feed
      */
     public function setTitle(string $title): void
     {
-        $this->title = $title;
+        $this->title = Helper::trimOrDefaultNull($title);
     }
 
     /**
@@ -129,7 +132,7 @@ class Feed
      */
     public function setCopyright(?string $copyright): void
     {
-        $this->copyright = $copyright;
+        $this->copyright = Helper::trimOrDefaultNull($copyright);
     }
 
     /**
@@ -177,7 +180,7 @@ class Feed
      */
     public function setDescription(?string $description): void
     {
-        $this->description = $description;
+        $this->description = Helper::trimOrDefaultNull($description);
     }
 
     /**
@@ -193,7 +196,7 @@ class Feed
      */
     public function setFeedUrl(?string $feedUrl): void
     {
-        $this->feedUrl = $feedUrl;
+        $this->feedUrl = Helper::trimOrDefaultNull($feedUrl);
     }
 
     /**
@@ -209,7 +212,7 @@ class Feed
      */
     public function setId(string $id): void
     {
-        $this->id = $id;
+        $this->id = Helper::trimOrDefaultNull($id);
     }
 
     /**
@@ -225,7 +228,7 @@ class Feed
      */
     public function setLanguage(?string $language): void
     {
-        $this->language = $language;
+        $this->language = Helper::trimOrDefaultNull($language);
     }
 
     /**
@@ -241,7 +244,7 @@ class Feed
      */
     public function setUrl(?string $url): void
     {
-        $this->url = $url;
+        $this->url = Helper::trimOrDefaultNull($url);
     }
 
     /**

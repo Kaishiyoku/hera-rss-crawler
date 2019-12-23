@@ -5,6 +5,7 @@ namespace Kaishiyoku\HeraRssCrawler\Models\Rss;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
+use Kaishiyoku\HeraRssCrawler\Helper;
 use Kaishiyoku\HeraRssCrawler\HeraRssCrawler;
 use TypeError;
 use Zend\Feed\Reader\Entry\AbstractEntry;
@@ -127,7 +128,9 @@ class FeedItem
      */
     public function setCategories(Collection $categories): void
     {
-        $this->categories = $categories;
+        $this->categories = $categories->map(function ($category) {
+            return Helper::trimOrDefaultNull($category);
+        });
     }
 
     /**
@@ -143,7 +146,9 @@ class FeedItem
      */
     public function setAuthors(Collection $authors): void
     {
-        $this->authors = $authors;
+        $this->authors = $authors->map(function ($author) {
+            return Helper::trimOrDefaultNull($author);
+        });
     }
 
     /**
@@ -159,7 +164,7 @@ class FeedItem
      */
     public function setTitle(string $title): void
     {
-        $this->title = $title;
+        $this->title = Helper::trimOrDefaultNull($title);
     }
 
     /**
@@ -191,7 +196,7 @@ class FeedItem
      */
     public function setCommentFeedLink(?string $commentFeedLink): void
     {
-        $this->commentFeedLink = $commentFeedLink;
+        $this->commentFeedLink = Helper::trimOrDefaultNull($commentFeedLink);
     }
 
     /**
@@ -207,7 +212,7 @@ class FeedItem
      */
     public function setCommentLink(?string $commentLink): void
     {
-        $this->commentLink = $commentLink;
+        $this->commentLink = Helper::trimOrDefaultNull($commentLink);
     }
 
     /**
@@ -223,7 +228,7 @@ class FeedItem
      */
     public function setContent(string $content): void
     {
-        $this->content = $content;
+        $this->content = Helper::trimOrDefaultNull($content);
     }
 
     /**
@@ -271,7 +276,7 @@ class FeedItem
      */
     public function setDescription(?string $description): void
     {
-        $this->description = $description;
+        $this->description = Helper::trimOrDefaultNull($description);
     }
 
     /**
@@ -287,7 +292,7 @@ class FeedItem
      */
     public function setEnclosureUrl(?string $enclosureUrl): void
     {
-        $this->enclosureUrl = $enclosureUrl;
+        $this->enclosureUrl = Helper::trimOrDefaultNull($enclosureUrl);
     }
 
     /**
@@ -303,7 +308,7 @@ class FeedItem
      */
     public function setEncoding(string $encoding): void
     {
-        $this->encoding = $encoding;
+        $this->encoding = Helper::trimOrDefaultNull($encoding);
     }
 
     /**
@@ -319,7 +324,7 @@ class FeedItem
      */
     public function setId(string $id): void
     {
-        $this->id = $id;
+        $this->id = Helper::trimOrDefaultNull($id);
     }
 
     /**
@@ -335,7 +340,9 @@ class FeedItem
      */
     public function setLinks(Collection $links): void
     {
-        $this->links = $links;
+        $this->links = $links->map(function ($link) {
+            return Helper::trimOrDefaultNull($link);
+        });
     }
 
     /**
@@ -351,7 +358,7 @@ class FeedItem
      */
     public function setPermalink(string $permalink): void
     {
-        $this->permalink = $permalink;
+        $this->permalink = Helper::trimOrDefaultNull($permalink);
     }
 
     /**
@@ -367,7 +374,7 @@ class FeedItem
      */
     public function setType(string $type): void
     {
-        $this->type = $type;
+        $this->type = Helper::trimOrDefaultNull($type);
     }
 
     /**
