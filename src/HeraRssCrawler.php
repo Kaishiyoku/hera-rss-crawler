@@ -56,6 +56,18 @@ class HeraRssCrawler
 
     /**
      * @param string $url
+     * @return Collection<Feed>
+     */
+    public function discoverAndParseFeeds(string $url): Collection
+    {
+        return $this->discoverFeedUrls($url)
+            ->map(function ($feedUrl) {
+                return $this->parseFeed($feedUrl);
+            });
+    }
+
+    /**
+     * @param string $url
      * @return Collection<string>
      */
     public function discoverFeedUrls(string $url): Collection

@@ -3,6 +3,7 @@
 namespace Kaishiyoku\HeraRssCrawler;
 
 use Carbon\Carbon;
+use Kaishiyoku\HeraRssCrawler\Models\Rss\Feed;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\FeedItem;
 use PHPUnit\Framework\TestCase;
 use Spatie\Snapshots\MatchesSnapshots;
@@ -26,7 +27,7 @@ class HeraRssCrawlerTest extends TestCase
 
     /**
      * @dataProvider websiteProvider
-     * @covers       HeraRssCrawler::discoverFeedUrls()
+     * @covers HeraRssCrawler::discoverFeedUrls()
      * @param $url
      * @param $expectedUrls
      * @return void
@@ -40,7 +41,7 @@ class HeraRssCrawlerTest extends TestCase
 
     /**
      * @dataProvider feedProvider
-     * @covers       HeraRssCrawler::parseFeed()
+     * @covers HeraRssCrawler::parseFeed()
      * @param $feedUrls
      * @return void
      */
@@ -68,7 +69,21 @@ class HeraRssCrawlerTest extends TestCase
     }
 
     /**
-     * @covers       HeraRssCrawler::generateChecksumForFeedItem()
+     * @covers HeraRssCrawler::discoverAndParseFeeds()
+     * @return void
+     */
+    public function testDiscoverAndParseFeeds(): void
+    {
+        $feeds = $this->heraRssCrawler->discoverAndParseFeeds('https://byorgey.wordpress.com/');
+        $actual = $feeds->map(function (Feed $feed) {
+            return $feed->getTitle();
+        })->toArray();
+
+        $this->assertMatchesSnapshot($actual);
+    }
+
+    /**
+     * @covers HeraRssCrawler::generateChecksumForFeedItem()
      * @return void
      */
     public function testGenerateChecksumForFeedItem(): void
