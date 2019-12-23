@@ -231,7 +231,7 @@ class HeraRssCrawler
             $class = new ReflectionClass(FeedItem::class);
             $allValuesConcatenated = trim(collect($class->getMethods(ReflectionMethod::IS_PUBLIC))
                 ->filter(function (ReflectionMethod $method) {
-                    return Str::startsWith($method->getName(), 'get') && $method->getName() != 'getChecksum';
+                    return Str::startsWith($method->getName(), 'get') && $method->getName() !== 'getChecksum';
                 })
                 ->reduce(function ($carry, ReflectionMethod $method) use ($feedItem, $delimiter) {
                     return $carry . $delimiter . $method->invoke($feedItem);

@@ -391,8 +391,8 @@ class FeedItem
         $feedItem = new self();
 
         $feedItem->setCategories(collect($zendFeedItem->getCategories()->getValues()));
-        $feedItem->setAuthors(collect($zendFeedItem->getAuthors() == null ? null : $zendFeedItem->getAuthors()->getValues()));
-        $feedItem->setTitle($zendFeedItem->getTitle() == null ? '' : $zendFeedItem->getTitle()); // TODO: investigate; why can a title be empty? maybe we should discard those items
+        $feedItem->setAuthors(collect($zendFeedItem->getAuthors() === null ? null : $zendFeedItem->getAuthors()->getValues()));
+        $feedItem->setTitle($zendFeedItem->getTitle() ?? ''); // TODO: investigate; why can a title be empty? maybe we should discard those items
         $feedItem->setCommentCount($zendFeedItem->getCommentCount() ?? 0);
         $feedItem->setCommentFeedLink($zendFeedItem->getCommentFeedLink());
         $feedItem->setCommentLink($zendFeedItem->getCommentLink());
@@ -411,7 +411,7 @@ class FeedItem
         $feedItem->setEncoding($zendFeedItem->getEncoding());
         $feedItem->setId($zendFeedItem->getId());
         $feedItem->setLinks(collect($zendFeedItem->getLinks()));
-        $feedItem->setPermalink($zendFeedItem->getPermalink() == null ? '' : $zendFeedItem->getPermalink()); // TODO: investigate; why can a permalink be empty? maybe we should discard those items
+        $feedItem->setPermalink($zendFeedItem->getPermalink() ?? ''); // TODO: investigate; why can a permalink be empty? maybe we should discard those items
         $feedItem->setType($zendFeedItem->getType());
 
         $feedItem->setChecksum(HeraRssCrawler::generateChecksumForFeedItem($feedItem));

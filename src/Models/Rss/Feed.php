@@ -271,7 +271,7 @@ class Feed
     {
         $feed = new self();
         $feed->setCategories(collect($zendFeed->getCategories()->getValues()));
-        $feed->setAuthors(collect($zendFeed->getAuthors() == null ? null : $zendFeed->getAuthors()->getValues()));
+        $feed->setAuthors(collect($zendFeed->getAuthors() === null ? null : $zendFeed->getAuthors()->getValues()));
         $feed->setTitle($zendFeed->getTitle());
         $feed->setCopyright($zendFeed->getCopyright());
         $feed->setCreatedAt(Carbon::parse($zendFeed->getDateCreated()));

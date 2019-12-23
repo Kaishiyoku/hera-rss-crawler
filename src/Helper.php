@@ -21,7 +21,7 @@ class Helper
      */
     public static function normalizeUrl(string $url): string
     {
-        return trim(preg_replace("#(^|[^:])//+#", "\\1/", $url), '/');
+        return trim(preg_replace('#(^|[^:])//+#', "\\1/", $url), '/');
     }
 
     /**
