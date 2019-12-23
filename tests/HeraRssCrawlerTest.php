@@ -5,7 +5,6 @@ namespace Kaishiyoku\HeraRssCrawler;
 use Carbon\Carbon;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\FeedItem;
 use PHPUnit\Framework\TestCase;
-use ReflectionException;
 use Spatie\Snapshots\MatchesSnapshots;
 
 /**
@@ -24,7 +23,6 @@ class HeraRssCrawlerTest extends TestCase
     {
         $this->heraRssCrawler = new HeraRssCrawler();
     }
-
 
     /**
      * @dataProvider websiteProvider
@@ -72,7 +70,6 @@ class HeraRssCrawlerTest extends TestCase
     /**
      * @covers       HeraRssCrawler::generateChecksumForFeedItem()
      * @return void
-     * @throws ReflectionException
      */
     public function testGenerateChecksumForFeedItem(): void
     {

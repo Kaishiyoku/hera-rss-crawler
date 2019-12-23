@@ -425,7 +425,7 @@ class Result implements DeserializableModel
      */
     public static function fromJson(array $json): Result
     {
-        $result = new Result();
+        $result = new self();
         $result->setFeedId($json['feedId']);
         $result->setSubscribers($json['subscribers']);
         $result->setTitle($json['title']);

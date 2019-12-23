@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Kaishiyoku\HeraRssCrawler\HeraRssCrawler;
-use ReflectionException;
 use TypeError;
 use Zend\Feed\Reader\Entry\AbstractEntry;
 use Zend\Feed\Reader\Entry\Atom;
@@ -375,15 +374,14 @@ class FeedItem
      * @param AbstractEntry $zendFeedItem
      * @return FeedItem
      * @throws InvalidArgumentException
-     * @throws ReflectionException
      */
     public static function fromZendFeedItem($zendFeedItem): FeedItem
     {
-        if (!$zendFeedItem instanceof Rss && !$zendFeedItem instanceof  Atom) {
+        if (!$zendFeedItem instanceof Rss && !$zendFeedItem instanceof Atom) {
             throw new InvalidArgumentException('given feed item neither is from a Rss or Atom feed');
         }
 
-        $feedItem = new FeedItem();
+        $feedItem = new self();
 
         $feedItem->setCategories(collect($zendFeedItem->getCategories()->getValues()));
         $feedItem->setAuthors(collect($zendFeedItem->getAuthors() == null ? null : $zendFeedItem->getAuthors()->getValues()));

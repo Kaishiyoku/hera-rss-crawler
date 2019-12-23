@@ -266,7 +266,7 @@ class Feed
      */
     public static function fromZendFeed(FeedInterface $zendFeed): Feed
     {
-        $feed = new Feed();
+        $feed = new self();
         $feed->setCategories(collect($zendFeed->getCategories()->getValues()));
         $feed->setAuthors(collect($zendFeed->getAuthors() == null ? null : $zendFeed->getAuthors()->getValues()));
         $feed->setTitle($zendFeed->getTitle());
