@@ -64,9 +64,9 @@ class Feed
     private $url;
 
     /**
-     * @var Collection<Item>
+     * @var Collection<FeedItem>
      */
-    private $items;
+    private $feedItems;
 
     /**
      * @return Collection
@@ -247,17 +247,17 @@ class Feed
     /**
      * @return Collection
      */
-    public function getItems(): Collection
+    public function getFeedItems(): Collection
     {
-        return $this->items;
+        return $this->feedItems;
     }
 
     /**
-     * @param Collection $items
+     * @param Collection $feedItems
      */
-    public function setItems(Collection $items): void
+    public function setFeedItems(Collection $feedItems): void
     {
-        $this->items = $items;
+        $this->feedItems = $feedItems;
     }
 
     /**
@@ -282,10 +282,10 @@ class Feed
         $feedItems = collect();
 
         foreach ($zendFeed as $zendFeedItem) {
-            $feedItems->add(Item::fromZendFeedItem($zendFeedItem));
+            $feedItems->add(FeedItem::fromZendFeedItem($zendFeedItem));
         }
 
-        $feed->setItems($feedItems);
+        $feed->setFeedItems($feedItems);
 
         return $feed;
     }

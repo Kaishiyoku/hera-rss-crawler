@@ -12,7 +12,7 @@ use Zend\Feed\Reader\Entry\AbstractEntry;
 use Zend\Feed\Reader\Entry\Atom;
 use Zend\Feed\Reader\Entry\Rss;
 
-class Item
+class FeedItem
 {
     /**
      * @var string
@@ -373,17 +373,17 @@ class Item
 
     /**
      * @param AbstractEntry $zendFeedItem
-     * @return Item
+     * @return FeedItem
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public static function fromZendFeedItem($zendFeedItem): Item
+    public static function fromZendFeedItem($zendFeedItem): FeedItem
     {
         if (!$zendFeedItem instanceof Rss && !$zendFeedItem instanceof  Atom) {
             throw new InvalidArgumentException('given feed item neither is from a Rss or Atom feed');
         }
 
-        $feedItem = new Item();
+        $feedItem = new FeedItem();
 
         $feedItem->setCategories(collect($zendFeedItem->getCategories()->getValues()));
         $feedItem->setAuthors(collect($zendFeedItem->getAuthors() == null ? null : $zendFeedItem->getAuthors()->getValues()));

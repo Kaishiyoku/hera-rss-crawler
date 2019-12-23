@@ -3,7 +3,7 @@
 namespace Kaishiyoku\HeraRssCrawler;
 
 use Carbon\Carbon;
-use Kaishiyoku\HeraRssCrawler\Models\Rss\Item;
+use Kaishiyoku\HeraRssCrawler\Models\Rss\FeedItem;
 use PHPUnit\Framework\TestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
@@ -59,7 +59,7 @@ class HeraRssCrawlerTest extends TestCase
 
             $this->assertNotEmpty($feed->getCreatedAt());
             $this->assertNotEmpty($feed->getUpdatedAt());
-            $this->assertGreaterThanOrEqual(0, $feed->getItems()->count());
+            $this->assertGreaterThanOrEqual(0, $feed->getFeedItems()->count());
         }
     }
 
@@ -67,31 +67,31 @@ class HeraRssCrawlerTest extends TestCase
     {
         $expected = '0339bfd7b25e3ae5bc304a5d64a8474baac5eb30036356534a29802bf5ad2e5f';
 
-        $item = new Item();
-        $item->setCategories(collect(['Zeitgeschehen']));
-        $item->setAuthors(collect(['ZEIT ONLINE: Zeitgeschehen - Alena Kammer']));
-        $item->setTitle('Gabun: Piraten töten Kapitän und entführen Matrosen');
-        $item->setCommentCount(0);
-        $item->setCommentFeedLink(null);
-        $item->setCommentLink(null);
-        $item->setCreatedAt(Carbon::parse('2019-12-22 18:28:44.0 +00:00'));
-        $item->setUpdatedAt(Carbon::parse('2019-12-22 18:28:44.0 +00:00'));
-        $item->setDescription('<a href="https://www.zeit.de/gesellschaft/zeitgeschehen/2019-12/gabun-piraterie-angriff-libreville-entfuehrung"><img style="float:left; margin-right:5px" src="https://img.zeit.de/gesellschaft/zeitgeschehen/2019-12/gabun-libreville-hafen-piraterie-angriff/wide__148x84"></a> Im Hafen der Hauptstadt Libreville haben Piraten vier Schiffe überfallen. Nach Angaben der Regierung wurde ein Kapitän getötet und vier Matrosen wurden entführt.');
-        $item->setEnclosure(null);
-        $item->setEncoding('UTF-8');
-        $item->setId('{urn:uuid:a56e1e5f-a630-4cd6-aa51-cdb896904ee9}');
-        $item->setLinks(collect(['https://www.zeit.de/gesellschaft/zeitgeschehen/2019-12/gabun-piraterie-angriff-libreville-entfuehrung']));
-        $item->setPermalink('https://www.zeit.de/gesellschaft/zeitgeschehen/2019-12/gabun-piraterie-angriff-libreville-entfuehrung');
-        $item->setType('rss-20');
-        $item->setContent('');
-        $item->setChecksum('not important here');
+        $feedItem = new FeedItem();
+        $feedItem->setCategories(collect(['Zeitgeschehen']));
+        $feedItem->setAuthors(collect(['ZEIT ONLINE: Zeitgeschehen - Alena Kammer']));
+        $feedItem->setTitle('Gabun: Piraten töten Kapitän und entführen Matrosen');
+        $feedItem->setCommentCount(0);
+        $feedItem->setCommentFeedLink(null);
+        $feedItem->setCommentLink(null);
+        $feedItem->setCreatedAt(Carbon::parse('2019-12-22 18:28:44.0 +00:00'));
+        $feedItem->setUpdatedAt(Carbon::parse('2019-12-22 18:28:44.0 +00:00'));
+        $feedItem->setDescription('<a href="https://www.zeit.de/gesellschaft/zeitgeschehen/2019-12/gabun-piraterie-angriff-libreville-entfuehrung"><img style="float:left; margin-right:5px" src="https://img.zeit.de/gesellschaft/zeitgeschehen/2019-12/gabun-libreville-hafen-piraterie-angriff/wide__148x84"></a> Im Hafen der Hauptstadt Libreville haben Piraten vier Schiffe überfallen. Nach Angaben der Regierung wurde ein Kapitän getötet und vier Matrosen wurden entführt.');
+        $feedItem->setEnclosure(null);
+        $feedItem->setEncoding('UTF-8');
+        $feedItem->setId('{urn:uuid:a56e1e5f-a630-4cd6-aa51-cdb896904ee9}');
+        $feedItem->setLinks(collect(['https://www.zeit.de/gesellschaft/zeitgeschehen/2019-12/gabun-piraterie-angriff-libreville-entfuehrung']));
+        $feedItem->setPermalink('https://www.zeit.de/gesellschaft/zeitgeschehen/2019-12/gabun-piraterie-angriff-libreville-entfuehrung');
+        $feedItem->setType('rss-20');
+        $feedItem->setContent('');
+        $feedItem->setChecksum('not important here');
 
-        $this->assertEquals($expected, HeraRssCrawler::generateChecksumForFeedItem($item));
+        $this->assertEquals($expected, HeraRssCrawler::generateChecksumForFeedItem($feedItem));
 
-        $item2 = clone $item;
-        $item2->setTitle('Title has changed');
+        $feedItem2 = clone $feedItem;
+        $feedItem2->setTitle('Title has changed');
 
-        $this->assertNotEquals($expected, HeraRssCrawler::generateChecksumForFeedItem($item2));
+        $this->assertNotEquals($expected, HeraRssCrawler::generateChecksumForFeedItem($feedItem2));
     }
 
     public function websiteProvider()

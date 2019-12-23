@@ -2,6 +2,7 @@
 
 namespace Kaishiyoku\HeraRssCrawler;
 
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Arr;
@@ -11,7 +12,7 @@ use Kaishiyoku\HeraRssCrawler\Models\Feedly\Result;
 use Kaishiyoku\HeraRssCrawler\Models\Feedly\SearchResponse;
 use Kaishiyoku\HeraRssCrawler\Models\ResponseContainer;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\Feed;
-use Kaishiyoku\HeraRssCrawler\Models\Rss\Item;
+use Kaishiyoku\HeraRssCrawler\Models\Rss\FeedItem;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
@@ -157,23 +158,27 @@ class HeraRssCrawler
     }
 
     /**
-     * @param Item $item
+     * @param FeedItem $feedItem
      * @param string $algo
      * @param string $delimiter
-     * @return string
-     * @throws ReflectionException
+     * @return ?string
      */
-    public static function generateChecksumForFeedItem(Item $item, string $algo = 'sha256', string $delimiter = '|'): string
+    public static function generateChecksumForFeedItem(FeedItem $feedItem, string $algo = 'sha256', string $delimiter = '|'): ?string
     {
-        $class = new ReflectionClass(Item::class);
-        $allValuesConcatenated = trim(collect($class->getMethods(ReflectionMethod::IS_PUBLIC))
-            ->filter(function (ReflectionMethod $method) {
-                return Str::startsWith($method->getName(), 'get') && $method->getName() != 'getChecksum';
-            })
-            ->reduce(function ($carry, ReflectionMethod $method) use ($item, $delimiter) {
-                return $carry . $delimiter . $method->invoke($item);
-            }, ''), $delimiter);
+        try {
+            $class = new ReflectionClass(FeedItem::class);
+            $allValuesConcatenated = trim(collect($class->getMethods(ReflectionMethod::IS_PUBLIC))
+                ->filter(function (ReflectionMethod $method) {
+                    return Str::startsWith($method->getName(), 'get') && $method->getName() != 'getChecksum';
+                })
+                ->reduce(function ($carry, ReflectionMethod $method) use ($feedItem, $delimiter) {
+                    return $carry . $delimiter . $method->invoke($feedItem);
+                }, ''), $delimiter);
 
-        return hash($algo, $allValuesConcatenated);
+            return hash($algo, $allValuesConcatenated);
+        }
+        catch (Exception $e) {
+            return null;
+        }
     }
 }
