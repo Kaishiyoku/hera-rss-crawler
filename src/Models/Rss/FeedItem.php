@@ -72,7 +72,7 @@ class FeedItem
     /**
      * @var string|null
      */
-    private $enclosure;
+    private $enclosureUrl;
 
     /**
      * @var string
@@ -278,17 +278,17 @@ class FeedItem
     /**
      * @return string|null
      */
-    public function getEnclosure(): ?string
+    public function getEnclosureUrl(): ?string
     {
-        return $this->enclosure;
+        return $this->enclosureUrl;
     }
 
     /**
-     * @param string|null $enclosure
+     * @param string|null $enclosureUrl
      */
-    public function setEnclosure(?string $enclosure): void
+    public function setEnclosureUrl(?string $enclosureUrl): void
     {
-        $this->enclosure = $enclosure;
+        $this->enclosureUrl = $enclosureUrl;
     }
 
     /**
@@ -402,7 +402,7 @@ class FeedItem
         $feedItem->setCreatedAt(Carbon::parse($zendFeedItem->getDateCreated()));
         $feedItem->setUpdatedAt(Carbon::parse($zendFeedItem->getDateModified()));
         $feedItem->setDescription($zendFeedItem->getDescription());
-        $feedItem->setEnclosure($zendFeedItem->getEnclosure() ? $zendFeedItem->getEnclosure()->url : null);
+        $feedItem->setEnclosureUrl($zendFeedItem->getEnclosure() ? $zendFeedItem->getEnclosure()->url : null);
         $feedItem->setEncoding($zendFeedItem->getEncoding());
         $feedItem->setId($zendFeedItem->getId());
         $feedItem->setLinks(collect($zendFeedItem->getLinks()));
