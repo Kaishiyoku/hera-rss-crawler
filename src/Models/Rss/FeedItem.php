@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Kaishiyoku\HeraRssCrawler\Helper;
 use Kaishiyoku\HeraRssCrawler\HeraRssCrawler;
+use SimpleXMLElement;
 use TypeError;
 use Zend\Feed\Reader\Entry\AbstractEntry;
 use Zend\Feed\Reader\Entry\Atom;
@@ -100,7 +101,7 @@ class FeedItem
     private $type;
 
     /**
-     * @var string|null
+     * @var SimpleXMLElement|null
      */
     private $xml;
 
@@ -383,9 +384,9 @@ class FeedItem
     }
 
     /**
-     * @return string|null
+     * @return SimpleXMLElement|null
      */
-    public function getXml(): ?string
+    public function getXml(): ?SimpleXMLElement
     {
         return $this->xml;
     }
@@ -395,7 +396,7 @@ class FeedItem
      */
     public function setXml(?string $xml): void
     {
-        $this->xml = Helper::trimOrDefaultNull($xml);
+        $this->xml = simplexml_load_string(Helper::trimOrDefaultNull($xml));
     }
 
     /**
