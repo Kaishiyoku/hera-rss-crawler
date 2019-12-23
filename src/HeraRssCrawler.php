@@ -23,17 +23,17 @@ use Zend\Feed\Reader\Reader;
 class HeraRssCrawler
 {
     /**
-     * @var string
+     * @var string|null
      */
     private $url;
 
     /**
-     * @var Client
+     * @var Client|null
      */
     private $httpClient;
 
     /**
-     * @var CssSelectorConverter
+     * @var CssSelectorConverter|null
      */
     private $converter;
 
@@ -65,7 +65,10 @@ class HeraRssCrawler
         return Feed::fromZendFeed($zendFeed);
     }
 
-    public function discoverFeedUrls()
+    /**
+     * @return Collection<string>
+     */
+    public function discoverFeedUrls(): Collection
     {
         $responseContainer = null;
 
@@ -93,11 +96,15 @@ class HeraRssCrawler
         }, collect());
 
         return $urls->map(function ($url) {
-            return normalizeUrl($url);
+            return Helper::normalizeUrl($url);
         })->unique()->values();
     }
 
-    private function discoverFeedUrlByFeedly(ResponseContainer $responseContainer)
+    /**
+     * @param ResponseContainer $responseContainer
+     * @return Collection<string>
+     */
+    private function discoverFeedUrlByFeedly(ResponseContainer $responseContainer): Collection
     {
         $response = $this->httpClient->get(self::FEEDLY_API_BASE_URL . '/search/feeds', [
             'query' => ['query' => $responseContainer->getRequestUrl()],
@@ -110,6 +117,10 @@ class HeraRssCrawler
         });
     }
 
+    /**
+     * @param ResponseContainer $responseContainer
+     * @return Collection<string>
+     */
     private function discoverFeedUrlByContentType(ResponseContainer $responseContainer): Collection
     {
         $contentTypeMixedValue = Arr::get($responseContainer->getResponse()->getHeaders(), 'Content-Type');
@@ -124,33 +135,45 @@ class HeraRssCrawler
         return collect();
     }
 
-    private function discoverFeedUrlByHtmlHeadElements(ResponseContainer $responseContainer)
+    /**
+     * @param ResponseContainer $responseContainer
+     * @return Collection<string>
+     */
+    private function discoverFeedUrlByHtmlHeadElements(ResponseContainer $responseContainer): Collection
     {
         $crawler = new Crawler($responseContainer->getResponse()->getBody()->getContents());
         $nodes = $crawler->filterXPath($this->converter->toXPath('head > link[type="application/rss+xml"], head > link[type="application/atom+xml"]'));
 
         return collect($nodes->each(function (Crawler $node) {
-            return $this->transformNodesToUrls($node);
+            return $this->transformNodeToUrl($node);
         }));
     }
 
-    private function discoverFeedUrlByHtmlAnchorElements(ResponseContainer $responseContainer)
+    /**
+     * @param ResponseContainer $responseContainer
+     * @return Collection<string>
+     */
+    private function discoverFeedUrlByHtmlAnchorElements(ResponseContainer $responseContainer): Collection
     {
         $crawler = new Crawler($responseContainer->getResponse()->getBody()->getContents());
         $nodes = $crawler->filterXPath($this->converter->toXPath('a'));
 
         return collect($nodes->each(function (Crawler $node) {
-            return $this->transformNodesToUrls($node);
+            return $this->transformNodeToUrl($node);
         }))->filter(function ($url) {
             return Str::contains($url, 'rss');
         });
     }
 
-    private function transformNodesToUrls(Crawler $node)
+    /**
+     * @var Crawler $node
+     * @return string
+     */
+    private function transformNodeToUrl(Crawler $node): string
     {
         $href = $node->attr('href');
 
-        if (isValidUrl($href)) {
+        if (Helper::isValidUrl($href)) {
             return $href;
         }
 
