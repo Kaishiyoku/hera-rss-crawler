@@ -65,6 +65,10 @@ class HeraRssCrawlerTest extends TestCase
             $this->assertNotEmpty($feed->getCreatedAt());
             $this->assertNotEmpty($feed->getUpdatedAt());
             $this->assertGreaterThanOrEqual(0, $feed->getFeedItems()->count());
+
+            if ($feed->getFeedItems()->isNotEmpty()) {
+                $this->assertNotEmpty($feed->getFeedItems()->first()->getChecksum());
+            }
         }
     }
 
