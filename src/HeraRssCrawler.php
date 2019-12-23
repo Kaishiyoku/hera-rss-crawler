@@ -2,6 +2,7 @@
 
 namespace Kaishiyoku\HeraRssCrawler;
 
+use DOMElement;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -82,10 +83,18 @@ class HeraRssCrawler
         }
 
         $discoveryFns = collect([
-            function ($responseContainer) { return $this->discoverFeedUrlByContentType($responseContainer); },
-            function ($responseContainer) { return $this->discoverFeedUrlByHtmlHeadElements($responseContainer); },
-            function ($responseContainer) { return $this->discoverFeedUrlByHtmlAnchorElements($responseContainer); },
-            function ($responseContainer) { return $this->discoverFeedUrlByFeedly($responseContainer); },
+            function ($responseContainer) {
+                return $this->discoverFeedUrlByContentType($responseContainer);
+            },
+            function ($responseContainer) {
+                return $this->discoverFeedUrlByHtmlHeadElements($responseContainer);
+            },
+            function ($responseContainer) {
+                return $this->discoverFeedUrlByHtmlAnchorElements($responseContainer);
+            },
+            function ($responseContainer) {
+                return $this->discoverFeedUrlByFeedly($responseContainer);
+            },
         ]);
 
         $urls = $discoveryFns->reduce(function (Collection $carry, $discoveryFn) use ($responseContainer) {
@@ -100,6 +109,36 @@ class HeraRssCrawler
         return $urls->map(function ($url) {
             return Helper::normalizeUrl($url);
         })->unique()->values();
+    }
+
+    /**
+     * @param string $url
+     * @return string|null
+     */
+    public function discoverFavicon(string $url): ?string
+    {
+        $response = null;
+
+        try {
+            $response = $this->httpClient->get($url);
+        } catch (RequestException $e) {
+            return null;
+        }
+
+        $crawler = new Crawler($response->getBody()->getContents());
+        $nodes = $crawler->filterXPath($this->converter->toXPath('head > link'));
+
+        $faviconUrls = collect($nodes)->filter(function (DOMElement $node) {
+            return Str::contains($node->getAttribute('rel'), 'icon');
+        })->map(function (DOMElement $node) use ($url) {
+            return Helper::normalizeUrl(Helper::transformUrl($url, $node->getAttribute('href')));
+        });
+
+        if ($faviconUrls->isEmpty()) {
+            return null;
+        }
+
+        return $faviconUrls->first();
     }
 
     /**
@@ -177,11 +216,7 @@ class HeraRssCrawler
     {
         $href = $node->attr('href');
 
-        if (Helper::isValidUrl($href)) {
-            return $href;
-        }
-
-        return $baseUrl . '/' . $href;
+        return Helper::transformUrl($baseUrl, $href);
     }
 
     /**
@@ -203,8 +238,7 @@ class HeraRssCrawler
                 }, ''), $delimiter);
 
             return hash($algo, $allValuesConcatenated);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return null;
         }
     }

@@ -2,6 +2,8 @@
 
 namespace Kaishiyoku\HeraRssCrawler;
 
+use Illuminate\Support\Str;
+
 class Helper
 {
     /**
@@ -33,5 +35,26 @@ class Helper
         }
 
         return trim($str);
+    }
+
+    /**
+     * @param string $baseUrl
+     * @param string $url
+     * @return string
+     */
+    public static function transformUrl(string $baseUrl, string $url): string
+    {
+        if (self::isValidUrl($url)) {
+            return $url;
+        }
+
+        if (Str::startsWith($url, '/')) {
+            return $baseUrl . '/' . $url;
+        }
+
+        $scheme = parse_url($baseUrl, PHP_URL_SCHEME);
+        $host = parse_url($baseUrl, PHP_URL_HOST);
+
+        return $scheme . '://' . $host . '/' . $url;
     }
 }

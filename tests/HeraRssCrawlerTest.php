@@ -27,12 +27,12 @@ class HeraRssCrawlerTest extends TestCase
 
     /**
      * @dataProvider websiteProvider
-     * @covers HeraRssCrawler::discoverFeedUrls()
-     * @param $url
-     * @param $expectedUrls
+     * @covers       HeraRssCrawler::discoverFeedUrls()
+     * @param string $url
+     * @param array $expectedUrls
      * @return void
      */
-    public function testDiscoverFeedUrl($url, $expectedUrls): void
+    public function testDiscoverFeedUrls(string $url, array $expectedUrls): void
     {
         $actual = $this->heraRssCrawler->discoverFeedUrls($url);
 
@@ -41,11 +41,11 @@ class HeraRssCrawlerTest extends TestCase
 
     /**
      * @dataProvider feedProvider
-     * @covers HeraRssCrawler::parseFeed()
-     * @param $feedUrls
+     * @covers       HeraRssCrawler::parseFeed()
+     * @param array $feedUrls
      * @return void
      */
-    public function testParseFeed($feedUrls): void
+    public function testParseFeed(array $feedUrls): void
     {
         foreach ($feedUrls as $key => $feedUrl) {
             $feed = $this->heraRssCrawler->parseFeed($feedUrl);
@@ -122,6 +122,21 @@ class HeraRssCrawlerTest extends TestCase
     }
 
     /**
+     * @dataProvider websiteProvider
+     * @covers       HeraRssCrawler::discoverFeedUrls()
+     * @param string $url
+     * @param array $expectedUrls
+     * @param string|null $expectedFaviconUrl
+     * @return void
+     */
+    public function testDiscoverFavicon(string $url, array $expectedUrls, ?string $expectedFaviconUrl): void
+    {
+        $faviconUrl = $this->heraRssCrawler->discoverFavicon($url);
+
+        $this->assertEquals($expectedFaviconUrl, $faviconUrl);
+    }
+
+    /**
      * @return array
      */
     public function websiteProvider(): array
@@ -132,18 +147,21 @@ class HeraRssCrawlerTest extends TestCase
                 [
                     'https://newsfeed.zeit.de/index'
                 ],
+                'https://www.zeit.de/favicon.ico',
             ],
             'FAZ' => [
                 'https://www.faz.net',
                 [
                     'https://www.faz.net/rss/aktuell'
                 ],
+                'https://www.faz.net/favicon.ico',
             ],
             'Anime2You' => [
                 'https://www.anime2you.de',
                 [
                     'http://www.anime2you.de/feed'
                 ],
+                null,
             ],
             'blog :: Brent -> [String]' => [
                 'https://byorgey.wordpress.com/',
@@ -151,24 +169,28 @@ class HeraRssCrawlerTest extends TestCase
                     'https://byorgey.wordpress.com/feed',
                     'https://byorgey.wordpress.com/comments/feed'
                 ],
+                'https://s1.wp.com/i/favicon.ico',
             ],
             'Echo JS' => [
                 'http://www.echojs.com/',
                 [
                     'http://www.echojs.com/rss'
                 ],
+                'http://www.echojs.com/favicon.ico',
             ],
             'Hacker News: Newest (min. 100 points)' => [
                 'https://news.ycombinator.com/newest',
                 [
                     'http://hnrss.org/newest?points=100'
                 ],
+                'https://news.ycombinator.com/favicon.ico',
             ],
             'Laravel News' => [
                 'https://laravel-news.com/',
                 [
                     'https://feed.laravel-news.com'
                 ],
+                'https://laravel-news.com/apple-touch-icon.png',
             ],
             'Unknown Worlds Entertainment' => [
                 'https://unknownworlds.com/',
@@ -176,12 +198,16 @@ class HeraRssCrawlerTest extends TestCase
                     'https://unknownworlds.com/feed',
                     'https://unknownworlds.com/homepage-2/feed'
                 ],
+                'https://2i1suz1s0n5g1i6ph4z0sw1b-wpengine.netdna-ssl.com/favicon.png',
             ],
             'Welt - Politcs' => [
-                'https://www.welt.de/feeds/section/politik.rss',
+                'https://www.welt.de/politik/',
                 [
-                    'https://www.welt.de/feeds/section/politik.rss'
-                ]
+                    'http://www.welt.de/politik/?service=Rss',
+                    'http://www.welt.de/politik/ausland/?service=Rss',
+                    'http://www.welt.de/politik/deutschland/?service=Rss',
+                ],
+                'https://www.welt.de/assets/images/global/welt-w-icon-229e79389f.svg',
             ],
             'TrekCast' => [
                 'https://www.startrek-index.de/trekcast',
@@ -191,6 +217,7 @@ class HeraRssCrawlerTest extends TestCase
                     'https://www.startrek-index.de/trekcast/comments/feed',
                     'https://www.startrek-index.de/trekcast/feed/podcast',
                 ],
+                'https://www.startrek-index.de/trekcast/favicon.ico',
             ],
             'Stephan Wiesner Blog' => [
                 'https://www.stephanwiesner.de/blog',
@@ -198,6 +225,7 @@ class HeraRssCrawlerTest extends TestCase
                     'https://www.stephanwiesner.de/blog/feed',
                     'https://www.stephanwiesner.de/blog/comments/feed',
                 ],
+                'https://www.stephanwiesner.de/blog/wp-content/uploads/2016/06/cropped-DSC4384-3-32x32.jpg',
             ],
             'Shiroku' => [
                 'http://shiroutang.blogspot.com/',
@@ -206,12 +234,14 @@ class HeraRssCrawlerTest extends TestCase
                     'https://shiroutang.blogspot.com/feeds/posts/default?alt=rss',
                     'https://www.blogger.com/feeds/7456002711322960081/posts/default',
                 ],
+                'https://shiroutang.blogspot.com/favicon.ico',
             ],
             'React' => [
                 'https://facebook.github.io/react',
                 [
                     'https://facebook.github.io/react/feed.xml'
                 ],
+                'https://facebook.github.io/react/favicon.ico',
             ],
             'PHP' => [
                 'http://php.net',
@@ -219,12 +249,14 @@ class HeraRssCrawlerTest extends TestCase
                     'https://www.php.net/releases/feed.php',
                     'https://www.php.net/feed.atom',
                 ],
+                'https://www.php.net/favicon.ico',
             ],
             'PHP Internals' => [
                 'https://phpinternals.news/',
                 [
                     'https://phpinternals.news/feed.rss',
                 ],
+                null,
             ],
             'Nutrition Facts' => [
                 'https://nutritionfacts.org/',
@@ -235,6 +267,7 @@ class HeraRssCrawlerTest extends TestCase
                     'https://nutritionfacts.org/videos/feed/podcast',
                     'http://nutritionfacts.org/feed/podcast',
                 ],
+                null,
             ],
             'JRock News' => [
                 'https://www.jrocknews.com/',
@@ -242,10 +275,12 @@ class HeraRssCrawlerTest extends TestCase
                     'https://jrocknews.com/feed',
                     'https://jrocknews.com/comments/feed',
                 ],
+                'https://jrocknews.com/wp-content/uploads/2015/05/cropped-JRN-icon-2017-32x32.png',
             ],
             'Non-existent website' => [
                 'https://www.nonexistent-website.dev',
                 [],
+                null,
             ],
         ];
     }
