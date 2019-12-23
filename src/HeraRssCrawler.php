@@ -22,17 +22,17 @@ use Zend\Feed\Reader\Reader;
 class HeraRssCrawler
 {
     /**
-     * @var string
+     * @var string|null
      */
     private $url;
 
     /**
-     * @var Client
+     * @var Client|null
      */
     private $httpClient;
 
     /**
-     * @var CssSelectorConverter
+     * @var CssSelectorConverter|null
      */
     private $converter;
 
@@ -95,11 +95,12 @@ class HeraRssCrawler
         }, collect());
 
         return $urls->map(function ($url) {
-            return normalizeUrl($url);
+            return Helper::normalizeUrl($url);
         })->unique()->values();
     }
 
     /**
+     * @param ResponseContainer $responseContainer
      * @return Collection<string>
      */
     private function discoverFeedUrlByFeedly(ResponseContainer $responseContainer): Collection
@@ -116,6 +117,7 @@ class HeraRssCrawler
     }
 
     /**
+     * @param ResponseContainer $responseContainer
      * @return Collection<string>
      */
     private function discoverFeedUrlByContentType(ResponseContainer $responseContainer): Collection
@@ -133,6 +135,7 @@ class HeraRssCrawler
     }
 
     /**
+     * @param ResponseContainer $responseContainer
      * @return Collection<string>
      */
     private function discoverFeedUrlByHtmlHeadElements(ResponseContainer $responseContainer): Collection
@@ -146,6 +149,7 @@ class HeraRssCrawler
     }
 
     /**
+     * @param ResponseContainer $responseContainer
      * @return Collection<string>
      */
     private function discoverFeedUrlByHtmlAnchorElements(ResponseContainer $responseContainer): Collection
@@ -154,7 +158,7 @@ class HeraRssCrawler
         $nodes = $crawler->filterXPath($this->converter->toXPath('a'));
 
         return collect($nodes->each(function (Crawler $node) {
-            return $this->transformNodesToUrls($node);
+            return $this->transformNodeToUrl($node);
         }))->filter(function ($url) {
             return Str::contains($url, 'rss');
         });
@@ -168,7 +172,7 @@ class HeraRssCrawler
     {
         $href = $node->attr('href');
 
-        if (isValidUrl($href)) {
+        if (Helper::isValidUrl($href)) {
             return $href;
         }
 

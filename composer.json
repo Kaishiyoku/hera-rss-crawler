@@ -32,9 +32,6 @@
   "autoload": {
     "psr-4": {
       "Kaishiyoku\\HeraRssCrawler\\": "src/"
-    },
-    "files": [
-      "src/helpers.php"
-    ]
+    }
   }
 }

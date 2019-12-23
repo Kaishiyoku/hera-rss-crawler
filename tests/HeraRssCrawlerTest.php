@@ -5,6 +5,7 @@ namespace Kaishiyoku\HeraRssCrawler;
 use Carbon\Carbon;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\Item;
 use PHPUnit\Framework\TestCase;
+use ReflectionException;
 use Spatie\Snapshots\MatchesSnapshots;
 
 /**
@@ -19,8 +20,9 @@ class HeraRssCrawlerTest extends TestCase
      * @covers       HeraRssCrawler::discoverFeedUrls()
      * @param $url
      * @param $expectedUrls
+     * @return void
      */
-    public function testDiscoverFeedUrl($url, $expectedUrls)
+    public function testDiscoverFeedUrl($url, $expectedUrls): void
     {
         $heraRssCrawler = new HeraRssCrawler($url);
 
@@ -35,10 +37,11 @@ class HeraRssCrawlerTest extends TestCase
 
     /**
      * @dataProvider feedProvider
-     * @covers       HeraRssCrawler::discover()
+     * @covers       HeraRssCrawler::parse()
      * @param $feedUrls
+     * @return void
      */
-    public function testParse($feedUrls)
+    public function testParse($feedUrls): void
     {
         foreach ($feedUrls as $key => $feedUrl) {
             $heraRssCrawler = new HeraRssCrawler($feedUrl);
@@ -63,7 +66,12 @@ class HeraRssCrawlerTest extends TestCase
         }
     }
 
-    public function testGenerateChecksumForFeedItem()
+    /**
+     * @covers       HeraRssCrawler::generateChecksumForFeedItem()
+     * @return void
+     * @throws ReflectionException
+     */
+    public function testGenerateChecksumForFeedItem(): void
     {
         $expected = '0339bfd7b25e3ae5bc304a5d64a8474baac5eb30036356534a29802bf5ad2e5f';
 
@@ -94,7 +102,10 @@ class HeraRssCrawlerTest extends TestCase
         $this->assertNotEquals($expected, HeraRssCrawler::generateChecksumForFeedItem($item2));
     }
 
-    public function websiteProvider()
+    /**
+     * @return array
+     */
+    public function websiteProvider(): array
     {
         return [
             'Zeit' => [
@@ -220,7 +231,10 @@ class HeraRssCrawlerTest extends TestCase
         ];
     }
 
-    public function feedProvider()
+    /**
+     * @return array
+     */
+    public function feedProvider(): array
     {
         return [
             'Zeit' => [
