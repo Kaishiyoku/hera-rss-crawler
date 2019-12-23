@@ -100,6 +100,11 @@ class FeedItem
     private $type;
 
     /**
+     * @var string|null
+     */
+    private $xml;
+
+    /**
      * @return string
      */
     public function getChecksum(): string
@@ -378,6 +383,22 @@ class FeedItem
     }
 
     /**
+     * @return string|null
+     */
+    public function getXml(): ?string
+    {
+        return $this->xml;
+    }
+
+    /**
+     * @param string|null $xml
+     */
+    public function setXml(?string $xml): void
+    {
+        $this->xml = Helper::trimOrDefaultNull($xml);
+    }
+
+    /**
      * @param AbstractEntry $zendFeedItem
      * @return FeedItem
      * @throws InvalidArgumentException
@@ -413,6 +434,7 @@ class FeedItem
         $feedItem->setLinks(collect($zendFeedItem->getLinks()));
         $feedItem->setPermalink($zendFeedItem->getPermalink() ?? ''); // TODO: investigate; why can a permalink be empty? maybe we should discard those items
         $feedItem->setType($zendFeedItem->getType());
+        $feedItem->setXml($zendFeedItem->saveXml());
 
         $feedItem->setChecksum(HeraRssCrawler::generateChecksumForFeedItem($feedItem));
 
