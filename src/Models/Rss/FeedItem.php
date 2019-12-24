@@ -4,16 +4,21 @@ namespace Kaishiyoku\HeraRssCrawler\Models\Rss;
 
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
+use JsonSerializable;
 use Kaishiyoku\HeraRssCrawler\Helper;
 use Kaishiyoku\HeraRssCrawler\HeraRssCrawler;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionMethod;
 use SimpleXMLElement;
 use TypeError;
 use Zend\Feed\Reader\Entry\AbstractEntry;
 use Zend\Feed\Reader\Entry\Atom;
 use Zend\Feed\Reader\Entry\Rss;
 
-class FeedItem
+class FeedItem implements JsonSerializable
 {
     /**
      * @var string
@@ -440,5 +445,25 @@ class FeedItem
         $feedItem->setChecksum(HeraRssCrawler::generateChecksumForFeedItem($feedItem));
 
         return $feedItem;
+    }
+
+    /**
+     * @return string
+     */
+    public function jsonSerialize(): string
+    {
+        try {
+            $class = new ReflectionClass(self::class);
+            $methods = collect($class->getMethods(ReflectionMethod::IS_PUBLIC))
+                ->filter(function (ReflectionMethod $method) {
+                    return Str::startsWith($method->getName(), 'get');
+                });
+
+            return $methods->mapWithKeys(function (ReflectionMethod $method) {
+                return [lcfirst(Str::substr($method->getName(), 3)) => $method->invoke($this)];
+            })->toJson();
+        } catch (ReflectionException $e) {
+            return null;
+        }
     }
 }
