@@ -96,7 +96,7 @@ class HeraRssCrawlerTest extends TestCase
      */
     public function testGenerateChecksumForFeedItem(): void
     {
-        $expected = '6fce40d0e80ed3b87bbdec1727234e95eac09e96bb94b0671f35a79c3ab7520e';
+        $expected = 'cf951e1f98ee8aeb47d863dc72bbf57628ff348f37f0b25da0a2d702ae118af4';
 
         $feedItem = self::getSampleFeedItem();
 
@@ -107,7 +107,7 @@ class HeraRssCrawlerTest extends TestCase
 
         $this->assertNotEquals($expected, HeraRssCrawler::generateChecksumForFeedItem($feedItem2));
 
-        $expectedSha512 = 'a7f0426f0b2b9f66d53fb75e5b57272f173a329535325edc0f790ebb5bc98c0b9593fbbbcf359f5e6f7250367daf864e245d3585a7d46f9aa8ca4e2a4f38f287';
+        $expectedSha512 = '1d86c54606888d855ae65fdf0447716075a52c459f966fa3f30457fd09fc2f85f29670e123ae1f4ea2a0ef3c3bd656ce6ca12816db2868df7e5aa202d05b18fb';
 
         $this->assertEquals($expectedSha512, HeraRssCrawler::generateChecksumForFeedItem($feedItem, '__', Hash::SHA_512));
         $this->assertNotEquals($expectedSha512, HeraRssCrawler::generateChecksumForFeedItem($feedItem, '--', Hash::SHA_512));
@@ -119,7 +119,7 @@ class HeraRssCrawlerTest extends TestCase
      */
     public function testGenerateChecksumForFeed(): void
     {
-        $expected = 'fc7e9d42e52726d1cdd84d7e19ce49ce97cb3366112b5f4780500737095045b9';
+        $expected = 'a4e32c21b9887713e1d1c355c7cdad964329d730c512d1ea114c40e060b01a1e';
 
         $feed = self::getSampleFeed();
 
@@ -130,7 +130,7 @@ class HeraRssCrawlerTest extends TestCase
 
         $this->assertNotEquals($expected, HeraRssCrawler::generateChecksumForFeed($feed2));
 
-        $expectedSha512 = '82331967a38db513a11fa1e77f759383e843dc41780f099109f2590fcfc8750c83a7494d173b12fff0d93f45bfddd323e58edbe26f2fab224cade35f84edda7a';
+        $expectedSha512 = 'a1defda8006069a841074bbee33b2edccfd073acd90deb3557bb56a4b1b83280ef7c8033e65d3b98a56e066aef70fec428e7069a2c0666a35e53778e875484ac';
 
         $feed3 = clone $feed;
         $feed3->setFeedItems(collect([self::getSampleFeedItem(), self::getSampleFeedItem()]));
