@@ -242,11 +242,31 @@ class HeraRssCrawler
      */
     public static function generateChecksumForFeedItem(FeedItem $feedItem, string $delimiter = '|', string $algo = Hash::SHA_256): ?string
     {
+        $properties = [
+            'categories',
+            'authors',
+            'title',
+            'commentCount',
+            'commentFeedLink',
+            'commentLink',
+            'createdAt',
+            'updatedAt',
+            'description',
+            'enclosureUrl',
+            'encoding',
+            'id',
+            'links',
+            'permalink',
+            'type',
+        ];
+
         try {
             $class = new ReflectionClass(FeedItem::class);
             $allValuesConcatenated = trim(collect($class->getMethods(ReflectionMethod::IS_PUBLIC))
-                ->filter(function (ReflectionMethod $method) {
-                    return Str::startsWith($method->getName(), 'get') && $method->getName() !== 'getChecksum';
+                ->filter(function (ReflectionMethod $method) use ($properties) {
+                    return in_array($method->getName(), array_map(function ($property) {
+                        return 'get' . Str::ucfirst($property);
+                    }, $properties), true);
                 })
                 ->reduce(function ($carry, ReflectionMethod $method) use ($feedItem, $delimiter) {
                     return $carry . $delimiter . $method->invoke($feedItem);
@@ -260,11 +280,28 @@ class HeraRssCrawler
 
     public static function generateChecksumForFeed(Feed $feed, string $delimiter = '|', string $algo = Hash::SHA_256): ?string
     {
+        $properties = [
+            'categories',
+            'authors',
+            'title',
+            'copyright',
+            'createdAt',
+            'updatedAt',
+            'description',
+            'feedUrl',
+            'id',
+            'language',
+            'url',
+            'feedItems',
+        ];
+
         try {
             $class = new ReflectionClass(Feed::class);
             $allValuesConcatenated = trim(collect($class->getMethods(ReflectionMethod::IS_PUBLIC))
-                ->filter(function (ReflectionMethod $method) {
-                    return Str::startsWith($method->getName(), 'get') && $method->getName() !== 'getChecksum';
+                ->filter(function (ReflectionMethod $method) use ($properties) {
+                    return in_array($method->getName(), array_map(function ($property) {
+                        return 'get' . Str::ucfirst($property);
+                    }, $properties), true);
                 })
                 ->reduce(function ($carry, ReflectionMethod $method) use ($feed, $delimiter) {
                     if ($method->getName() === 'getFeedItems') {
