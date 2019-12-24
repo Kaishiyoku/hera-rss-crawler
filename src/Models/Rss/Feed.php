@@ -36,12 +36,12 @@ class Feed
     private $copyright;
 
     /**
-     * @var Carbon
+     * @var Carbon|null
      */
     private $createdAt;
 
     /**
-     * @var Carbon
+     * @var Carbon|null
      */
     private $updatedAt;
 
@@ -160,33 +160,33 @@ class Feed
     }
 
     /**
-     * @return Carbon
+     * @return Carbon|null
      */
-    public function getCreatedAt(): Carbon
+    public function getCreatedAt(): ?Carbon
     {
         return $this->createdAt;
     }
 
     /**
-     * @param Carbon $createdAt
+     * @param Carbon|null $createdAt
      */
-    public function setCreatedAt(Carbon $createdAt): void
+    public function setCreatedAt(?Carbon $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
     /**
-     * @return Carbon
+     * @return Carbon|null
      */
-    public function getUpdatedAt(): Carbon
+    public function getUpdatedAt(): ?Carbon
     {
         return $this->updatedAt;
     }
 
     /**
-     * @param Carbon $updatedAt
+     * @param Carbon|null $updatedAt
      */
-    public function setUpdatedAt(Carbon $updatedAt): void
+    public function setUpdatedAt(?Carbon $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
     }
@@ -298,8 +298,8 @@ class Feed
         $feed->setAuthors(collect($zendFeed->getAuthors() === null ? null : $zendFeed->getAuthors()->getValues()));
         $feed->setTitle($zendFeed->getTitle() ?? '');
         $feed->setCopyright($zendFeed->getCopyright());
-        $feed->setCreatedAt(Carbon::parse($zendFeed->getDateCreated()));
-        $feed->setUpdatedAt(Carbon::parse($zendFeed->getDateModified()));
+        $feed->setCreatedAt($zendFeed->getDateCreated() === null ? null : Carbon::parse($zendFeed->getDateCreated()));
+        $feed->setUpdatedAt($zendFeed->getDateModified() === null ? null: Carbon::parse($zendFeed->getDateModified()));
         $feed->setDescription($zendFeed->getDescription());
         $feed->setFeedUrl($zendFeed->getFeedLink());
         $feed->setId($zendFeed->getId());
