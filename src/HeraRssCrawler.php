@@ -246,7 +246,6 @@ class HeraRssCrawler
             'categories',
             'authors',
             'title',
-            'commentCount',
             'commentFeedLink',
             'commentLink',
             'createdAt',
