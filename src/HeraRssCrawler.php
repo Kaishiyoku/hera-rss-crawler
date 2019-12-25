@@ -168,13 +168,16 @@ class HeraRssCrawler
     /**
      * @param string $url
      * @return bool
-     * @throws ConnectException
      */
     public function checkIfConsumableFeed(string $url): bool
     {
-        $feed = $this->parseFeed($url);
+        try {
+            $feed = $this->parseFeed($url);
 
-        return $feed instanceof Feed;
+            return $feed instanceof Feed;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     /**
