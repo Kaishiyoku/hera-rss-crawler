@@ -3,9 +3,8 @@
 namespace Kaishiyoku\HeraRssCrawler;
 
 use DOMElement;
-use Exception;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -15,6 +14,7 @@ use Kaishiyoku\HeraRssCrawler\Models\ResponseContainer;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\Feed;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\FeedItem;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionMethod;
 use Symfony\Component\CssSelector\CssSelectorConverter;
 use Symfony\Component\DomCrawler\Crawler;
@@ -33,35 +33,53 @@ class HeraRssCrawler
     private $converter;
 
     /**
+     * @var array
+     */
+    private $urlReplacementMap = [
+        'https://www.reddit.com/' => 'https://old.reddit.com/',
+    ];
+
+    /**
      * @var string
      */
     private const FEEDLY_API_BASE_URL = 'https://cloud.feedly.com/v3';
 
     public function __construct()
     {
-        $this->httpClient = new Client();
+        $this->httpClient = new Client([
+            'headers' => [
+                'User-Agent' => 'hera-rss-crawler/1.0',
+            ],
+        ]);
         $this->converter = new CssSelectorConverter();
+    }
+
+    /**
+     * @param array $urlReplacementMap
+     */
+    public function setUrlReplacementMap(array $urlReplacementMap): void
+    {
+        $this->urlReplacementMap = $urlReplacementMap;
     }
 
     /**
      * @param string $url
      * @return Feed|null
+     * @throws ConnectException
+     * @throws ReflectionException
      */
     public function parseFeed(string $url): ?Feed
     {
-        try {
-            $content = $this->httpClient->get($url)->getBody()->getContents();
-            $zendFeed = Reader::importString($content);
+        $content = $this->httpClient->get($url)->getBody()->getContents();
+        $zendFeed = Reader::importString($content);
 
-            return Feed::fromZendFeed($zendFeed);
-        } catch (Exception $e) {
-            return null;
-        }
+        return Feed::fromZendFeed($zendFeed);
     }
 
     /**
      * @param string $url
      * @return Collection<Feed>
+     * @throws ConnectException
      */
     public function discoverAndParseFeeds(string $url): Collection
     {
@@ -74,17 +92,14 @@ class HeraRssCrawler
     /**
      * @param string $url
      * @return Collection<string>
+     * @throws ConnectException
      */
     public function discoverFeedUrls(string $url): Collection
     {
-        $responseContainer = null;
+        $adjustedUrl = Helper::replaceBaseUrls($url, $this->urlReplacementMap);
 
-        try {
-            $response = $this->httpClient->get($url);
-            $responseContainer = new ResponseContainer($url, $response);
-        } catch (RequestException $e) {
-            return collect();
-        }
+        $response = $this->httpClient->get($adjustedUrl);
+        $responseContainer = new ResponseContainer($adjustedUrl, $response);
 
         $discoveryFns = collect([
             function ($responseContainer) {
@@ -110,24 +125,19 @@ class HeraRssCrawler
             return $carry;
         }, collect());
 
-        return $urls->map(function ($url) {
-            return Helper::normalizeUrl($url);
+        return $urls->map(function ($adjustedUrl) {
+            return Helper::normalizeUrl($adjustedUrl);
         })->unique()->values();
     }
 
     /**
      * @param string $url
      * @return string|null
+     * @throws ConnectException
      */
     public function discoverFavicon(string $url): ?string
     {
-        $response = null;
-
-        try {
-            $response = $this->httpClient->get($url);
-        } catch (RequestException $e) {
-            return null;
-        }
+        $response = $this->httpClient->get($url);
 
         $crawler = new Crawler($response->getBody()->getContents());
         $nodes = $crawler->filterXPath($this->converter->toXPath('head > link'));
@@ -148,6 +158,7 @@ class HeraRssCrawler
     /**
      * @param string $url
      * @return bool
+     * @throws ConnectException
      */
     public function checkIfConsumableFeed(string $url): bool
     {
@@ -159,6 +170,7 @@ class HeraRssCrawler
     /**
      * @param ResponseContainer $responseContainer
      * @return Collection<string>
+     * @throws ConnectException
      */
     private function discoverFeedUrlByFeedly(ResponseContainer $responseContainer): Collection
     {
@@ -239,6 +251,7 @@ class HeraRssCrawler
      * @param string $delimiter
      * @param string $algo
      * @return string|null
+     * @throws ReflectionException
      */
     public static function generateChecksumForFeedItem(FeedItem $feedItem, string $delimiter = '|', string $algo = Hash::SHA_256): ?string
     {
@@ -254,24 +267,27 @@ class HeraRssCrawler
             'type',
         ];
 
-        try {
-            $class = new ReflectionClass(FeedItem::class);
-            $allValuesConcatenated = trim(collect($class->getMethods(ReflectionMethod::IS_PUBLIC))
-                ->filter(function (ReflectionMethod $method) use ($properties) {
-                    return in_array($method->getName(), array_map(function ($property) {
-                        return 'get' . Str::ucfirst($property);
-                    }, $properties), true);
-                })
-                ->reduce(function ($carry, ReflectionMethod $method) use ($feedItem, $delimiter) {
-                    return $carry . $delimiter . $method->invoke($feedItem);
-                }, ''), $delimiter);
+        $class = new ReflectionClass(FeedItem::class);
+        $allValuesConcatenated = trim(collect($class->getMethods(ReflectionMethod::IS_PUBLIC))
+            ->filter(function (ReflectionMethod $method) use ($properties) {
+                return in_array($method->getName(), array_map(function ($property) {
+                    return 'get' . Str::ucfirst($property);
+                }, $properties), true);
+            })
+            ->reduce(function ($carry, ReflectionMethod $method) use ($feedItem, $delimiter) {
+                return $carry . $delimiter . $method->invoke($feedItem);
+            }, ''), $delimiter);
 
-            return Hash::hash($algo, $allValuesConcatenated);
-        } catch (Exception $e) {
-            return null;
-        }
+        return Hash::hash($algo, $allValuesConcatenated);
     }
 
+    /**
+     * @param Feed $feed
+     * @param string $delimiter
+     * @param string $algo
+     * @return string|null
+     * @throws ReflectionException
+     */
     public static function generateChecksumForFeed(Feed $feed, string $delimiter = '|', string $algo = Hash::SHA_256): ?string
     {
         $properties = [
@@ -288,27 +304,23 @@ class HeraRssCrawler
             'feedItems',
         ];
 
-        try {
-            $class = new ReflectionClass(Feed::class);
-            $allValuesConcatenated = trim(collect($class->getMethods(ReflectionMethod::IS_PUBLIC))
-                ->filter(function (ReflectionMethod $method) use ($properties) {
-                    return in_array($method->getName(), array_map(function ($property) {
-                        return 'get' . Str::ucfirst($property);
-                    }, $properties), true);
-                })
-                ->reduce(function ($carry, ReflectionMethod $method) use ($feed, $delimiter) {
-                    if ($method->getName() === 'getFeedItems') {
-                        return $carry . $delimiter . $method->invoke($feed)->reduce(function ($carry, FeedItem $feedItem) use ($delimiter) {
-                            return $carry . $delimiter . self::generateChecksumForFeedItem($feedItem);
-                        });
-                    }
+        $class = new ReflectionClass(Feed::class);
+        $allValuesConcatenated = trim(collect($class->getMethods(ReflectionMethod::IS_PUBLIC))
+            ->filter(function (ReflectionMethod $method) use ($properties) {
+                return in_array($method->getName(), array_map(function ($property) {
+                    return 'get' . Str::ucfirst($property);
+                }, $properties), true);
+            })
+            ->reduce(function ($carry, ReflectionMethod $method) use ($feed, $delimiter) {
+                if ($method->getName() === 'getFeedItems') {
+                    return $carry . $delimiter . $method->invoke($feed)->reduce(function ($carry, FeedItem $feedItem) use ($delimiter) {
+                        return $carry . $delimiter . self::generateChecksumForFeedItem($feedItem);
+                    });
+                }
 
-                    return $carry . $delimiter . $method->invoke($feed);
-                }, ''), $delimiter);
+                return $carry . $delimiter . $method->invoke($feed);
+            }, ''), $delimiter);
 
-            return Hash::hash($algo, $allValuesConcatenated);
-        } catch (Exception $e) {
-            return null;
-        }
+        return Hash::hash($algo, $allValuesConcatenated);
     }
 }

@@ -3,6 +3,7 @@
 namespace Kaishiyoku\HeraRssCrawler;
 
 use Carbon\Carbon;
+use GuzzleHttp\Exception\ConnectException;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\Feed;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\FeedItem;
 use PHPUnit\Framework\TestCase;
@@ -30,13 +31,21 @@ class HeraRssCrawlerTest extends TestCase
      * @covers       HeraRssCrawler::discoverFeedUrls()
      * @param string $url
      * @param array $expectedUrls
+     * @param string|null $expectedFaviconUrl
+     * @param bool $throwsConnectException
      * @return void
      */
-    public function testDiscoverFeedUrls(string $url, array $expectedUrls): void
+    public function testDiscoverFeedUrls(string $url, array $expectedUrls, ?string $expectedFaviconUrl = null, bool $throwsConnectException = false): void
     {
+        if ($throwsConnectException) {
+            $this->expectException(ConnectException::class);
+        }
+
         $actual = $this->heraRssCrawler->discoverFeedUrls($url);
 
-        $this->assertEquals($expectedUrls, $actual->toArray());
+        if (!$throwsConnectException) {
+            $this->assertEquals($expectedUrls, $actual->toArray());
+        }
     }
 
     /**
@@ -44,34 +53,41 @@ class HeraRssCrawlerTest extends TestCase
      * @covers       HeraRssCrawler::parseFeed()
      * @param array $feedUrls
      * @param array $expectedValues
+     * @param bool $throwsConnectException
      * @return void
      */
-    public function testParseFeed(array $feedUrls, array $expectedValues): void
+    public function testParseFeed(array $feedUrls, array $expectedValues, bool $throwsConnectException = false): void
     {
         foreach ($feedUrls as $key => $feedUrl) {
+            if ($throwsConnectException) {
+                $this->expectException(ConnectException::class);
+            }
+
             $feed = $this->heraRssCrawler->parseFeed($feedUrl);
 
-            if ($expectedValues[$key]) {
-                $feedArr = [
-                    'title' => $feed->getTitle(),
-                    'copyright' => $feed->getCopyright(),
-                    'description' => $feed->getDescription(),
-                    'feedUrl' => $feed->getFeedUrl(),
-                    'id' => $feed->getId(),
-                    'language' => $feed->getLanguage(),
-                    'url' => $feed->getUrl(),
-                ];
+            if (!$throwsConnectException) {
+                if ($expectedValues[$key]) {
+                    $feedArr = [
+                        'title' => $feed->getTitle(),
+                        'copyright' => $feed->getCopyright(),
+                        'description' => $feed->getDescription(),
+                        'feedUrl' => $feed->getFeedUrl(),
+                        'id' => $feed->getId(),
+                        'language' => $feed->getLanguage(),
+                        'url' => $feed->getUrl(),
+                    ];
 
-                $this->assertMatchesSnapshot($feedArr);
+                    $this->assertMatchesSnapshot($feedArr);
 
-                $this->assertNotEmpty($feed->getChecksum());
-                $this->assertGreaterThanOrEqual(0, $feed->getFeedItems()->count());
+                    $this->assertNotEmpty($feed->getChecksum());
+                    $this->assertGreaterThanOrEqual(0, $feed->getFeedItems()->count());
 
-                if ($feed->getFeedItems()->isNotEmpty()) {
-                    $this->assertNotEmpty($feed->getFeedItems()->first()->getChecksum());
+                    if ($feed->getFeedItems()->isNotEmpty()) {
+                        $this->assertNotEmpty($feed->getFeedItems()->first()->getChecksum());
+                    }
+                } else {
+                    $this->assertNull($feed);
                 }
-            } else {
-                $this->assertNull($feed);
             }
         }
     }
@@ -147,13 +163,20 @@ class HeraRssCrawlerTest extends TestCase
      * @param string $url
      * @param array $expectedUrls
      * @param string|null $expectedFaviconUrl
+     * @param bool $throwsConnectException
      * @return void
      */
-    public function testDiscoverFavicon(string $url, array $expectedUrls, ?string $expectedFaviconUrl): void
+    public function testDiscoverFavicon(string $url, array $expectedUrls, ?string $expectedFaviconUrl = null, bool $throwsConnectException = false): void
     {
+        if ($throwsConnectException) {
+            $this->expectException(ConnectException::class);
+        }
+
         $faviconUrl = $this->heraRssCrawler->discoverFavicon($url);
 
-        $this->assertEquals($expectedFaviconUrl, $faviconUrl);
+        if (!$throwsConnectException) {
+            $this->assertEquals($expectedFaviconUrl, $faviconUrl);
+        }
     }
 
     /**
@@ -161,14 +184,85 @@ class HeraRssCrawlerTest extends TestCase
      * @covers       HeraRssCrawler::checkIfConsumableFeed()
      * @param array $feedUrls
      * @param array $expectedValues
+     * @param bool $throwsConnectException
      */
-    public function testCheckIfConsumableFeed(array $feedUrls, array $expectedValues): void
+    public function testCheckIfConsumableFeed(array $feedUrls, array $expectedValues, bool $throwsConnectException = false): void
     {
         foreach ($feedUrls as $key => $feedUrl) {
+            if ($throwsConnectException) {
+                $this->expectException(ConnectException::class);
+            }
+
             $isConsumableFeed = $this->heraRssCrawler->checkIfConsumableFeed($feedUrl);
 
-            $this->assertEquals($expectedValues[$key], $isConsumableFeed);
+            if (!$throwsConnectException) {
+                $this->assertEquals($expectedValues[$key], $isConsumableFeed);
+            }
         }
+    }
+
+    /**
+     * @covers Helper::replaceBaseUrl
+     */
+    public function testReplaceBaseUrl(): void
+    {
+        $newUrl = Helper::replaceBaseUrl('https://www.reddit.com/r/ns2/new/', 'https://www.reddit.com/', 'https://old.reddit.com/');
+        $this->assertEquals('https://old.reddit.com/r/ns2/new/', $newUrl);
+
+        $newUrl2 = Helper::replaceBaseUrl('https://site.dev/test?query=hello_world', 'https://site.dev', 'https://new.site.dev');
+        $this->assertEquals('https://new.site.dev/test?query=hello_world', $newUrl2);
+
+        $newUrl3 = Helper::replaceBaseUrl('https://www.google.com/?query=hello_world', 'https://site.dev', 'https://new.site.dev');
+        $this->assertEquals('https://www.google.com/?query=hello_world', $newUrl3);
+    }
+
+    /**
+     * @covers Helper::replaceBaseUrls()
+     */
+    public function testReplaceBaseUrls(): void
+    {
+        $urlReplacementMap = [
+            'https://site.dev' => 'https://new.site.dev',
+            'https://www.reddit.com/' => 'https://old.reddit.com/',
+        ];
+
+        $url = Helper::replaceBaseUrls('https://www.reddit.com/r/ns2/new/', $urlReplacementMap);
+        $this->assertEquals('https://old.reddit.com/r/ns2/new/', $url);
+
+        $url2 = Helper::replaceBaseUrls('https://site.dev/test?query=hello_world', $urlReplacementMap);
+        $this->assertEquals('https://new.site.dev/test?query=hello_world', $url2);
+
+        $url3 = Helper::replaceBaseUrls('https://www.google.com/?query=hello_world', $urlReplacementMap);
+        $this->assertEquals('https://www.google.com/?query=hello_world', $url3);
+    }
+
+    /**
+     * @covers HeraRssCrawler::discoverFeedUrls()
+     */
+    public function testDiscoverRedditFeedUrls(): void
+    {
+        $heraRssCrawler = new HeraRssCrawler();
+
+        $feed = $heraRssCrawler->parseFeed('https://www.reddit.com/r/ns2/new/.rss');
+        $this->assertInstanceOf(Feed::class, $feed);
+
+        $feedUrls = $heraRssCrawler->discoverFeedUrls('https://www.reddit.com/r/ns2/new/');
+        $this->assertEquals(['https://old.reddit.com/r/ns2/new/.rss'], $feedUrls->toArray());
+
+        $heraRssCrawler->setUrlReplacementMap([
+            'https://site.dev' => 'https://new.site.dev',
+            'https://www.reddit.com/' => 'https://old.reddit.com/',
+        ]);
+
+        $feedUrls = $heraRssCrawler->discoverFeedUrls('https://www.reddit.com/r/ns2/new/');
+        $this->assertEquals(['https://old.reddit.com/r/ns2/new/.rss'], $feedUrls->toArray());
+
+        $heraRssCrawler->setUrlReplacementMap([
+            'https://site.dev' => 'https://new.site.dev',
+        ]);
+
+        $feedUrls = $heraRssCrawler->discoverFeedUrls('https://www.reddit.com/r/ns2/new/');
+        $this->assertEmpty($feedUrls->toArray());
     }
 
     /**
@@ -365,6 +459,7 @@ class HeraRssCrawlerTest extends TestCase
                 'https://www.nonexistent-website.dev',
                 [],
                 null,
+                true,
             ],
         ];
     }
@@ -546,6 +641,7 @@ class HeraRssCrawlerTest extends TestCase
                 [
                     false,
                 ],
+                true,
             ],
         ];
     }

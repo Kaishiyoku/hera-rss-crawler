@@ -408,6 +408,7 @@ class FeedItem implements JsonSerializable
      * @param AbstractEntry $zendFeedItem
      * @return FeedItem
      * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
     public static function fromZendFeedItem($zendFeedItem): FeedItem
     {

@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Kaishiyoku\HeraRssCrawler\Helper;
 use Kaishiyoku\HeraRssCrawler\HeraRssCrawler;
+use ReflectionException;
 use Zend\Feed\Reader\Feed\FeedInterface;
 
 class Feed
@@ -290,6 +291,7 @@ class Feed
     /**
      * @param FeedInterface $zendFeed
      * @return Feed
+     * @throws ReflectionException
      */
     public static function fromZendFeed(FeedInterface $zendFeed): Feed
     {
