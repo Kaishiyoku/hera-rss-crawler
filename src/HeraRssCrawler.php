@@ -23,6 +23,11 @@ use Zend\Feed\Reader\Reader;
 class HeraRssCrawler
 {
     /**
+     * @var string
+     */
+    private const VERSION = '0.5.0';
+
+    /**
      * @var Client|null
      */
     private $httpClient;
@@ -46,9 +51,14 @@ class HeraRssCrawler
 
     public function __construct()
     {
+        $name = Str::snake(Arr::last(explode('\\', self::class)));
+        $userAgent = $name . '/' . self::VERSION;
+
         $this->httpClient = new Client([
             'headers' => [
-                'User-Agent' => 'hera-rss-crawler/1.0',
+                'User-Agent' => $userAgent,
+                'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+                'Accept-Encoding' => 'gzip, deflate',
             ],
         ]);
         $this->converter = new CssSelectorConverter();
