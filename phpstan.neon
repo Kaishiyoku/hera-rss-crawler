@@ -1,0 +1,5 @@
+parameters:
+	autoload_directories:
+		- src
+		- tests
+	level: 2

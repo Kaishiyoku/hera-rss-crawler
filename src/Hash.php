@@ -127,9 +127,9 @@ class Hash
     /**
      * @param string $algo
      * @param mixed $value
-     * @return string
+     * @return string|null
      */
-    public static function hash(string $algo, $value): string
+    public static function hash(string $algo, $value): ?string
     {
         try {
             $availableAlgos = (new ReflectionClass(self::class))->getConstants();
