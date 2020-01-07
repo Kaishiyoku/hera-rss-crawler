@@ -30,7 +30,8 @@
     "phpunit/phpunit": "^8.5",
     "spatie/phpunit-snapshot-assertions": "^3.0",
     "symfony/var-dumper": "^5.0",
-    "mockery/mockery": "^1.3"
+    "mockery/mockery": "^1.3",
+    "phpstan/phpstan": "^0.12.4"
   },
   "autoload": {
     "psr-4": {
@@ -40,6 +41,11 @@
   "autoload-dev": {
     "files": [
       "tests/TestClasses/FailingTestClass.php"
+    ]
+  },
+  "scripts": {
+    "analyse": [
+      ".\\vendor\\bin\\phpstan analyse"
     ]
   }
 }

@@ -419,7 +419,7 @@ class FeedItem implements JsonSerializable
         $feedItem = new self();
 
         $feedItem->setCategories(collect($zendFeedItem->getCategories()->getValues()));
-        $feedItem->setAuthors(collect($zendFeedItem->getAuthors() === null ? null : $zendFeedItem->getAuthors()->getValues()));
+        $feedItem->setAuthors(collect($zendFeedItem->getAuthors() == null ? null : $zendFeedItem->getAuthors()->getValues()));
         $feedItem->setTitle($zendFeedItem->getTitle() ?? ''); // TODO: investigate; why can a title be empty? maybe we should discard those items
         $feedItem->setCommentCount($zendFeedItem->getCommentCount() ?? 0);
         $feedItem->setCommentFeedLink($zendFeedItem->getCommentFeedLink());
@@ -432,8 +432,8 @@ class FeedItem implements JsonSerializable
             $feedItem->setContent('');
         }
 
-        $feedItem->setCreatedAt($zendFeedItem->getDateCreated() === null ? null : Carbon::parse($zendFeedItem->getDateCreated()));
-        $feedItem->setUpdatedAt($zendFeedItem->getDateModified() === null ? null : Carbon::parse($zendFeedItem->getDateModified()));
+        $feedItem->setCreatedAt($zendFeedItem->getDateCreated() == null ? null : Carbon::parse($zendFeedItem->getDateCreated()));
+        $feedItem->setUpdatedAt($zendFeedItem->getDateModified() == null ? null : Carbon::parse($zendFeedItem->getDateModified()));
         $feedItem->setDescription($zendFeedItem->getDescription());
         $feedItem->setEnclosureUrl($zendFeedItem->getEnclosure() ? $zendFeedItem->getEnclosure()->url : null);
         $feedItem->setEncoding($zendFeedItem->getEncoding());
@@ -449,9 +449,9 @@ class FeedItem implements JsonSerializable
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function jsonSerialize(): string
+    public function jsonSerialize(): ?string
     {
         try {
             $class = new ReflectionClass(self::class);
