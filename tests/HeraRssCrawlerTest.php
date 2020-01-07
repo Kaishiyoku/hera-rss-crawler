@@ -69,7 +69,6 @@ class HeraRssCrawlerTest extends TestCase
                 if ($expectedValues[$key]) {
                     $feedArr = [
                         'title' => $feed->getTitle(),
-                        'copyright' => $feed->getCopyright(),
                         'description' => $feed->getDescription(),
                         'feedUrl' => $feed->getFeedUrl(),
                         'id' => $feed->getId(),
@@ -184,20 +183,13 @@ class HeraRssCrawlerTest extends TestCase
      * @covers       HeraRssCrawler::checkIfConsumableFeed()
      * @param array $feedUrls
      * @param array $expectedValues
-     * @param bool $throwsConnectException
      */
-    public function testCheckIfConsumableFeed(array $feedUrls, array $expectedValues, bool $throwsConnectException = false): void
+    public function testCheckIfConsumableFeed(array $feedUrls, array $expectedValues): void
     {
         foreach ($feedUrls as $key => $feedUrl) {
-            if ($throwsConnectException) {
-                $this->expectException(ConnectException::class);
-            }
-
             $isConsumableFeed = $this->heraRssCrawler->checkIfConsumableFeed($feedUrl);
 
-            if (!$throwsConnectException) {
-                $this->assertEquals($expectedValues[$key], $isConsumableFeed);
-            }
+            $this->assertEquals($expectedValues[$key], $isConsumableFeed);
         }
     }
 
@@ -397,13 +389,12 @@ class HeraRssCrawlerTest extends TestCase
                 ],
                 'https://www.startrek-index.de/trekcast/favicon.ico',
             ],
-            'Stephan Wiesner Blog' => [
-                'https://www.stephanwiesner.de/blog',
+            '22 Places' => [
+                'https://www.22places.de/fotografie-blog/',
                 [
-                    'https://www.stephanwiesner.de/blog/feed',
-                    'https://www.stephanwiesner.de/blog/comments/feed',
+                    'https://www.22places.de/rsslatest.xml',
                 ],
-                'https://www.stephanwiesner.de/blog/wp-content/uploads/2016/06/cropped-DSC4384-3-32x32.jpg',
+                'https://www.22places.de/images/2017/12/cropped-171207_22places_Logo_Favicon_tuerkis-32x32.png',
             ],
             'Shiroku' => [
                 'http://shiroutang.blogspot.com/',
@@ -560,13 +551,11 @@ class HeraRssCrawlerTest extends TestCase
                     true,
                 ],
             ],
-            'Stephan Wiesner Blog' => [
+            '22 Places' => [
                 [
-                    'https://www.stephanwiesner.de/blog/feed',
-                    'https://www.stephanwiesner.de/blog/comments/feed',
+                    'https://www.22places.de/rsslatest.xml',
                 ],
                 [
-                    true,
                     true,
                 ],
             ],
