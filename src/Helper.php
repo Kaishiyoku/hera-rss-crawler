@@ -2,6 +2,7 @@
 
 namespace Kaishiyoku\HeraRssCrawler;
 
+use Exception;
 use Illuminate\Support\Str;
 
 class Helper
@@ -79,5 +80,27 @@ class Helper
         return collect($urlReplacementMap)->keys()->reduce(function ($carry, $oldBaseUrl) use ($urlReplacementMap) {
             return self::replaceBaseUrl($carry, $oldBaseUrl, $urlReplacementMap[$oldBaseUrl]);
         }, $url);
+    }
+
+    /**
+     * @param callable $callback
+     * @param int $delay
+     * @param int $retries
+     * @return mixed
+     * @throws Exception
+     */
+    public static function withRetries(callable $callback, int $delay = 1, int $retries = 3)
+    {
+        try {
+            return $callback();
+        } catch (Exception $e) {
+            if ($retries > 0) {
+                sleep($delay);
+
+                return self::withRetries($callback, $delay, $retries - 1);
+            }
+
+            throw $e;
+        }
     }
 }

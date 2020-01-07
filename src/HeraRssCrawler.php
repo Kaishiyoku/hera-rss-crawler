@@ -3,6 +3,7 @@
 namespace Kaishiyoku\HeraRssCrawler;
 
 use DOMElement;
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Support\Arr;
@@ -38,6 +39,11 @@ class HeraRssCrawler
     private $converter;
 
     /**
+     * @var int
+     */
+    private $retryCount = 0;
+
+    /**
      * @var array
      */
     private $urlReplacementMap = [
@@ -65,6 +71,22 @@ class HeraRssCrawler
     }
 
     /**
+     * @return int
+     */
+    public function getRetryCount(): int
+    {
+        return $this->retryCount;
+    }
+
+    /**
+     * @param int $retryCount
+     */
+    public function setRetryCount(int $retryCount): void
+    {
+        $this->retryCount = $retryCount;
+    }
+
+    /**
      * @param array $urlReplacementMap
      */
     public function setUrlReplacementMap(array $urlReplacementMap): void
@@ -76,93 +98,101 @@ class HeraRssCrawler
      * @param string $url
      * @return Feed|null
      * @throws ConnectException
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function parseFeed(string $url): ?Feed
     {
-        $content = $this->httpClient->get($url)->getBody()->getContents();
-        $zendFeed = Reader::importString($content);
+        return $this->withRetries(function () use ($url) {
+            $content = $this->httpClient->get($url)->getBody()->getContents();
+            $zendFeed = Reader::importString($content);
 
-        return Feed::fromZendFeed($zendFeed);
+            return Feed::fromZendFeed($zendFeed);
+        });
     }
 
     /**
      * @param string $url
      * @return Collection<Feed>
-     * @throws ConnectException
+     * @throws Exception
      */
     public function discoverAndParseFeeds(string $url): Collection
     {
-        return $this->discoverFeedUrls($url)
-            ->map(function ($feedUrl) {
-                return $this->parseFeed($feedUrl);
-            });
+        return $this->withRetries(function () use ($url) {
+            return $this->discoverFeedUrls($url)
+                ->map(function ($feedUrl) {
+                    return $this->parseFeed($feedUrl);
+                });
+        });
     }
 
     /**
      * @param string $url
      * @return Collection<string>
-     * @throws ConnectException
+     * @throws Exception
      */
     public function discoverFeedUrls(string $url): Collection
     {
-        $adjustedUrl = Helper::replaceBaseUrls($url, $this->urlReplacementMap);
+        return $this->withRetries(function () use ($url) {
+            $adjustedUrl = Helper::replaceBaseUrls($url, $this->urlReplacementMap);
 
-        $response = $this->httpClient->get($adjustedUrl);
-        $responseContainer = new ResponseContainer($adjustedUrl, $response);
+            $response = $this->httpClient->get($adjustedUrl);
+            $responseContainer = new ResponseContainer($adjustedUrl, $response);
 
-        $discoveryFns = collect([
-            function ($responseContainer) {
-                return $this->discoverFeedUrlByContentType($responseContainer);
-            },
-            function ($responseContainer) {
-                return $this->discoverFeedUrlByHtmlHeadElements($responseContainer);
-            },
-            function ($responseContainer) {
-                return $this->discoverFeedUrlByHtmlAnchorElements($responseContainer);
-            },
-            function ($responseContainer) {
-                return $this->discoverFeedUrlByFeedly($responseContainer);
-            },
-        ]);
+            $discoveryFns = collect([
+                function ($responseContainer) {
+                    return $this->discoverFeedUrlByContentType($responseContainer);
+                },
+                function ($responseContainer) {
+                    return $this->discoverFeedUrlByHtmlHeadElements($responseContainer);
+                },
+                function ($responseContainer) {
+                    return $this->discoverFeedUrlByHtmlAnchorElements($responseContainer);
+                },
+                function ($responseContainer) {
+                    return $this->discoverFeedUrlByFeedly($responseContainer);
+                },
+            ]);
 
-        $urls = $discoveryFns->reduce(function (Collection $carry, $discoveryFn) use ($responseContainer) {
-            // only get the firstly fetched urls
-            if ($carry->isEmpty()) {
-                return $discoveryFn($responseContainer);
-            }
+            $urls = $discoveryFns->reduce(function (Collection $carry, $discoveryFn) use ($responseContainer) {
+                // only get the firstly fetched urls
+                if ($carry->isEmpty()) {
+                    return $discoveryFn($responseContainer);
+                }
 
-            return $carry;
-        }, collect());
+                return $carry;
+            }, collect());
 
-        return $urls->map(function ($adjustedUrl) {
-            return Helper::normalizeUrl($adjustedUrl);
-        })->unique()->values();
+            return $urls->map(function ($adjustedUrl) {
+                return Helper::normalizeUrl($adjustedUrl);
+            })->unique()->values();
+        });
     }
 
     /**
      * @param string $url
      * @return string|null
-     * @throws ConnectException
+     * @throws Exception
      */
     public function discoverFavicon(string $url): ?string
     {
-        $response = $this->httpClient->get($url);
+        return $this->withRetries(function () use ($url) {
+            $response = $this->httpClient->get($url);
 
-        $crawler = new Crawler($response->getBody()->getContents());
-        $nodes = $crawler->filterXPath($this->converter->toXPath('head > link'));
+            $crawler = new Crawler($response->getBody()->getContents());
+            $nodes = $crawler->filterXPath($this->converter->toXPath('head > link'));
 
-        $faviconUrls = collect($nodes)->filter(function (DOMElement $node) {
-            return Str::contains($node->getAttribute('rel'), 'icon');
-        })->map(function (DOMElement $node) use ($url) {
-            return Helper::normalizeUrl(Helper::transformUrl($url, $node->getAttribute('href')));
+            $faviconUrls = collect($nodes)->filter(function (DOMElement $node) {
+                return Str::contains($node->getAttribute('rel'), 'icon');
+            })->map(function (DOMElement $node) use ($url) {
+                return Helper::normalizeUrl(Helper::transformUrl($url, $node->getAttribute('href')));
+            });
+
+            if ($faviconUrls->isEmpty()) {
+                return null;
+            }
+
+            return $faviconUrls->first();
         });
-
-        if ($faviconUrls->isEmpty()) {
-            return null;
-        }
-
-        return $faviconUrls->first();
     }
 
     /**
@@ -172,10 +202,12 @@ class HeraRssCrawler
     public function checkIfConsumableFeed(string $url): bool
     {
         try {
-            $feed = $this->parseFeed($url);
+            return $this->withRetries(function () use ($url) {
+                $feed = $this->parseFeed($url);
 
-            return $feed instanceof Feed;
-        } catch (\Exception $e) {
+                return $feed instanceof Feed;
+            });
+        } catch (Exception $e) {
             return false;
         }
     }
@@ -327,13 +359,23 @@ class HeraRssCrawler
             ->reduce(function ($carry, ReflectionMethod $method) use ($feed, $delimiter) {
                 if ($method->getName() === 'getFeedItems') {
                     return $carry . $delimiter . $method->invoke($feed)->reduce(function ($carry, FeedItem $feedItem) use ($delimiter) {
-                        return $carry . $delimiter . self::generateChecksumForFeedItem($feedItem);
-                    });
+                            return $carry . $delimiter . self::generateChecksumForFeedItem($feedItem);
+                        });
                 }
 
                 return $carry . $delimiter . $method->invoke($feed);
             }, ''), $delimiter);
 
         return Hash::hash($algo, $allValuesConcatenated);
+    }
+
+    /**
+     * @param callable $callback
+     * @return mixed
+     * @throws Exception
+     */
+    private function withRetries(callable $callback)
+    {
+        return Helper::withRetries($callback, 1, $this->getRetryCount());
     }
 }

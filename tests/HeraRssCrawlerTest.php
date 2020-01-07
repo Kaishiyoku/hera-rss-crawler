@@ -3,10 +3,12 @@
 namespace Kaishiyoku\HeraRssCrawler;
 
 use Carbon\Carbon;
+use Exception;
 use GuzzleHttp\Exception\ConnectException;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\Feed;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\FeedItem;
 use PHPUnit\Framework\TestCase;
+use ReflectionException;
 use Spatie\Snapshots\MatchesSnapshots;
 
 /**
@@ -34,6 +36,7 @@ class HeraRssCrawlerTest extends TestCase
      * @param string|null $expectedFaviconUrl
      * @param bool $throwsConnectException
      * @return void
+     * @throws Exception
      */
     public function testDiscoverFeedUrls(string $url, array $expectedUrls, ?string $expectedFaviconUrl = null, bool $throwsConnectException = false): void
     {
@@ -55,6 +58,7 @@ class HeraRssCrawlerTest extends TestCase
      * @param array $expectedValues
      * @param bool $throwsConnectException
      * @return void
+     * @throws Exception
      */
     public function testParseFeed(array $feedUrls, array $expectedValues, bool $throwsConnectException = false): void
     {
@@ -94,6 +98,7 @@ class HeraRssCrawlerTest extends TestCase
     /**
      * @covers HeraRssCrawler::discoverAndParseFeeds()
      * @return void
+     * @throws Exception
      */
     public function testDiscoverAndParseFeeds(): void
     {
@@ -108,6 +113,7 @@ class HeraRssCrawlerTest extends TestCase
     /**
      * @covers HeraRssCrawler::generateChecksumForFeedItem()
      * @return void
+     * @throws ReflectionException
      */
     public function testGenerateChecksumForFeedItem(): void
     {
@@ -131,6 +137,7 @@ class HeraRssCrawlerTest extends TestCase
     /**
      * @covers HeraRssCrawler::generateChecksumForFeed()
      * @return void
+     * @throws ReflectionException
      */
     public function testGenerateChecksumForFeed(): void
     {
@@ -164,6 +171,7 @@ class HeraRssCrawlerTest extends TestCase
      * @param string|null $expectedFaviconUrl
      * @param bool $throwsConnectException
      * @return void
+     * @throws Exception
      */
     public function testDiscoverFavicon(string $url, array $expectedUrls, ?string $expectedFaviconUrl = null, bool $throwsConnectException = false): void
     {
