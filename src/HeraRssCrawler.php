@@ -26,7 +26,7 @@ class HeraRssCrawler
     /**
      * @var string
      */
-    private const VERSION = '0.5.1';
+    private const VERSION = '0.6.0';
 
     /**
      * @var Client|null
