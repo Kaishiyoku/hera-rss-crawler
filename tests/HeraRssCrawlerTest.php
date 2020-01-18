@@ -376,7 +376,7 @@ class HeraRssCrawlerTest extends TestCase
                     'https://unknownworlds.com/feed',
                     'https://unknownworlds.com/homepage-2/feed'
                 ],
-                'https://2i1suz1s0n5g1i6ph4z0sw1b-wpengine.netdna-ssl.com/favicon.png',
+                'https://unknownworlds.com/favicon.png',
             ],
             'Welt - Politcs' => [
                 'https://www.welt.de/politik/',
