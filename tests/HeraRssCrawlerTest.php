@@ -376,23 +376,13 @@ class HeraRssCrawlerTest extends TestCase
                     'https://unknownworlds.com/feed',
                     'https://unknownworlds.com/homepage-2/feed'
                 ],
-                'https://unknownworlds.com/favicon.png',
-            ],
-            'Welt - Politcs' => [
-                'https://www.welt.de/politik/',
-                [
-                    'http://www.welt.de/politik/?service=Rss',
-                    'http://www.welt.de/politik/ausland/?service=Rss',
-                    'http://www.welt.de/politik/deutschland/?service=Rss',
-                ],
-                'https://www.welt.de/assets/images/global/welt-w-icon-229e79389f.svg',
+                'https://2i1suz1s0n5g1i6ph4z0sw1b-wpengine.netdna-ssl.com/favicon.png',
             ],
             'TrekCast' => [
                 'https://www.startrek-index.de/trekcast',
                 [
                     'https://www.startrek-index.de/trekcast/feed',
                     'https://www.startrek-index.de/trekcast/feed/atom',
-                    'https://www.startrek-index.de/trekcast/comments/feed',
                     'https://www.startrek-index.de/trekcast/feed/podcast',
                 ],
                 'https://www.startrek-index.de/trekcast/favicon.ico',
@@ -450,9 +440,8 @@ class HeraRssCrawlerTest extends TestCase
                 'https://www.jrocknews.com/',
                 [
                     'https://jrocknews.com/feed',
-                    'https://jrocknews.com/comments/feed',
                 ],
-                'https://jrocknews.com/wp-content/uploads/2015/05/cropped-JRN-icon-2017-32x32.png',
+                'https://jrocknews.com/wp-content/uploads/2015/05/cropped-JRN-icon-2017-150x150.png',
             ],
             'Non-existent website' => [
                 'https://www.nonexistent-website.dev',
@@ -537,19 +526,10 @@ class HeraRssCrawlerTest extends TestCase
                     true,
                 ],
             ],
-            'Welt - Politcs' => [
-                [
-                    'https://www.welt.de/feeds/section/politik.rss'
-                ],
-                [
-                    true,
-                ],
-            ],
             'TrekCast' => [
                 [
                     'https://www.startrek-index.de/trekcast/feed',
                     'https://www.startrek-index.de/trekcast/feed/atom',
-                    'https://www.startrek-index.de/trekcast/comments/feed',
                     'https://www.startrek-index.de/trekcast/feed/podcast',
                 ],
                 [
