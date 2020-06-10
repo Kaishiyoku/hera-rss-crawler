@@ -1,6 +1,6 @@
-title: 'Kommentare für Trekcast – Der Star Trek Podcast'
-description: 'Der Podcast des Deutschen StarTrek-Index (DSi) zu Star Trek'
-feedUrl: 'https://www.startrek-index.de/trekcast/comments/feed/'
+title: 'Trekcast - Der Star Trek Podcast'
+description: 'Analysen, Trivia & Talk über Star Trek – Die drei Experten Yann-Patrick Schlame, Thorsten Kroke und Malte Kirchner diskutieren in loser Folge die Neuerscheinungen und viele andere spannende Aspekte rund um die Lieblingsserie vieler Fans.'
+feedUrl: 'https://www.startrek-index.de/trekcast/feed/podcast'
 id: 'https://www.startrek-index.de/trekcast'
-language: null
+language: de-DE
 url: 'https://www.startrek-index.de/trekcast'
