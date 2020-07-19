@@ -347,7 +347,7 @@ class HeraRssCrawlerTest extends TestCase
                     'https://byorgey.wordpress.com/feed',
                     'https://byorgey.wordpress.com/comments/feed'
                 ],
-                'https://s1.wp.com/i/favicon.ico',
+                'https://s0.wp.com/i/favicon.ico',
             ],
             'Echo JS' => [
                 'http://www.echojs.com/',
