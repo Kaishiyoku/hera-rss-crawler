@@ -347,7 +347,7 @@ class HeraRssCrawlerTest extends TestCase
                     'https://byorgey.wordpress.com/feed',
                     'https://byorgey.wordpress.com/comments/feed'
                 ],
-                'https://s0.wp.com/i/favicon.ico',
+                'https://s1.wp.com/i/favicon.ico',
             ],
             'Echo JS' => [
                 'http://www.echojs.com/',
@@ -393,15 +393,6 @@ class HeraRssCrawlerTest extends TestCase
                     'https://www.22places.de/rsslatest.xml',
                 ],
                 'https://www.22places.de/images/2017/12/cropped-171207_22places_Logo_Favicon_tuerkis-32x32.png',
-            ],
-            'Shiroku' => [
-                'http://shiroutang.blogspot.com/',
-                [
-                    'https://shiroutang.blogspot.com/feeds/posts/default',
-                    'https://shiroutang.blogspot.com/feeds/posts/default?alt=rss',
-                    'https://www.blogger.com/feeds/7456002711322960081/posts/default',
-                ],
-                'https://shiroutang.blogspot.com/favicon.ico',
             ],
             'React' => [
                 'https://facebook.github.io/react',
@@ -544,18 +535,6 @@ class HeraRssCrawlerTest extends TestCase
                     'https://www.22places.de/rsslatest.xml',
                 ],
                 [
-                    true,
-                ],
-            ],
-            'Shiroku' => [
-                [
-                    'https://shiroutang.blogspot.com/feeds/posts/default',
-                    'https://shiroutang.blogspot.com/feeds/posts/default?alt=rss',
-                    'https://www.blogger.com/feeds/7456002711322960081/posts/default',
-                ],
-                [
-                    true,
-                    true,
                     true,
                 ],
             ],
