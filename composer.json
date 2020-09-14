@@ -20,7 +20,7 @@
     "symfony/dom-crawler": "^5.1",
     "symfony/css-selector": "^5.1",
     "guzzlehttp/guzzle": "^6.5",
-    "illuminate/support": "^6.0|^7.0",
+    "illuminate/support": "^6.0|^7.0|^8.0",
     "nesbot/carbon": "^2.35",
     "zendframework/zend-feed": "^2.12"
   },
