@@ -12,7 +12,6 @@ use Kaishiyoku\HeraRssCrawler\HeraRssCrawler;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
-use SimpleXMLElement;
 use TypeError;
 use Zend\Feed\Reader\Entry\AbstractEntry;
 use Zend\Feed\Reader\Entry\Atom;
@@ -106,7 +105,7 @@ class FeedItem implements JsonSerializable
     private $type;
 
     /**
-     * @var SimpleXMLElement|null
+     * @var string|null
      */
     private $xml;
 
@@ -389,9 +388,9 @@ class FeedItem implements JsonSerializable
     }
 
     /**
-     * @return SimpleXMLElement|null
+     * @return string|null
      */
-    public function getXml(): ?SimpleXMLElement
+    public function getXml(): ?string
     {
         return $this->xml;
     }
@@ -401,7 +400,7 @@ class FeedItem implements JsonSerializable
      */
     public function setXml(?string $xml): void
     {
-        $this->xml = simplexml_load_string(Helper::trimOrDefaultNull($xml));
+        $this->xml = Helper::trimOrDefaultNull($xml);
     }
 
     /**
