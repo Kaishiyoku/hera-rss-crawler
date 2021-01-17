@@ -2,7 +2,6 @@
 
 namespace Kaishiyoku\HeraRssCrawler;
 
-use Illuminate\Support\Arr;
 use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionException;

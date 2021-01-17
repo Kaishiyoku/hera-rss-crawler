@@ -3,11 +3,12 @@
 namespace Kaishiyoku\HeraRssCrawler\Models\Rss;
 
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Kaishiyoku\HeraRssCrawler\Helper;
 use Kaishiyoku\HeraRssCrawler\HeraRssCrawler;
+use Laminas\Feed\Reader\Feed\FeedInterface;
 use ReflectionException;
-use Zend\Feed\Reader\Feed\FeedInterface;
 
 class Feed
 {
@@ -295,9 +296,13 @@ class Feed
      */
     public static function fromZendFeed(FeedInterface $zendFeed): Feed
     {
+        $authors = collect($zendFeed->getAuthors())->map(function ($authorData) {
+            return Arr::get($authorData, 'name');
+        });
+
         $feed = new self();
         $feed->setCategories(collect($zendFeed->getCategories()->getValues()));
-        $feed->setAuthors(collect($zendFeed->getAuthors() == null ? null : $zendFeed->getAuthors()->getValues()));
+        $feed->setAuthors($authors);
         $feed->setTitle($zendFeed->getTitle() ?? '');
         $feed->setCopyright($zendFeed->getCopyright());
         $feed->setCreatedAt($zendFeed->getDateCreated() === null ? null : Carbon::parse($zendFeed->getDateCreated()));

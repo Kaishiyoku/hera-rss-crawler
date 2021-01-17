@@ -337,7 +337,8 @@ class HeraRssCrawlerTest extends TestCase
             'Anime2You' => [
                 'https://www.anime2you.de',
                 [
-                    'http://www.anime2you.de/feed'
+                    'https://www.anime2you.de/feed',
+                    'https://www.anime2you.de/comments/feed',
                 ],
                 null,
             ],
@@ -377,14 +378,6 @@ class HeraRssCrawlerTest extends TestCase
                     'https://unknownworlds.com/homepage-2/feed'
                 ],
                 'https://2i1suz1s0n5g1i6ph4z0sw1b-wpengine.netdna-ssl.com/favicon.png',
-            ],
-            'TrekCast' => [
-                'https://www.startrek-index.de/trekcast',
-                [
-                    'https://www.startrek-index.de/trekcast/feed',
-                    'https://www.startrek-index.de/trekcast/feed/atom',
-                ],
-                'https://www.startrek-index.de/trekcast/favicon.ico',
             ],
             '22 Places' => [
                 'https://www.22places.de/fotografie-blog/',
@@ -516,20 +509,6 @@ class HeraRssCrawlerTest extends TestCase
                     true,
                 ],
             ],
-// TODO: https://github.com/Kaishiyoku/hera-rss-crawler/issues/6 the feed returns some invalid UTF-8 encoded XML
-//            'TrekCast' => [
-//                [
-//                    'https://www.startrek-index.de/trekcast/feed',
-//                    'https://www.startrek-index.de/trekcast/feed/atom',
-//                    'https://www.startrek-index.de/trekcast/feed/podcast',
-//                ],
-//                [
-//                    true,
-//                    true,
-//                    true,
-//                    true,
-//                ],
-//            ],
             '22 Places' => [
                 [
                     'https://www.22places.de/rsslatest.xml',

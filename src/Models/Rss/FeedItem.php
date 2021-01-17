@@ -9,13 +9,13 @@ use InvalidArgumentException;
 use JsonSerializable;
 use Kaishiyoku\HeraRssCrawler\Helper;
 use Kaishiyoku\HeraRssCrawler\HeraRssCrawler;
+use Laminas\Feed\Reader\Entry\Atom;
+use Laminas\Feed\Reader\Entry\EntryInterface;
+use Laminas\Feed\Reader\Entry\Rss;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
 use TypeError;
-use Zend\Feed\Reader\Entry\AbstractEntry;
-use Zend\Feed\Reader\Entry\Atom;
-use Zend\Feed\Reader\Entry\Rss;
 
 class FeedItem implements JsonSerializable
 {
@@ -404,7 +404,7 @@ class FeedItem implements JsonSerializable
     }
 
     /**
-     * @param AbstractEntry $zendFeedItem
+     * @param EntryInterface $zendFeedItem
      * @return FeedItem
      * @throws InvalidArgumentException
      * @throws ReflectionException

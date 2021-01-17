@@ -14,12 +14,12 @@ use Kaishiyoku\HeraRssCrawler\Models\Feedly\SearchResponse;
 use Kaishiyoku\HeraRssCrawler\Models\ResponseContainer;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\Feed;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\FeedItem;
+use Laminas\Feed\Reader\Reader;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
 use Symfony\Component\CssSelector\CssSelectorConverter;
 use Symfony\Component\DomCrawler\Crawler;
-use Zend\Feed\Reader\Reader;
 
 class HeraRssCrawler
 {
@@ -223,7 +223,7 @@ class HeraRssCrawler
             'query' => ['query' => $responseContainer->getRequestUrl()],
         ]);
 
-        $searchResponse = SearchResponse::fromJson(json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR));
+        $searchResponse = SearchResponse::fromJson(json_decode($response->getBody()->getContents(), true, 512));
 
         return $searchResponse->getResults()->map(function (Result $result) {
             return $result->getFeedUrl();
