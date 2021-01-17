@@ -379,13 +379,6 @@ class HeraRssCrawlerTest extends TestCase
                 ],
                 'https://2i1suz1s0n5g1i6ph4z0sw1b-wpengine.netdna-ssl.com/favicon.png',
             ],
-            '22 Places' => [
-                'https://www.22places.de/fotografie-blog/',
-                [
-                    'https://www.22places.de/rsslatest.xml',
-                ],
-                'https://www.22places.de/images/2017/12/cropped-171207_22places_Logo_Favicon_tuerkis-32x32.png',
-            ],
             'React' => [
                 'https://facebook.github.io/react',
                 [
@@ -506,14 +499,6 @@ class HeraRssCrawlerTest extends TestCase
                 ],
                 [
                     true,
-                    true,
-                ],
-            ],
-            '22 Places' => [
-                [
-                    'https://www.22places.de/rsslatest.xml',
-                ],
-                [
                     true,
                 ],
             ],

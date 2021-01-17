@@ -2,6 +2,7 @@
 
 namespace Kaishiyoku\HeraRssCrawler;
 
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Str;
 
@@ -102,5 +103,18 @@ class Helper
 
             throw $e;
         }
+    }
+
+    /**
+     * @param mixed $value
+     * @return Carbon|null
+     */
+    public static function parseDate($value): ?Carbon
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        return Carbon::parse($value);
     }
 }

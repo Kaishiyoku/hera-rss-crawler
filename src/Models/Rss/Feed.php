@@ -305,8 +305,8 @@ class Feed
         $feed->setAuthors($authors);
         $feed->setTitle($zendFeed->getTitle() ?? '');
         $feed->setCopyright($zendFeed->getCopyright());
-        $feed->setCreatedAt($zendFeed->getDateCreated() === null ? null : Carbon::parse($zendFeed->getDateCreated()));
-        $feed->setUpdatedAt($zendFeed->getDateModified() === null ? null: Carbon::parse($zendFeed->getDateModified()));
+        $feed->setCreatedAt(Helper::parseDate($zendFeed->getDateCreated()));
+        $feed->setUpdatedAt(Helper::parseDate($zendFeed->getDateModified()));
         $feed->setDescription($zendFeed->getDescription());
         $feed->setFeedUrl($zendFeed->getFeedLink());
         $feed->setId($zendFeed->getId());
