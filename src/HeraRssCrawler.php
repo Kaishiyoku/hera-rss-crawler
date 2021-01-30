@@ -15,7 +15,7 @@ use Kaishiyoku\HeraRssCrawler\Models\ResponseContainer;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\Feed;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\FeedItem;
 use Laminas\Feed\Reader\Reader;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
@@ -52,7 +52,7 @@ class HeraRssCrawler
     ];
 
     /**
-     * @var Logger|null
+     * @var LoggerInterface|null
      */
     private $logger = null;
 
@@ -103,9 +103,9 @@ class HeraRssCrawler
     /**
      * Enable logging
      *
-     * @param Logger $logger
+     * @param LoggerInterface $logger
      */
-    public function setLogger(Logger $logger): void
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }
