@@ -15,6 +15,7 @@ use Kaishiyoku\HeraRssCrawler\Models\ResponseContainer;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\Feed;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\FeedItem;
 use Laminas\Feed\Reader\Reader;
+use Monolog\Logger;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
@@ -49,6 +50,11 @@ class HeraRssCrawler
     private $urlReplacementMap = [
         'https://www.reddit.com/' => 'https://old.reddit.com/',
     ];
+
+    /**
+     * @var Logger|null
+     */
+    private $logger = null;
 
     /**
      * @var string
@@ -92,6 +98,16 @@ class HeraRssCrawler
     public function setUrlReplacementMap(array $urlReplacementMap): void
     {
         $this->urlReplacementMap = $urlReplacementMap;
+    }
+
+    /**
+     * Enable logging
+     *
+     * @param Logger $logger
+     */
+    public function setLogger(Logger $logger): void
+    {
+        $this->logger = $logger;
     }
 
     /**
@@ -208,6 +224,10 @@ class HeraRssCrawler
                 return $feed instanceof Feed;
             });
         } catch (Exception $e) {
+            if ($this->logger) {
+                $this->logger->error('Feed not consumable: ' . $e->getMessage());
+            }
+
             return false;
         }
     }
