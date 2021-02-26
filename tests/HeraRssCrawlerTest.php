@@ -337,8 +337,7 @@ class HeraRssCrawlerTest extends TestCase
             'Anime2You' => [
                 'https://www.anime2you.de',
                 [
-                    'https://www.anime2you.de/feed',
-                    'https://www.anime2you.de/comments/feed',
+                    'http://www.anime2you.de/feed',
                 ],
                 null,
             ],
