@@ -325,7 +325,7 @@ class HeraRssCrawlerTest extends TestCase
                 [
                     'https://newsfeed.zeit.de/index'
                 ],
-                'https://www.zeit.de/favicon.ico',
+                'https://static.zeit.de/p/zeit.web/icons/favicon.svg',
             ],
             'FAZ' => [
                 'https://www.faz.net',
@@ -337,7 +337,8 @@ class HeraRssCrawlerTest extends TestCase
             'Anime2You' => [
                 'https://www.anime2you.de',
                 [
-                    'http://www.anime2you.de/feed',
+                    'https://www.anime2you.de/feed',
+                    'https://www.anime2you.de/comments/feed',
                 ],
                 null,
             ],
