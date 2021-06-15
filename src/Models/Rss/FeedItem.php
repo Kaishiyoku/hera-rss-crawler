@@ -409,16 +409,18 @@ class FeedItem implements JsonSerializable
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public static function fromZendFeedItem($zendFeedItem): FeedItem
+    public static function fromZendFeedItem(EntryInterface $zendFeedItem): FeedItem
     {
         if (!$zendFeedItem instanceof Rss && !$zendFeedItem instanceof Atom) {
-            throw new InvalidArgumentException('given feed item neither is from a Rss or Atom feed');
+            throw new InvalidArgumentException('given feed item neither is from a RSS or Atom feed');
         }
 
         $feedItem = new self();
 
         $feedItem->setCategories(collect($zendFeedItem->getCategories()->getValues()));
-        $feedItem->setAuthors(collect($zendFeedItem->getAuthors() == null ? null : $zendFeedItem->getAuthors()->getValues()));
+        $feedItem->setAuthors(collect(optional($zendFeedItem->getAuthors(), function ($authors) {
+            return $authors->getValues();
+        })));
         $feedItem->setTitle($zendFeedItem->getTitle() ?? ''); // TODO: investigate; why can a title be empty? maybe we should discard those items
         $feedItem->setCommentCount($zendFeedItem->getCommentCount() ?? 0);
         $feedItem->setCommentFeedLink($zendFeedItem->getCommentFeedLink());
@@ -434,7 +436,9 @@ class FeedItem implements JsonSerializable
         $feedItem->setCreatedAt($zendFeedItem->getDateCreated() == null ? null : Carbon::parse($zendFeedItem->getDateCreated()));
         $feedItem->setUpdatedAt($zendFeedItem->getDateModified() == null ? null : Carbon::parse($zendFeedItem->getDateModified()));
         $feedItem->setDescription($zendFeedItem->getDescription());
-        $feedItem->setEnclosureUrl($zendFeedItem->getEnclosure() ? $zendFeedItem->getEnclosure()->url : null);
+        $feedItem->setEnclosureUrl(optional($zendFeedItem->getEnclosure(), function ($enclosure) {
+            return $enclosure->url;
+        }));
         $feedItem->setEncoding($zendFeedItem->getEncoding());
         $feedItem->setId($zendFeedItem->getId());
         $feedItem->setLinks(collect($zendFeedItem->getLinks()));
