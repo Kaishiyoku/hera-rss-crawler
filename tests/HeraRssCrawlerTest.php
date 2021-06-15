@@ -340,7 +340,7 @@ class HeraRssCrawlerTest extends TestCase
                     'https://www.anime2you.de/feed',
                     'https://www.anime2you.de/comments/feed',
                 ],
-                null,
+                'https://img.anime2you.de/2021/06/favicon.png',
             ],
             'blog :: Brent -> [String]' => [
                 'https://byorgey.wordpress.com/',
