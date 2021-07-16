@@ -1,6 +1,6 @@
-title: 'NutritionFacts.org Video Podcast'
-description: 'Michael Greger M.D. FACLM brings you the latest in nutrition-related research delivered in easy to understand video segments.'
-feedUrl: 'https://nutritionfacts.org/videos/feed/podcast'
+title: NutritionFacts.org
+description: 'The Latest in Nutrition Research'
+feedUrl: 'https://nutritionfacts.org/feed/?post_type%5B0%5D=video'
 id: 'https://nutritionfacts.org'
 language: en-US
 url: 'https://nutritionfacts.org'
