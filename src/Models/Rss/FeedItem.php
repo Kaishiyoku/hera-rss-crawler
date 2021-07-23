@@ -80,6 +80,11 @@ class FeedItem implements JsonSerializable
     private $enclosureUrl;
 
     /**
+     * @var string[]
+     */
+    private $imageUrls;
+
+    /**
      * @var string
      */
     private $encoding;
@@ -234,10 +239,14 @@ class FeedItem implements JsonSerializable
     }
 
     /**
-     * @param string $content
+     * @param ?string $content
      */
-    public function setContent(string $content): void
+    public function setContent(?string $content): void
     {
+        if (!$content) {
+            return;
+        }
+
         $this->content = Helper::trimOrDefaultNull($content);
     }
 
@@ -303,6 +312,22 @@ class FeedItem implements JsonSerializable
     public function setEnclosureUrl(?string $enclosureUrl): void
     {
         $this->enclosureUrl = Helper::trimOrDefaultNull($enclosureUrl);
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getImageUrls(): array
+    {
+        return $this->imageUrls;
+    }
+
+    /**
+     * @param string[] $imageUrls
+     */
+    public function setImageUrls(array $imageUrls): void
+    {
+        $this->imageUrls = $imageUrls;
     }
 
     /**
@@ -425,20 +450,14 @@ class FeedItem implements JsonSerializable
         $feedItem->setCommentCount($zendFeedItem->getCommentCount() ?? 0);
         $feedItem->setCommentFeedLink($zendFeedItem->getCommentFeedLink());
         $feedItem->setCommentLink($zendFeedItem->getCommentLink());
-
-        try {
-            $feedItem->setContent($zendFeedItem->getContent());
-        } catch (TypeError $e) {
-            // no content available
-            $feedItem->setContent('');
-        }
-
+        $feedItem->setContent($zendFeedItem->getContent());
         $feedItem->setCreatedAt($zendFeedItem->getDateCreated() == null ? null : Carbon::parse($zendFeedItem->getDateCreated()));
         $feedItem->setUpdatedAt($zendFeedItem->getDateModified() == null ? null : Carbon::parse($zendFeedItem->getDateModified()));
         $feedItem->setDescription($zendFeedItem->getDescription());
         $feedItem->setEnclosureUrl(optional($zendFeedItem->getEnclosure(), function ($enclosure) {
             return $enclosure->url;
         }));
+        $feedItem->setFirstImageUrl(Helper::getFirstImageUrl($feedItem->getContent()));
         $feedItem->setEncoding($zendFeedItem->getEncoding());
         $feedItem->setId($zendFeedItem->getId());
         $feedItem->setLinks(collect($zendFeedItem->getLinks()));

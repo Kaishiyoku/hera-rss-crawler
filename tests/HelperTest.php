@@ -34,6 +34,18 @@ class HelperTest extends TestCase
         $this->testMock->shouldHaveReceived('fail')->times(4);
     }
 
+    public function testGetImageUrls(): void
+    {
+        $content = '<img src="https://www.golem.de/2107/158391-284735-284731_rc.jpg" width="140" height="140" vspace="3" hspace="8" align="left">Mit einer Tages- oder Monatskarte des E-Scooter-Anbieters Voi sollen Nutzer so viel fahren können, wie sie wollen - können sie aber nicht. (<a href="https://www.golem.de/specials/e-scooter/">E-Scooter</a>, <a href="https://www.golem.de/specials/verbraucherschutz/">Verbraucherschutz</a>) <img src="https://cpx.golem.de/cpx.php?class=17&amp;aid=158391&amp;page=1&amp;ts=1627054380" alt="" width="1" height="1" />';
+
+        $imageUrls = Helper::getImageUrls($content);
+
+        $this->assertEquals([
+            'https://www.golem.de/2107/158391-284735-284731_rc.jpg',
+            'https://cpx.golem.de/cpx.php?class=17&amp;aid=158391&amp;page=1&amp;ts=1627054380'
+        ], $imageUrls);
+    }
+
     protected function tearDown(): void
     {
         parent::tearDown();

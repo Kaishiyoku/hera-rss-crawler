@@ -117,4 +117,17 @@ class Helper
 
         return Carbon::parse($value);
     }
+
+    /**
+     * @param string $content
+     * @return array
+     */
+    public static function getImageUrls(string $content): array
+    {
+        preg_match_all('/<img[^>]+src=[\'"]([^\'"]+)[\'"][^>]*>/i', $content, $matches);
+
+        [, $imageUrls] = $matches;
+
+        return $imageUrls;
+    }
 }
