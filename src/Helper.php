@@ -119,11 +119,15 @@ class Helper
     }
 
     /**
-     * @param string $content
+     * @param string|null $content
      * @return array
      */
-    public static function getImageUrls(string $content): array
+    public static function getImageUrls(?string $content): array
     {
+        if (!$content) {
+            return [];
+        }
+
         preg_match_all('/<img[^>]+src=[\'"]([^\'"]+)[\'"][^>]*>/i', $content, $matches);
 
         [, $imageUrls] = $matches;
