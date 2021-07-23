@@ -317,7 +317,7 @@ class FeedItem implements JsonSerializable
     /**
      * @return Collection<string>
      */
-    public function getImageUrls(): array
+    public function getImageUrls(): Collection
     {
         return $this->imageUrls;
     }
