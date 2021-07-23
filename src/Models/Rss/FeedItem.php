@@ -80,7 +80,7 @@ class FeedItem implements JsonSerializable
     private $enclosureUrl;
 
     /**
-     * @var string[]
+     * @var Collection<string>
      */
     private $imageUrls;
 
@@ -315,7 +315,7 @@ class FeedItem implements JsonSerializable
     }
 
     /**
-     * @return string[]
+     * @return Collection<string>
      */
     public function getImageUrls(): array
     {
@@ -323,9 +323,9 @@ class FeedItem implements JsonSerializable
     }
 
     /**
-     * @param string[] $imageUrls
+     * @param Collection<string> $imageUrls
      */
-    public function setImageUrls(array $imageUrls): void
+    public function setImageUrls(Collection $imageUrls): void
     {
         $this->imageUrls = $imageUrls;
     }
@@ -457,7 +457,7 @@ class FeedItem implements JsonSerializable
         $feedItem->setEnclosureUrl(optional($zendFeedItem->getEnclosure(), function ($enclosure) {
             return $enclosure->url;
         }));
-        $feedItem->setFirstImageUrl(Helper::getFirstImageUrl($feedItem->getContent()));
+        $feedItem->setImageUrls(collect(Helper::getImageUrls($feedItem->getContent())));
         $feedItem->setEncoding($zendFeedItem->getEncoding());
         $feedItem->setId($zendFeedItem->getId());
         $feedItem->setLinks(collect($zendFeedItem->getLinks()));
