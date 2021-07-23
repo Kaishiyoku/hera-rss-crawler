@@ -55,7 +55,7 @@ class FeedItem implements JsonSerializable
     private $commentLink;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $content;
 
@@ -231,9 +231,9 @@ class FeedItem implements JsonSerializable
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getContent(): string
+    public function getContent(): ?string
     {
         return $this->content;
     }
