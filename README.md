@@ -69,6 +69,18 @@ Fetch the favicon of the feed's website. If none is found then `null` is being r
 Check if a given url is a consumable RSS feed.
 
 
+Contribution
+============
+
+Found any issues or have an idea to improve the crawler? Feel free to open an issue or submit a pull request.
+
+
+Plans for the future
+====================
+
+- [ ] add a Laravel facade
+
+
 Author
 ======
 
