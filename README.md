@@ -9,7 +9,7 @@ Installation
 1. simply run `composer require kaishiyoku/hera-rss-crawler`
 2. create a new crawler instance using `$heraRssCrawler = new HeraRssCrawler()`
 3. discover a feed, for example `$feedUrls = $heraRssCrawler->discoverFeedUrls('https://laravel-news.com/')`
-4. pick the feed you like to use; if there multiple feeds were discovered pick one
+4. pick the feed you like to use; if there were multiple feeds discovered pick one
 5. fetch the feed: `$feed = $heraRssCrawler->parseFeed($feedUrls->get(0))`
 6. fetch the articles: `$feedItems = $feed->getFeedItems()`
 
