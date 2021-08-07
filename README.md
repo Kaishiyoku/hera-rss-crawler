@@ -17,17 +17,23 @@ Installation
 Available crawler options
 =========================
 
-`setRetryCount(int $retryCount): void`
+```php
+setRetryCount(int $retryCount): void
+```
 
 Determines how many retries parsing or discovering feeds will be made when an exception occurs, e.g. if the feed was unreachable.
 
 
-`setLogger(LoggerInterface $logger): void`
+```php
+setLogger(LoggerInterface $logger): void
+```
 
 Set your own logger instance, e.g. a simple file logger.
 
 
-`setUrlReplacementMap(array $urlReplacementMap): void`
+```php
+setUrlReplacementMap(array $urlReplacementMap): void
+```
 
 Useful for websites which redirect to another subdomain when visiting the site, e.g. for Reddit.
 
@@ -35,17 +41,23 @@ Useful for websites which redirect to another subdomain when visiting the site, 
 Available crawler methods
 =========================
 
-`parseFeed(string $url): ?Feed`
+```php
+parseFeed(string $url): ?Feed
+```
 
 Simply fetch and parse the feed of a given feed url. If no consumable RSS feed is being found `null` is being returned.
 
 
-`discoverAndParseFeeds(string $url): Collection`
+```php
+discoverAndParseFeeds(string $url): Collection
+```
 
 Discover feeds from a website url and return all parsed feeds in a collection.
 
 
-`discoverFeedUrls(string $url): Collection`
+```php
+discoverFeedUrls(string $url): Collection
+```
 
 Discover feeds from a website url and return all found feed urls in a collection. There are multiple ways the crawler tries to discover feeds. The order is as follows:
 
@@ -59,12 +71,16 @@ get all anchor elements of a HTML element and return the urls of those which inc
 fetch feed urls using the Feedly API
 
 
-`discoverFavicon(string $url): ?string`
+```php
+discoverFavicon(string $url): ?string
+```
 
 Fetch the favicon of the feed's website. If none is found then `null` is being returned.
 
 
-`checkIfConsumableFeed(string $url): bool`
+```php
+checkIfConsumableFeed(string $url): bool
+```
 
 Check if a given url is a consumable RSS feed.
 
