@@ -59,7 +59,7 @@ get all anchor elements of a HTML element and return the urls of those which inc
 fetch feed urls using the Feedly API
 
 
-`discoverFavicon(string $Url): ?string`
+`discoverFavicon(string $url): ?string`
 
 Fetch the favicon of the feed's website. If none is found then `null` is being returned.
 
