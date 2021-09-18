@@ -386,14 +386,6 @@ class HeraRssCrawlerTest extends TestCase
                 ],
                 'https://facebook.github.io/react/favicon.ico',
             ],
-            'PHP' => [
-                'http://php.net',
-                [
-                    'https://www.php.net/releases/feed.php',
-                    'https://www.php.net/feed.atom',
-                ],
-                'https://www.php.net/favicon.ico',
-            ],
             'PHP Internals' => [
                 'https://phpinternals.news/',
                 [
@@ -404,10 +396,10 @@ class HeraRssCrawlerTest extends TestCase
             'Nutrition Facts' => [
                 'https://nutritionfacts.org/',
                 [
+                    'http://nutritionfacts.org/feed',
                     'http://nutritionfacts.org/feed/?post_type=video',
                     'http://nutritionfacts.org/audio/feed/podcast',
                     'https://nutritionfacts.org/videos/feed/podcast',
-                    'http://nutritionfacts.org/feed/rss/?post_type%5B0%5D=video',
                     'http://nutritionfacts.org/feed/podcast',
                 ],
                 null,
@@ -507,16 +499,6 @@ class HeraRssCrawlerTest extends TestCase
                     'https://facebook.github.io/react/feed.xml'
                 ],
                 [
-                    true,
-                ],
-            ],
-            'PHP' => [
-                [
-                    'https://www.php.net/releases/feed.php',
-                    'https://www.php.net/feed.atom',
-                ],
-                [
-                    true,
                     true,
                 ],
             ],
