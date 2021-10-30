@@ -1,6 +1,6 @@
-title: NutritionFacts.org
-description: 'The Latest in Nutrition Research'
-feedUrl: 'https://nutritionfacts.org/feed/?post_type%5B0%5D=video'
+title: 'NutritionFacts.org Videos'
+description: 'The latest in nutrition-related research delivered in easy to understand video segments brought to you by Michael Greger, M.D. FACLM'
+feedUrl: 'https://nutritionfacts.org/feed/podcast'
 id: 'https://nutritionfacts.org'
-language: en-US
+language: en
 url: 'https://nutritionfacts.org'

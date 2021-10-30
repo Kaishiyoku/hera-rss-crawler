@@ -399,7 +399,6 @@ class HeraRssCrawlerTest extends TestCase
                     'http://nutritionfacts.org/feed',
                     'http://nutritionfacts.org/feed/?post_type=video',
                     'http://nutritionfacts.org/audio/feed/podcast',
-                    'https://nutritionfacts.org/videos/feed/podcast',
                     'http://nutritionfacts.org/feed/podcast',
                 ],
                 null,
@@ -512,10 +511,9 @@ class HeraRssCrawlerTest extends TestCase
             ],
             'Nutrition Facts' => [
                 [
+                    'http://nutritionfacts.org/feed',
                     'http://nutritionfacts.org/feed/?post_type=video',
                     'http://nutritionfacts.org/audio/feed/podcast',
-                    'https://nutritionfacts.org/videos/feed/podcast',
-                    'http://nutritionfacts.org/feed/rss/?post_type%5B0%5D=video',
                     'http://nutritionfacts.org/feed/podcast',
                 ],
                 [
