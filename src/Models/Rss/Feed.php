@@ -7,94 +7,60 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Kaishiyoku\HeraRssCrawler\Helper;
 use Kaishiyoku\HeraRssCrawler\HeraRssCrawler;
+use Laminas\Feed\Reader\Feed\Atom;
 use Laminas\Feed\Reader\Feed\FeedInterface;
+use Laminas\Feed\Reader\Feed\Rss;
 use ReflectionException;
 
 class Feed
 {
-    /**
-     * @var string
-     */
-    private $checksum;
+    private string $checksum;
 
     /**
      * @var Collection<string>
      */
-    private $categories;
+    private Collection $categories;
 
     /**
      * @var Collection<string>
      */
-    private $authors;
+    private Collection $authors;
 
-    /**
-     * @var string
-     */
-    private $title;
+    private string $title;
 
-    /**
-     * @var string|null
-     */
-    private $copyright;
+    private ?string $copyright;
 
-    /**
-     * @var Carbon|null
-     */
-    private $createdAt;
+    private ?Carbon $createdAt;
 
-    /**
-     * @var Carbon|null
-     */
-    private $updatedAt;
+    private ?Carbon $updatedAt;
 
-    /**
-     * @var string|null
-     */
-    private $description;
+    private ?string $description;
 
-    /**
-     * @var string|null
-     */
-    private $feedUrl;
+    private ?string $feedUrl;
 
-    /**
-     * @var string;
-     */
-    private $id;
+    private string $id;
 
-    /**
-     * @var string|null
-     */
-    private $language;
+    private ?string $language;
 
-    /**
-     * @var string|null
-     */
-    private $url;
+    private ?string $url;
 
     /**
      * @var Collection<FeedItem>
      */
-    private $feedItems;
+    private Collection $feedItems;
 
-    /**
-     * @return string
-     */
     public function getChecksum(): string
     {
         return $this->checksum;
     }
 
-    /**
-     * @param string $checksum
-     */
     public function setChecksum(string $checksum): void
     {
         $this->checksum = $checksum;
     }
 
     /**
-     * @return Collection
+     * @return Collection<string>
      */
     public function getCategories(): Collection
     {
@@ -102,7 +68,7 @@ class Feed
     }
 
     /**
-     * @param Collection $categories
+     * @param Collection<string> $categories
      */
     public function setCategories(Collection $categories): void
     {
@@ -112,7 +78,7 @@ class Feed
     }
 
     /**
-     * @return Collection
+     * @return Collection<string>
      */
     public function getAuthors(): Collection
     {
@@ -120,7 +86,7 @@ class Feed
     }
 
     /**
-     * @param Collection $authors
+     * @param Collection<string> $authors
      */
     public function setAuthors(Collection $authors): void
     {
@@ -129,152 +95,98 @@ class Feed
         });
     }
 
-    /**
-     * @return string
-     */
     public function getTitle(): string
     {
         return $this->title;
     }
 
-    /**
-     * @param string $title
-     */
     public function setTitle(string $title): void
     {
         $this->title = Helper::trimOrDefaultNull($title);
     }
 
-    /**
-     * @return string|null
-     */
     public function getCopyright(): ?string
     {
         return $this->copyright;
     }
 
-    /**
-     * @param string|null $copyright
-     */
     public function setCopyright(?string $copyright): void
     {
         $this->copyright = Helper::trimOrDefaultNull($copyright);
     }
 
-    /**
-     * @return Carbon|null
-     */
     public function getCreatedAt(): ?Carbon
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param Carbon|null $createdAt
-     */
     public function setCreatedAt(?Carbon $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
-    /**
-     * @return Carbon|null
-     */
     public function getUpdatedAt(): ?Carbon
     {
         return $this->updatedAt;
     }
 
-    /**
-     * @param Carbon|null $updatedAt
-     */
     public function setUpdatedAt(?Carbon $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
     }
 
-    /**
-     * @return string|null
-     */
     public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    /**
-     * @param string|null $description
-     */
     public function setDescription(?string $description): void
     {
         $this->description = Helper::trimOrDefaultNull($description);
     }
 
-    /**
-     * @return string|null
-     */
     public function getFeedUrl(): ?string
     {
         return $this->feedUrl;
     }
 
-    /**
-     * @param string|null $feedUrl
-     */
     public function setFeedUrl(?string $feedUrl): void
     {
         $this->feedUrl = Helper::trimOrDefaultNull($feedUrl);
     }
 
-    /**
-     * @return string
-     */
     public function getId(): string
     {
         return $this->id;
     }
 
-    /**
-     * @param string $id
-     */
     public function setId(string $id): void
     {
         $this->id = Helper::trimOrDefaultNull($id);
     }
 
-    /**
-     * @return string|null
-     */
     public function getLanguage(): ?string
     {
         return $this->language;
     }
 
-    /**
-     * @param string|null $language
-     */
     public function setLanguage(?string $language): void
     {
         $this->language = Helper::trimOrDefaultNull($language);
     }
 
-    /**
-     * @return string|null
-     */
     public function getUrl(): ?string
     {
         return $this->url;
     }
 
-    /**
-     * @param string|null $url
-     */
     public function setUrl(?string $url): void
     {
         $this->url = Helper::trimOrDefaultNull($url);
     }
 
     /**
-     * @return Collection
+     * @return Collection<FeedItem>
      */
     public function getFeedItems(): Collection
     {
@@ -282,7 +194,7 @@ class Feed
     }
 
     /**
-     * @param Collection $feedItems
+     * @param Collection<FeedItem> $feedItems
      */
     public function setFeedItems(Collection $feedItems): void
     {
@@ -290,11 +202,11 @@ class Feed
     }
 
     /**
-     * @param FeedInterface $zendFeed
+     * @param mixed $zendFeed
      * @return Feed
      * @throws ReflectionException
      */
-    public static function fromZendFeed(FeedInterface $zendFeed): Feed
+    public static function fromZendFeed($zendFeed): Feed
     {
         $authors = collect($zendFeed->getAuthors())->map(function ($authorData) {
             return Arr::get($authorData, 'name');

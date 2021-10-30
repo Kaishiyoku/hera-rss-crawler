@@ -6,6 +6,7 @@ use DOMElement;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -24,41 +25,23 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class HeraRssCrawler
 {
-    /**
-     * @var string
-     */
     private const VERSION = '0.6.0';
 
-    /**
-     * @var Client|null
-     */
-    private $httpClient;
+    private ?Client $httpClient;
+
+    private ?CssSelectorConverter $converter;
+
+    private int $retryCount = 0;
 
     /**
-     * @var CssSelectorConverter|null
+     * @var string[]
      */
-    private $converter;
-
-    /**
-     * @var int
-     */
-    private $retryCount = 0;
-
-    /**
-     * @var array
-     */
-    private $urlReplacementMap = [
+    private array $urlReplacementMap = [
         'https://www.reddit.com/' => 'https://old.reddit.com/',
     ];
 
-    /**
-     * @var LoggerInterface|null
-     */
-    private $logger = null;
+    private ?LoggerInterface $logger = null;
 
-    /**
-     * @var string
-     */
     private const FEEDLY_API_BASE_URL = 'https://cloud.feedly.com/v3';
 
     public function __construct()
@@ -76,24 +59,18 @@ class HeraRssCrawler
         $this->converter = new CssSelectorConverter();
     }
 
-    /**
-     * @return int
-     */
     public function getRetryCount(): int
     {
         return $this->retryCount;
     }
 
-    /**
-     * @param int $retryCount
-     */
     public function setRetryCount(int $retryCount): void
     {
         $this->retryCount = $retryCount;
     }
 
     /**
-     * @param array $urlReplacementMap
+     * @param string[] $urlReplacementMap
      */
     public function setUrlReplacementMap(array $urlReplacementMap): void
     {
@@ -102,8 +79,6 @@ class HeraRssCrawler
 
     /**
      * Enable logging
-     *
-     * @param LoggerInterface $logger
      */
     public function setLogger(LoggerInterface $logger): void
     {
@@ -234,8 +209,8 @@ class HeraRssCrawler
 
     /**
      * @param ResponseContainer $responseContainer
-     * @return Collection<string>
-     * @throws ConnectException
+     * @return Collection<mixed>
+     * @throws ConnectException|GuzzleException
      */
     private function discoverFeedUrlByFeedly(ResponseContainer $responseContainer): Collection
     {

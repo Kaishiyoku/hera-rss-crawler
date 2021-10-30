@@ -5,8 +5,8 @@ namespace Kaishiyoku\HeraRssCrawler\Models;
 interface DeserializableModel
 {
     /**
-     * @param array $json
+     * @param mixed $json
      * @return mixed
      */
-    public static function fromJson(array $json);
+    public static function fromJson($json);
 }

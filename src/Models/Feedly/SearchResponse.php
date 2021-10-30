@@ -8,39 +8,30 @@ use Kaishiyoku\HeraRssCrawler\Models\DeserializableModel;
 
 class SearchResponse implements DeserializableModel
 {
-    /**
-     * @var string|null
-     */
-    private $hint;
+    private ?string $hint;
 
     /**
      * @var Collection<Result>
      */
-    private $results;
+    private Collection $results;
 
     /**
      * @var Collection<string>
      */
-    private $related;
+    private Collection $related;
 
-    /**
-     * @return string|null
-     */
     public function getHint(): ?string
     {
         return $this->hint;
     }
 
-    /**
-     * @param string|null $hint
-     */
     public function setHint(?string $hint): void
     {
         $this->hint = $hint;
     }
 
     /**
-     * @return Collection
+     * @return Collection<Result>
      */
     public function getResults(): Collection
     {
@@ -64,7 +55,7 @@ class SearchResponse implements DeserializableModel
     }
 
     /**
-     * @param Collection $related
+     * @param Collection<string> $related
      */
     public function setRelated(Collection $related): void
     {
@@ -72,10 +63,10 @@ class SearchResponse implements DeserializableModel
     }
 
     /**
-     * @param array $json
+     * @param mixed $json
      * @return SearchResponse
      */
-    public static function fromJson(array $json): SearchResponse
+    public static function fromJson($json): SearchResponse
     {
         $searchResponse = new self();
         $searchResponse->setHint(Arr::get($json, 'hint'));

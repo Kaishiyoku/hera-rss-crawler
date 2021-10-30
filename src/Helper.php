@@ -8,28 +8,16 @@ use Illuminate\Support\Str;
 
 class Helper
 {
-    /**
-     * @param string $url
-     * @return bool
-     */
     public static function isValidUrl(string $url): bool
     {
-        return filter_var($url, FILTER_VALIDATE_URL);
+        return (bool) filter_var($url, FILTER_VALIDATE_URL);
     }
 
-    /**
-     * @param string $url
-     * @return string
-     */
     public static function normalizeUrl(string $url): string
     {
         return trim(preg_replace('#(^|[^:])//+#', "\\1/", $url), '/');
     }
 
-    /**
-     * @param string|null $str
-     * @return string|null
-     */
     public static function trimOrDefaultNull(?string $str): ?string
     {
         if ($str === null) {
@@ -39,11 +27,6 @@ class Helper
         return trim($str);
     }
 
-    /**
-     * @param string $baseUrl
-     * @param string $url
-     * @return string
-     */
     public static function transformUrl(string $baseUrl, string $url): string
     {
         if (self::isValidUrl($url)) {
@@ -60,12 +43,6 @@ class Helper
         return $scheme . '://' . $host . '/' . $url;
     }
 
-    /**
-     * @param string $url
-     * @param string $oldBaseUrl
-     * @param string $newBaseUrl
-     * @return string
-     */
     public static function replaceBaseUrl(string $url, string $oldBaseUrl, string $newBaseUrl): string
     {
         return preg_replace('/^' . preg_quote($oldBaseUrl, '/') . '/', $newBaseUrl, $url);
@@ -73,7 +50,7 @@ class Helper
 
     /**
      * @param string $url
-     * @param array $urlReplacementMap
+     * @param string[] $urlReplacementMap
      * @return string
      */
     public static function replaceBaseUrls(string $url, array $urlReplacementMap): string
@@ -120,7 +97,7 @@ class Helper
 
     /**
      * @param string|null $content
-     * @return array
+     * @return string[]
      */
     public static function getImageUrls(?string $content): array
     {

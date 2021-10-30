@@ -19,119 +19,68 @@ use TypeError;
 
 class FeedItem implements JsonSerializable
 {
-    /**
-     * @var string
-     */
-    private $checksum;
+    private string $checksum;
 
     /**
      * @var Collection<string>
      */
-    private $categories;
+    private Collection $categories;
 
     /**
      * @var Collection<string>
      */
-    private $authors;
+    private Collection $authors;
 
-    /**
-     * @var string
-     */
-    private $title;
+    private string $title;
 
-    /**
-     * @var int
-     */
-    private $commentCount;
+    private int $commentCount;
 
-    /**
-     * @var string|null
-     */
-    private $commentFeedLink;
+    private ?string $commentFeedLink;
 
-    /**
-     * @var string|null
-     */
-    private $commentLink;
+    private ?string $commentLink;
 
-    /**
-     * @var string|null
-     */
-    private $content;
+    private ?string $content;
 
-    /**
-     * @var Carbon|null
-     */
-    private $createdAt;
+    private ?Carbon $createdAt;
 
-    /**
-     * @var Carbon|null
-     */
-    private $updatedAt;
+    private ?Carbon $updatedAt;
 
-    /**
-     * @var string|null
-     */
-    private $description;
+    private ?string $description;
 
-    /**
-     * @var string|null
-     */
-    private $enclosureUrl;
+    private ?string $enclosureUrl;
 
     /**
      * @var Collection<string>
      */
-    private $imageUrls;
+    private Collection $imageUrls;
 
-    /**
-     * @var string
-     */
-    private $encoding;
+    private string $encoding;
 
-    /**
-     * @var string
-     */
-    private $id;
+    private string $id;
 
     /**
      * @var Collection<string>
      */
-    private $links;
+    private Collection $links;
 
-    /**
-     * @var string
-     */
-    private $permalink;
+    private string $permalink;
 
-    /**
-     * @var string
-     */
-    private $type;
+    private string $type;
 
-    /**
-     * @var string|null
-     */
-    private $xml;
+    private ?string $xml;
 
-    /**
-     * @return string
-     */
     public function getChecksum(): string
     {
         return $this->checksum;
     }
 
-    /**
-     * @param string $checksum
-     */
     public function setChecksum(string $checksum): void
     {
         $this->checksum = $checksum;
     }
 
     /**
-     * @return Collection
+     * @return Collection<string>
      */
     public function getCategories(): Collection
     {
@@ -139,7 +88,7 @@ class FeedItem implements JsonSerializable
     }
 
     /**
-     * @param Collection $categories
+     * @param Collection<string> $categories
      */
     public function setCategories(Collection $categories): void
     {
@@ -149,7 +98,7 @@ class FeedItem implements JsonSerializable
     }
 
     /**
-     * @return Collection
+     * @return Collection<string>
      */
     public function getAuthors(): Collection
     {
@@ -157,7 +106,7 @@ class FeedItem implements JsonSerializable
     }
 
     /**
-     * @param Collection $authors
+     * @param Collection<string> $authors
      */
     public function setAuthors(Collection $authors): void
     {
@@ -166,81 +115,51 @@ class FeedItem implements JsonSerializable
         });
     }
 
-    /**
-     * @return string
-     */
     public function getTitle(): string
     {
         return $this->title;
     }
 
-    /**
-     * @param string $title
-     */
     public function setTitle(string $title): void
     {
         $this->title = Helper::trimOrDefaultNull($title);
     }
 
-    /**
-     * @return int
-     */
     public function getCommentCount(): int
     {
         return $this->commentCount;
     }
 
-    /**
-     * @param int $commentCount
-     */
     public function setCommentCount(int $commentCount): void
     {
         $this->commentCount = $commentCount;
     }
 
-    /**
-     * @return string|null
-     */
     public function getCommentFeedLink(): ?string
     {
         return $this->commentFeedLink;
     }
 
-    /**
-     * @param string|null $commentFeedLink
-     */
     public function setCommentFeedLink(?string $commentFeedLink): void
     {
         $this->commentFeedLink = Helper::trimOrDefaultNull($commentFeedLink);
     }
 
-    /**
-     * @return string|null
-     */
     public function getCommentLink(): ?string
     {
         return $this->commentLink;
     }
 
-    /**
-     * @param string|null $commentLink
-     */
     public function setCommentLink(?string $commentLink): void
     {
         $this->commentLink = Helper::trimOrDefaultNull($commentLink);
     }
 
-    /**
-     * @return string|null
-     */
     public function getContent(): ?string
     {
         return $this->content;
     }
 
-    /**
-     * @param ?string $content
-     */
     public function setContent(?string $content): void
     {
         if (!$content) {
@@ -250,65 +169,41 @@ class FeedItem implements JsonSerializable
         $this->content = Helper::trimOrDefaultNull($content);
     }
 
-    /**
-     * @return Carbon|null
-     */
     public function getCreatedAt(): ?Carbon
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param Carbon|null $createdAt
-     */
     public function setCreatedAt(?Carbon $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
-    /**
-     * @return Carbon|null
-     */
     public function getUpdatedAt(): ?Carbon
     {
         return $this->updatedAt;
     }
 
-    /**
-     * @param Carbon|null $updatedAt
-     */
     public function setUpdatedAt(?Carbon $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
     }
 
-    /**
-     * @return string|null
-     */
     public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    /**
-     * @param string|null $description
-     */
     public function setDescription(?string $description): void
     {
         $this->description = Helper::trimOrDefaultNull($description);
     }
 
-    /**
-     * @return string|null
-     */
     public function getEnclosureUrl(): ?string
     {
         return $this->enclosureUrl;
     }
 
-    /**
-     * @param string|null $enclosureUrl
-     */
     public function setEnclosureUrl(?string $enclosureUrl): void
     {
         $this->enclosureUrl = Helper::trimOrDefaultNull($enclosureUrl);
@@ -330,40 +225,28 @@ class FeedItem implements JsonSerializable
         $this->imageUrls = $imageUrls;
     }
 
-    /**
-     * @return string
-     */
     public function getEncoding(): string
     {
         return $this->encoding;
     }
 
-    /**
-     * @param string $encoding
-     */
     public function setEncoding(string $encoding): void
     {
         $this->encoding = Helper::trimOrDefaultNull($encoding);
     }
 
-    /**
-     * @return string
-     */
     public function getId(): string
     {
         return $this->id;
     }
 
-    /**
-     * @param string $id
-     */
     public function setId(string $id): void
     {
         $this->id = Helper::trimOrDefaultNull($id);
     }
 
     /**
-     * @return Collection
+     * @return Collection<string>
      */
     public function getLinks(): Collection
     {
@@ -371,7 +254,7 @@ class FeedItem implements JsonSerializable
     }
 
     /**
-     * @param Collection $links
+     * @param Collection<string> $links
      */
     public function setLinks(Collection $links): void
     {
@@ -380,49 +263,31 @@ class FeedItem implements JsonSerializable
         });
     }
 
-    /**
-     * @return string
-     */
     public function getPermalink(): string
     {
         return $this->permalink;
     }
 
-    /**
-     * @param string $permalink
-     */
     public function setPermalink(string $permalink): void
     {
         $this->permalink = Helper::trimOrDefaultNull($permalink);
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @param string $type
-     */
     public function setType(string $type): void
     {
         $this->type = Helper::trimOrDefaultNull($type);
     }
 
-    /**
-     * @return string|null
-     */
     public function getXml(): ?string
     {
         return $this->xml;
     }
 
-    /**
-     * @param string|null $xml
-     */
     public function setXml(?string $xml): void
     {
         $this->xml = Helper::trimOrDefaultNull($xml);

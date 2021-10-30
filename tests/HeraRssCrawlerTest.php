@@ -32,7 +32,7 @@ class HeraRssCrawlerTest extends TestCase
      * @dataProvider websiteProvider
      * @covers       HeraRssCrawler::discoverFeedUrls()
      * @param string $url
-     * @param array $expectedUrls
+     * @param string[] $expectedUrls
      * @param string|null $expectedFaviconUrl
      * @param bool $throwsConnectException
      * @return void
@@ -54,8 +54,8 @@ class HeraRssCrawlerTest extends TestCase
     /**
      * @dataProvider feedProvider
      * @covers       HeraRssCrawler::parseFeed()
-     * @param array $feedUrls
-     * @param array $expectedValues
+     * @param string[] $feedUrls
+     * @param bool[] $expectedValues
      * @param bool $throwsConnectException
      * @return void
      * @throws Exception
@@ -167,7 +167,7 @@ class HeraRssCrawlerTest extends TestCase
      * @dataProvider websiteProvider
      * @covers       HeraRssCrawler::discoverFeedUrls()
      * @param string $url
-     * @param array $expectedUrls
+     * @param string[] $expectedUrls
      * @param string|null $expectedFaviconUrl
      * @param bool $throwsConnectException
      * @return void
@@ -189,8 +189,8 @@ class HeraRssCrawlerTest extends TestCase
     /**
      * @dataProvider feedProvider
      * @covers       HeraRssCrawler::checkIfConsumableFeed()
-     * @param array $feedUrls
-     * @param array $expectedValues
+     * @param string[] $feedUrls
+     * @param bool[] $expectedValues
      */
     public function testCheckIfConsumableFeed(array $feedUrls, array $expectedValues): void
     {
@@ -315,7 +315,7 @@ class HeraRssCrawlerTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array[]
      */
     public function websiteProvider(): array
     {
@@ -420,7 +420,7 @@ class HeraRssCrawlerTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array[]
      */
     public function feedProvider(): array
     {

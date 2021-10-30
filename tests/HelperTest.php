@@ -5,6 +5,7 @@ namespace Kaishiyoku\HeraRssCrawler;
 use Exception;
 use Kaishiyoku\HeraRssCrawler\TestClasses\FailingTestClass;
 use Mockery;
+use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -12,26 +13,29 @@ use PHPUnit\Framework\TestCase;
  */
 class HelperTest extends TestCase
 {
-    private $testMock;
+    /**
+     * @var mixed
+     */
+    private $failingTestClassMock;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->testMock = Mockery::mock(FailingTestClass::class);
+        $this->failingTestClassMock = Mockery::mock(FailingTestClass::class);
     }
 
     public function testWithRetries(): void
     {
         try {
             Helper::withRetries(function () {
-                return $this->testMock->fail();
+                return $this->failingTestClassMock->fail();
             });
         } catch (Exception $e) {
 
         }
 
-        $this->testMock->shouldHaveReceived('fail')->times(4);
+        $this->failingTestClassMock->shouldHaveReceived('fail')->times(4);
     }
 
     public function testGetImageUrls(): void
@@ -50,6 +54,6 @@ class HelperTest extends TestCase
     {
         parent::tearDown();
 
-        $this->addToAssertionCount($this->testMock->mockery_getExpectationCount());
+        $this->addToAssertionCount($this->failingTestClassMock->mockery_getExpectationCount());
     }
 }
