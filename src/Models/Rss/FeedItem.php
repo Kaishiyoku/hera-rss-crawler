@@ -15,7 +15,6 @@ use Laminas\Feed\Reader\Entry\Rss;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
-use TypeError;
 
 class FeedItem implements JsonSerializable
 {
@@ -35,19 +34,19 @@ class FeedItem implements JsonSerializable
 
     private int $commentCount;
 
-    private ?string $commentFeedLink;
+    private ?string $commentFeedLink = null;
 
-    private ?string $commentLink;
+    private ?string $commentLink = null;
 
-    private ?string $content;
+    private ?string $content = null;
 
-    private ?Carbon $createdAt;
+    private ?Carbon $createdAt = null;
 
-    private ?Carbon $updatedAt;
+    private ?Carbon $updatedAt = null;
 
-    private ?string $description;
+    private ?string $description = null;
 
-    private ?string $enclosureUrl;
+    private ?string $enclosureUrl = null;
 
     /**
      * @var Collection<string>
@@ -67,7 +66,7 @@ class FeedItem implements JsonSerializable
 
     private string $type;
 
-    private ?string $xml;
+    private ?string $xml = null;
 
     public function getChecksum(): string
     {

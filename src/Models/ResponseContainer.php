@@ -6,15 +6,9 @@ use Psr\Http\Message\ResponseInterface;
 
 class ResponseContainer
 {
-    /**
-     * @var string
-     */
-    private $requestUrl;
+    private string $requestUrl;
 
-    /**
-     * @var ResponseInterface
-     */
-    private $response;
+    private ResponseInterface $response;
 
     /**
      * ResponseContainer constructor.
@@ -27,17 +21,11 @@ class ResponseContainer
         $this->response = $response;
     }
 
-    /**
-     * @return string
-     */
     public function getRequestUrl(): string
     {
         return $this->requestUrl;
     }
 
-    /**
-     * @return ResponseInterface
-     */
     public function getResponse(): ResponseInterface
     {
         return $this->response;

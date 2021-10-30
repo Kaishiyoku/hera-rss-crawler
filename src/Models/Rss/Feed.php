@@ -7,9 +7,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Kaishiyoku\HeraRssCrawler\Helper;
 use Kaishiyoku\HeraRssCrawler\HeraRssCrawler;
-use Laminas\Feed\Reader\Feed\Atom;
-use Laminas\Feed\Reader\Feed\FeedInterface;
-use Laminas\Feed\Reader\Feed\Rss;
 use ReflectionException;
 
 class Feed
@@ -28,21 +25,21 @@ class Feed
 
     private string $title;
 
-    private ?string $copyright;
+    private ?string $copyright = null;
 
-    private ?Carbon $createdAt;
+    private ?Carbon $createdAt = null;
 
-    private ?Carbon $updatedAt;
+    private ?Carbon $updatedAt = null;
 
-    private ?string $description;
+    private ?string $description = null;
 
-    private ?string $feedUrl;
+    private ?string $feedUrl = null;
 
     private string $id;
 
-    private ?string $language;
+    private ?string $language = null;
 
-    private ?string $url;
+    private ?string $url = null;
 
     /**
      * @var Collection<FeedItem>

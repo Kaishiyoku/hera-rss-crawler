@@ -18,7 +18,7 @@ class Result implements DeserializableModel
     /**
      * the website associated with this feed.
      */
-    private ?string $website;
+    private ?string $website = null;
 
     /**
      * the unique, immutable id of this feed
@@ -29,7 +29,7 @@ class Result implements DeserializableModel
      * the timestamp, in ms, of the last article received for this feed. This value is useful to find “dormant” feeds
      * (feeds that haven’t updated in over 3 months
      */
-    private ?Carbon $lastUpdated;
+    private ?Carbon $lastUpdated = null;
 
     /**
      * the average number of articles published weekly. This number is updated every few days.
@@ -53,45 +53,45 @@ class Result implements DeserializableModel
      * “longform” (for longer article), “videos” (for YouTube, Vimeo and other video-centric feeds),
      * and “audio” (for podcast feeds etc).
      */
-    private ?string $contentType;
+    private ?string $contentType = null;
 
     /**
      * this field is a combination of the language reported by the RSS feed, and the language automatically
      * detected from the feed’s content. It might not be accurate, as many feeds misreport it.
      */
-    private ?string $language;
+    private ?string $language = null;
 
     /**
      * the feed description.
      */
-    private ?string $description;
+    private ?string $description = null;
 
     /**
      * a small (square) icon URL
      */
-    private ?string $iconUrl;
+    private ?string $iconUrl = null;
 
     /**
      * a larger (square) icon URL
      */
-    private ?string $visualUrl;
+    private ?string $visualUrl = null;
 
     /**
      * a large (rectangular) background image
      */
-    private ?string $coverUrl;
+    private ?string $coverUrl = null;
 
     /**
      * a small (square) icon URL with transparency
      */
-    private ?string $logo;
+    private ?string $logo = null;
 
     private bool $partial;
 
     /**
      * the background cover color
      */
-    private ?string $coverColor;
+    private ?string $coverColor = null;
 
     /**
      * @var Collection<string>

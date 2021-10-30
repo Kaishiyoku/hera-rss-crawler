@@ -20,11 +20,7 @@ class Helper
 
     public static function trimOrDefaultNull(?string $str): ?string
     {
-        if ($str === null) {
-            return $str;
-        }
-
-        return trim($str);
+        return $str === null ? null : trim($str);
     }
 
     public static function transformUrl(string $baseUrl, string $url): string
@@ -55,9 +51,9 @@ class Helper
      */
     public static function replaceBaseUrls(string $url, array $urlReplacementMap): string
     {
-        return collect($urlReplacementMap)->keys()->reduce(function ($carry, $oldBaseUrl) use ($urlReplacementMap) {
-            return self::replaceBaseUrl($carry, $oldBaseUrl, $urlReplacementMap[$oldBaseUrl]);
-        }, $url);
+        return collect($urlReplacementMap)->keys()->reduce(
+            fn($carry, $oldBaseUrl) => self::replaceBaseUrl($carry, $oldBaseUrl, $urlReplacementMap[$oldBaseUrl]), $url
+        );
     }
 
     /**
@@ -72,13 +68,13 @@ class Helper
         try {
             return $callback();
         } catch (Exception $e) {
-            if ($retries > 0) {
-                sleep($delay);
-
-                return self::withRetries($callback, $delay, $retries - 1);
+            if ($retries <= 0) {
+                throw $e;
             }
 
-            throw $e;
+            sleep($delay);
+
+            return self::withRetries($callback, $delay, $retries - 1);
         }
     }
 
@@ -88,11 +84,7 @@ class Helper
      */
     public static function parseDate($value): ?Carbon
     {
-        if ($value === null) {
-            return null;
-        }
-
-        return Carbon::parse($value);
+        return $value === null ? null : Carbon::parse($value);
     }
 
     /**

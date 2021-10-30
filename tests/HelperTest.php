@@ -5,7 +5,6 @@ namespace Kaishiyoku\HeraRssCrawler;
 use Exception;
 use Kaishiyoku\HeraRssCrawler\TestClasses\FailingTestClass;
 use Mockery;
-use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 
 /**

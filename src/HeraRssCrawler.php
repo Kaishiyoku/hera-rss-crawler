@@ -108,12 +108,10 @@ class HeraRssCrawler
      */
     public function discoverAndParseFeeds(string $url): Collection
     {
-        return $this->withRetries(function () use ($url) {
-            return $this->discoverFeedUrls($url)
-                ->map(function ($feedUrl) {
-                    return $this->parseFeed($feedUrl);
-                });
-        });
+        return $this->withRetries(
+            fn() => $this->discoverFeedUrls($url)
+                ->map(fn($feedUrl) => $this->parseFeed($feedUrl))
+        );
     }
 
     /**
@@ -130,18 +128,10 @@ class HeraRssCrawler
             $responseContainer = new ResponseContainer($adjustedUrl, $response);
 
             $discoveryFns = collect([
-                function ($responseContainer) {
-                    return $this->discoverFeedUrlByContentType($responseContainer);
-                },
-                function ($responseContainer) {
-                    return $this->discoverFeedUrlByHtmlHeadElements($responseContainer);
-                },
-                function ($responseContainer) {
-                    return $this->discoverFeedUrlByHtmlAnchorElements($responseContainer);
-                },
-                function ($responseContainer) {
-                    return $this->discoverFeedUrlByFeedly($responseContainer);
-                },
+                fn($responseContainer) => $this->discoverFeedUrlByContentType($responseContainer),
+                fn($responseContainer) => $this->discoverFeedUrlByHtmlHeadElements($responseContainer),
+                fn($responseContainer) => $this->discoverFeedUrlByHtmlAnchorElements($responseContainer),
+                fn($responseContainer) => $this->discoverFeedUrlByFeedly($responseContainer),
             ]);
 
             $urls = $discoveryFns->reduce(function (Collection $carry, $discoveryFn) use ($responseContainer) {
@@ -153,9 +143,7 @@ class HeraRssCrawler
                 return $carry;
             }, collect());
 
-            return $urls->map(function ($adjustedUrl) {
-                return Helper::normalizeUrl($adjustedUrl);
-            })->unique()->values();
+            return $urls->map(fn($adjustedUrl) => Helper::normalizeUrl($adjustedUrl))->unique()->values();
         });
     }
 
@@ -172,11 +160,9 @@ class HeraRssCrawler
             $crawler = new Crawler($response->getBody()->getContents());
             $nodes = $crawler->filterXPath($this->converter->toXPath('head > link'));
 
-            $faviconUrls = collect($nodes)->filter(function (DOMElement $node) {
-                return Str::contains($node->getAttribute('rel'), 'icon');
-            })->map(function (DOMElement $node) use ($url) {
-                return Helper::normalizeUrl(Helper::transformUrl($url, $node->getAttribute('href')));
-            });
+            $faviconUrls = collect($nodes)
+                ->filter(fn(DOMElement $node) => Str::contains($node->getAttribute('rel'), 'icon'))
+                ->map(fn(DOMElement $node) => Helper::normalizeUrl(Helper::transformUrl($url, $node->getAttribute('href'))));
 
             if ($faviconUrls->isEmpty()) {
                 return null;
@@ -193,11 +179,7 @@ class HeraRssCrawler
     public function checkIfConsumableFeed(string $url): bool
     {
         try {
-            return $this->withRetries(function () use ($url) {
-                $feed = $this->parseFeed($url);
-
-                return $feed instanceof Feed;
-            });
+            return $this->withRetries(fn() => $this->parseFeed($url) instanceof Feed);
         } catch (Exception $e) {
             if ($this->logger) {
                 $this->logger->error('Feed not consumable: ' . $e->getMessage());
@@ -220,9 +202,7 @@ class HeraRssCrawler
 
         $searchResponse = SearchResponse::fromJson(json_decode($response->getBody()->getContents(), true, 512));
 
-        return $searchResponse->getResults()->map(function (Result $result) {
-            return $result->getFeedUrl();
-        });
+        return $searchResponse->getResults()->map(fn(Result $result) => $result->getFeedUrl());
     }
 
     /**
@@ -252,9 +232,7 @@ class HeraRssCrawler
         $crawler = new Crawler($responseContainer->getResponse()->getBody()->getContents());
         $nodes = $crawler->filterXPath($this->converter->toXPath('head > link[type="application/rss+xml"], head > link[type="application/atom+xml"]'));
 
-        return collect($nodes->each(function (Crawler $node) use ($responseContainer) {
-            return $this->transformNodeToUrl($responseContainer->getRequestUrl(), $node);
-        }));
+        return collect($nodes->each(fn(Crawler $node) => $this->transformNodeToUrl($responseContainer->getRequestUrl(), $node)));
     }
 
     /**
@@ -266,11 +244,8 @@ class HeraRssCrawler
         $crawler = new Crawler($responseContainer->getResponse()->getBody()->getContents());
         $nodes = $crawler->filterXPath($this->converter->toXPath('a'));
 
-        return collect($nodes->each(function (Crawler $node) use ($responseContainer) {
-            return $this->transformNodeToUrl($responseContainer->getRequestUrl(), $node);
-        }))->filter(function ($url) {
-            return Str::contains($url, 'rss');
-        });
+        return collect($nodes->each(fn(Crawler $node) => $this->transformNodeToUrl($responseContainer->getRequestUrl(), $node)))
+            ->filter(fn($url) => Str::contains($url, 'rss'));
     }
 
     /**
@@ -281,9 +256,7 @@ class HeraRssCrawler
      */
     private function transformNodeToUrl(string $baseUrl, Crawler $node): string
     {
-        $href = $node->attr('href');
-
-        return Helper::transformUrl($baseUrl, $href);
+        return Helper::transformUrl($baseUrl, $node->attr('href'));
     }
 
     /**
@@ -309,14 +282,8 @@ class HeraRssCrawler
 
         $class = new ReflectionClass(FeedItem::class);
         $allValuesConcatenated = trim(collect($class->getMethods(ReflectionMethod::IS_PUBLIC))
-            ->filter(function (ReflectionMethod $method) use ($properties) {
-                return in_array($method->getName(), array_map(function ($property) {
-                    return 'get' . Str::ucfirst($property);
-                }, $properties), true);
-            })
-            ->reduce(function ($carry, ReflectionMethod $method) use ($feedItem, $delimiter) {
-                return $carry . $delimiter . $method->invoke($feedItem);
-            }, ''), $delimiter);
+            ->filter(fn(ReflectionMethod $method) => in_array($method->getName(), array_map(fn($property) => 'get' . Str::ucfirst($property), $properties), true))
+            ->reduce(fn($carry, ReflectionMethod $method) => $carry . $delimiter . $method->invoke($feedItem), ''), $delimiter);
 
         return Hash::hash($algo, $allValuesConcatenated);
     }

@@ -8,7 +8,7 @@ use Kaishiyoku\HeraRssCrawler\Models\DeserializableModel;
 
 class SearchResponse implements DeserializableModel
 {
-    private ?string $hint;
+    private ?string $hint = null;
 
     /**
      * @var Collection<Result>
