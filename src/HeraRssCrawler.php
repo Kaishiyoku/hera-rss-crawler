@@ -118,6 +118,8 @@ class HeraRssCrawler
     /**
      * Discover the first feed URL of a website and parse the feed.
      *
+     * @param string $url
+     * @return Collection<Feed>
      * @throws Exception
      */
     public function discoverAndParseFeeds(string $url): Collection
@@ -131,6 +133,8 @@ class HeraRssCrawler
     /**
      * Discover all available feed URLs of a website.
      *
+     * @param string $url
+     * @return Collection<string>
      * @throws Exception
      */
     public function discoverFeedUrls(string $url): Collection
@@ -205,7 +209,9 @@ class HeraRssCrawler
     /**
      * Discover feed URLs using the Feedly API.
      *
-     * @throws ConnectException|GuzzleException
+     * @param ResponseContainer $responseContainer
+     * @return Collection<string>
+     * @throws GuzzleException
      */
     private function discoverFeedUrlByFeedly(ResponseContainer $responseContainer): Collection
     {
@@ -220,6 +226,9 @@ class HeraRssCrawler
 
     /**
      * Discover feed URLs by parsing the website's HTML content.
+     *
+     * @param ResponseContainer $responseContainer
+     * @return Collection<string>
      */
     private function discoverFeedUrlByContentType(ResponseContainer $responseContainer): Collection
     {
@@ -237,6 +246,9 @@ class HeraRssCrawler
 
     /**
      * Discover feed URLs by parsing the website's HTML head elements.
+     *
+     * @param ResponseContainer $responseContainer
+     * @return Collection<string>
      */
     private function discoverFeedUrlByHtmlHeadElements(ResponseContainer $responseContainer): Collection
     {
@@ -248,6 +260,9 @@ class HeraRssCrawler
 
     /**
      * Discover feed URLs by searching for HTML anchor elements.
+     *
+     * @param ResponseContainer $responseContainer
+     * @return Collection<string>
      */
     private function discoverFeedUrlByHtmlAnchorElements(ResponseContainer $responseContainer): Collection
     {

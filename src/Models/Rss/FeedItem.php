@@ -310,8 +310,8 @@ class FeedItem implements JsonSerializable
         $feedItem->setAuthors(collect(optional($zendFeedItem->getAuthors(), function ($authors) {
             return $authors->getValues();
         })));
-        $feedItem->setTitle($zendFeedItem->getTitle() ?? ''); // TODO: investigate; why can a title be empty? maybe we should discard those items
-        $feedItem->setCommentCount($zendFeedItem->getCommentCount() ?? 0);
+        $feedItem->setTitle($zendFeedItem->getTitle() ?: ''); // TODO: investigate; why can a title be empty? maybe we should discard those items
+        $feedItem->setCommentCount($zendFeedItem->getCommentCount() ?: 0);
         $feedItem->setCommentFeedLink($zendFeedItem->getCommentFeedLink());
         $feedItem->setCommentLink($zendFeedItem->getCommentLink());
         $feedItem->setContent($zendFeedItem->getContent());
@@ -325,7 +325,7 @@ class FeedItem implements JsonSerializable
         $feedItem->setEncoding($zendFeedItem->getEncoding());
         $feedItem->setId($zendFeedItem->getId());
         $feedItem->setLinks(collect($zendFeedItem->getLinks()));
-        $feedItem->setPermalink($zendFeedItem->getPermalink() ?? ''); // TODO: investigate; why can a permalink be empty? maybe we should discard those items
+        $feedItem->setPermalink($zendFeedItem->getPermalink() ?: ''); // TODO: investigate; why can a permalink be empty? maybe we should discard those items
         $feedItem->setType($zendFeedItem->getType());
         $feedItem->setXml($zendFeedItem->saveXml());
 

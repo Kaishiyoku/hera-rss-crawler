@@ -315,7 +315,7 @@ class HeraRssCrawlerTest extends TestCase
     }
 
     /**
-     * @return array[]
+     * @return array<string, array<int, array<int, string>|string|true|null>>
      */
     public function websiteProvider(): array
     {
@@ -420,7 +420,7 @@ class HeraRssCrawlerTest extends TestCase
     }
 
     /**
-     * @return array[]
+     * @return array<string, array<int, array<int, bool|string>|true>>
      */
     public function feedProvider(): array
     {
