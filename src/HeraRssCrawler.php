@@ -31,9 +31,15 @@ class HeraRssCrawler
 
     private ?CssSelectorConverter $converter;
 
+    /**
+     * The number of retries to attempt on HTTP requests.
+     */
     private int $retryCount = 0;
 
     /**
+     * A replacement map where the array keys are being replaced by their values.
+     * This is useful for HTTP redirect URLs, for example.
+     *
      * @var string[]
      */
     private array $urlReplacementMap = [
@@ -59,6 +65,14 @@ class HeraRssCrawler
         $this->converter = new CssSelectorConverter();
     }
 
+    /**
+     * This overrides the default HTTP client with your own
+     */
+    public function setHttpClient(Client $httpClient): void
+    {
+        $this->httpClient = $httpClient;
+    }
+
     public function getRetryCount(): int
     {
         return $this->retryCount;
@@ -78,7 +92,7 @@ class HeraRssCrawler
     }
 
     /**
-     * Enable logging
+     * Enable logging by setting a logger.
      */
     public function setLogger(LoggerInterface $logger): void
     {
@@ -86,8 +100,8 @@ class HeraRssCrawler
     }
 
     /**
-     * @param string $url
-     * @return Feed|null
+     * Parse a given URL and return a Feed object.
+     *
      * @throws ConnectException
      * @throws Exception
      */
@@ -102,8 +116,8 @@ class HeraRssCrawler
     }
 
     /**
-     * @param string $url
-     * @return Collection<Feed>
+     * Discover the first feed URL of a website and parse the feed.
+     *
      * @throws Exception
      */
     public function discoverAndParseFeeds(string $url): Collection
@@ -115,8 +129,8 @@ class HeraRssCrawler
     }
 
     /**
-     * @param string $url
-     * @return Collection<string>
+     * Discover all available feed URLs of a website.
+     *
      * @throws Exception
      */
     public function discoverFeedUrls(string $url): Collection
@@ -148,8 +162,8 @@ class HeraRssCrawler
     }
 
     /**
-     * @param string $url
-     * @return string|null
+     * Discover the favicon of the website.
+     *
      * @throws Exception
      */
     public function discoverFavicon(string $url): ?string
@@ -173,8 +187,7 @@ class HeraRssCrawler
     }
 
     /**
-     * @param string $url
-     * @return bool
+     * Check if the given URL is a consumable RSS feed.
      */
     public function checkIfConsumableFeed(string $url): bool
     {
@@ -190,8 +203,8 @@ class HeraRssCrawler
     }
 
     /**
-     * @param ResponseContainer $responseContainer
-     * @return Collection<mixed>
+     * Discover feed URLs using the Feedly API.
+     *
      * @throws ConnectException|GuzzleException
      */
     private function discoverFeedUrlByFeedly(ResponseContainer $responseContainer): Collection
@@ -206,8 +219,7 @@ class HeraRssCrawler
     }
 
     /**
-     * @param ResponseContainer $responseContainer
-     * @return Collection<string>
+     * Discover feed URLs by parsing the website's HTML content.
      */
     private function discoverFeedUrlByContentType(ResponseContainer $responseContainer): Collection
     {
@@ -224,8 +236,7 @@ class HeraRssCrawler
     }
 
     /**
-     * @param ResponseContainer $responseContainer
-     * @return Collection<string>
+     * Discover feed URLs by parsing the website's HTML head elements.
      */
     private function discoverFeedUrlByHtmlHeadElements(ResponseContainer $responseContainer): Collection
     {
@@ -236,8 +247,7 @@ class HeraRssCrawler
     }
 
     /**
-     * @param ResponseContainer $responseContainer
-     * @return Collection<string>
+     * Discover feed URLs by searching for HTML anchor elements.
      */
     private function discoverFeedUrlByHtmlAnchorElements(ResponseContainer $responseContainer): Collection
     {
@@ -249,10 +259,7 @@ class HeraRssCrawler
     }
 
     /**
-     *
-     * @param string $baseUrl
-     * @param Crawler $node
-     * @return string
+     * Transform a Crawler node to a string URL.
      */
     private function transformNodeToUrl(string $baseUrl, Crawler $node): string
     {
@@ -260,10 +267,8 @@ class HeraRssCrawler
     }
 
     /**
-     * @param FeedItem $feedItem
-     * @param string $delimiter
-     * @param string $algo
-     * @return string|null
+     * Generate a checksum of a single feed item.
+     *
      * @throws ReflectionException
      */
     public static function generateChecksumForFeedItem(FeedItem $feedItem, string $delimiter = '|', string $algo = Hash::SHA_256): ?string
@@ -289,10 +294,8 @@ class HeraRssCrawler
     }
 
     /**
-     * @param Feed $feed
-     * @param string $delimiter
-     * @param string $algo
-     * @return string|null
+     * Generate a checksum for the whole feed.
+     *
      * @throws ReflectionException
      */
     public static function generateChecksumForFeed(Feed $feed, string $delimiter = '|', string $algo = Hash::SHA_256): ?string
@@ -332,8 +335,6 @@ class HeraRssCrawler
     }
 
     /**
-     * @param callable $callback
-     * @return mixed
      * @throws Exception
      */
     private function withRetries(callable $callback)
