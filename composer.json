@@ -11,6 +11,14 @@
       "homepage": "https://andreas-wiedel.de"
     }
   ],
+  "keywords": [
+    "rss",
+    "atom",
+    "feed",
+    "crawler",
+    "parser",
+    "reader"
+  ],
   "require": {
     "php": "^7.4|^8.0",
     "ext-json": "*",
