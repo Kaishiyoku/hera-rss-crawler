@@ -64,6 +64,29 @@ class HeraRssCrawlerTest extends TestCase
         static::assertEquals($this->sampleFeedItem->getChecksum(), FeedItem::fromJson($this->sampleFeedItem->toJson())->getChecksum());
     }
 
+    public function testCompareTo(): void
+    {
+        // the same object should result in 100.0
+        static::assertSame(100.0, $this->sampleFeedItem->compareTo($this->sampleFeedItem));
+        static::assertTrue($this->sampleFeedItem->isSimilarTo(100, $this->sampleFeedItem));
+        static::assertTrue($this->sampleFeedItem->isSimilarTo(90, $this->sampleFeedItem));
+
+        // same checksum always results in 100.0
+        $otherFeedItem = clone $this->sampleFeedItem;
+        $otherFeedItem->setTitle('Lorem ipsum');
+        static::assertSame(100.0, $this->sampleFeedItem->compareTo($otherFeedItem));
+        static::assertTrue($this->sampleFeedItem->isSimilarTo(100, $otherFeedItem));
+        static::assertTrue($this->sampleFeedItem->isSimilarTo(90, $otherFeedItem));
+
+        // title has changed
+        $otherFeedItem = clone $this->sampleFeedItem;
+        $otherFeedItem->setTitle('Lorem ipsum');
+        $otherFeedItem->setChecksum(HeraRssCrawler::generateChecksumForFeedItem($otherFeedItem));
+        static::assertSame(97.57979656260962, $this->sampleFeedItem->compareTo($otherFeedItem));
+        static::assertTrue($this->sampleFeedItem->isSimilarTo(97, $otherFeedItem));
+        static::assertFalse($this->sampleFeedItem->isSimilarTo(100, $otherFeedItem));
+    }
+
     /**
      * @dataProvider websiteProvider
      * @covers       HeraRssCrawler::discoverFeedUrls()
@@ -411,7 +434,6 @@ class HeraRssCrawlerTest extends TestCase
                 'https://unknownworlds.com/',
                 [
                     'https://unknownworlds.com/feed',
-                    'https://unknownworlds.com/homepage-2/feed'
                 ],
                 'https://2i1suz1s0n5g1i6ph4z0sw1b-wpengine.netdna-ssl.com/favicon.png',
             ],
@@ -437,7 +459,7 @@ class HeraRssCrawlerTest extends TestCase
                     'http://nutritionfacts.org/audio/feed/podcast',
                     'http://nutritionfacts.org/feed/podcast',
                 ],
-                null,
+                'https://nutritionfacts.org/apple-touch-icon.png',
             ],
             'JRock News' => [
                 'https://www.jrocknews.com/',
@@ -522,7 +544,6 @@ class HeraRssCrawlerTest extends TestCase
             'Unknown Worlds Entertainment' => [
                 [
                     'https://unknownworlds.com/feed',
-                    'https://unknownworlds.com/homepage-2/feed'
                 ],
                 [
                     true,

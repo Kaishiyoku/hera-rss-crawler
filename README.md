@@ -13,6 +13,11 @@ Installation
 5. fetch the feed: `$feed = $heraRssCrawler->parseFeed($feedUrls->get(0))`
 6. fetch the articles: `$feedItems = $feed->getFeedItems()`
 
+Breaking Changes
+================
+Version 3.x introduced the following breaking changes:
+
+* FeedItem-method `jsonSerialize` has been renamed to `toJson` and doesn't return `null` anymore but throws a `JsonException` when the serialized JSON is null.
 
 Available crawler options
 =========================

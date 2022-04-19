@@ -19,6 +19,15 @@ use ReflectionMethod;
 
 class FeedItem
 {
+    private const COMPARISON_FIELDS = [
+        'title',
+        'content',
+        'createdAt',
+        'updatedAt',
+        'description',
+        'permalink',
+    ];
+
     private string $checksum;
 
     /**
@@ -371,20 +380,45 @@ class FeedItem
     /**
      * @throws JsonException
      */
-    public function toJson(): string
+    public function toJson(array $fields = []): string
     {
         try {
             $class = new ReflectionClass(self::class);
-            $methods = collect($class->getMethods(ReflectionMethod::IS_PUBLIC))
-                ->filter(function (ReflectionMethod $method) {
-                    return Str::startsWith($method->getName(), 'get');
-                });
+            $methods = count($fields) > 0
+                ? collect($fields)->map(fn(string $field) => $class->getMethod(Str::of($field)->ucfirst()->prepend('get')->toString()))
+                : collect($class->getMethods(ReflectionMethod::IS_PUBLIC))->filter(fn(ReflectionMethod $method) => Str::startsWith($method->getName(), 'get'));
 
             return $methods->mapWithKeys(function (ReflectionMethod $method) {
-                return [lcfirst(Str::substr($method->getName(), 3)) => $method->invoke($this)];
+                return [Str::of($method->getName())->substr(3)->lcfirst()->toString() => $method->invoke($this)];
             })->toJson();
         } catch (ReflectionException $e) {
             throw new JsonException('Cannot convert the given feed item to a JSON string.');
         }
+    }
+
+    /**
+     * Calculates and returns the similarity between the given and another feed item as a percentage between 0 and 100.
+     *
+     * @throws JsonException
+     */
+    public function compareTo(FeedItem $otherFeedItem): float
+    {
+        if ($this->getChecksum() === $otherFeedItem->getChecksum()) {
+            return 100.0;
+        }
+
+        similar_text($this->toJson(self::COMPARISON_FIELDS), $otherFeedItem->toJson(self::COMPARISON_FIELDS), $percent);
+
+        return $percent;
+    }
+
+    /**
+     * Calculates if the given feed item is similar to another feed item using a minimum percentage
+     *
+     * @throws JsonException
+     */
+    public function isSimilarTo(float $minimumPercentage, FeedItem $otherFeedItem): bool
+    {
+        return $this->compareTo($otherFeedItem) >= $minimumPercentage;
     }
 }
