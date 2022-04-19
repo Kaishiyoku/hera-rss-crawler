@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
-use JsonSerializable;
+use JsonException;
 use Kaishiyoku\HeraRssCrawler\Helper;
 use Kaishiyoku\HeraRssCrawler\HeraRssCrawler;
 use Laminas\Feed\Reader\Entry\Atom;
@@ -16,7 +16,7 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
 
-class FeedItem implements JsonSerializable
+class FeedItem
 {
     private string $checksum;
 
@@ -67,6 +67,8 @@ class FeedItem implements JsonSerializable
     private string $type;
 
     private ?string $xml = null;
+
+    # region getters and setters
 
     public function getChecksum(): string
     {
@@ -292,11 +294,10 @@ class FeedItem implements JsonSerializable
         $this->xml = Helper::trimOrDefaultNull($xml);
     }
 
+    # endregion getters and setters
+
     /**
-     * @param EntryInterface $zendFeedItem
-     * @return FeedItem
-     * @throws InvalidArgumentException
-     * @throws ReflectionException
+     * Generate a feed item from a given XML entity.
      */
     public static function fromZendFeedItem(EntryInterface $zendFeedItem): FeedItem
     {
@@ -335,9 +336,9 @@ class FeedItem implements JsonSerializable
     }
 
     /**
-     * @return string|null
+     * @throws JsonException
      */
-    public function jsonSerialize(): ?string
+    public function toJson(): string
     {
         try {
             $class = new ReflectionClass(self::class);
@@ -350,7 +351,7 @@ class FeedItem implements JsonSerializable
                 return [lcfirst(Str::substr($method->getName(), 3)) => $method->invoke($this)];
             })->toJson();
         } catch (ReflectionException $e) {
-            return null;
+            throw new JsonException('Cannot convert the given feed item to a JSON string.');
         }
     }
 }

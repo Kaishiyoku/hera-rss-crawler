@@ -28,6 +28,32 @@ class HeraRssCrawlerTest extends TestCase
         $this->heraRssCrawler = new HeraRssCrawler();
     }
 
+    public function testToJson(): void
+    {
+        $feedItem = new FeedItem();
+        $feedItem->setChecksum('4dc977f8b15e2715885e612eddfa496d9f74432ac25ee80b14e0f1339ccdaed2');
+        $feedItem->setCategories(collect(['News', 'Tech']));
+        $feedItem->setAuthors(collect(['John Doe', 'Jane Doe']));
+        $feedItem->setTitle('Telekommunikation: Vodafone Deutschland bekommt einen neuen Chef');
+        $feedItem->setCommentCount(5);
+        $feedItem->setCommentFeedLink(null);
+        $feedItem->setCommentLink(null);
+        $feedItem->setContent('<img src=\"https:\/\/www.golem.de\/2204\/164697-323081-323077_rc.jpg\" width=\"140\" height=\"140\" vspace=\"3\" hspace=\"8\" align=\"left\">Der CEO Hannes Ametsreiter tritt vorzeitig von seinem Chefposten bei Vodafone Deutschland ab. Ihm folgt ein erfahrener Microsoft-Manager. (<a href=\"https:\/\/www.golem.de\/specials\/vodafone\/\">Vodafone<\/a>, <a href=\"https:\/\/www.golem.de\/specials\/microsoft\/\">Microsoft<\/a>) <img src=\"https:\/\/cpx.golem.de\/cpx.php?class=17&amp;aid=164697&amp;page=1&amp;ts=1650381962\" alt=\"\" width=\"1\" height=\"1\" \/>');
+        $feedItem->setCreatedAt(Carbon::parse('2022-04-19T15:26:02.000000Z'));
+        $feedItem->setUpdatedAt(Carbon::parse('2022-04-19T15:26:02.000000Z'));
+        $feedItem->setDescription('Der CEO Hannes Ametsreiter tritt vorzeitig von seinem Chefposten bei Vodafone Deutschland ab. Ihm folgt ein erfahrener Microsoft-Manager. (<a href=\"https:\/\/www.golem.de\/specials\/vodafone\/\">Vodafone<\/a>, <a href=\"https:\/\/www.golem.de\/specials\/microsoft\/\">Microsoft<\/a>) <img src=\"https:\/\/cpx.golem.de\/cpx.php?class=17&amp;aid=164697&amp;page=1&amp;ts=1650381962\" alt=\"\" width=\"1\" height=\"1\" \/>');
+        $feedItem->setEnclosureUrl(null);
+        $feedItem->setImageUrls(collect(['https:\/\/www.golem.de\/2204\/164697-323081-323077_rc.jpg', 'https:\/\/cpx.golem.de\/cpx.php?class=17&amp;aid=164697&amp;page=1&amp;ts=1650381962']));
+        $feedItem->setEncoding('ISO-8859-1');
+        $feedItem->setId('https:\/\/www.golem.de\/news\/telekommunikation-vodafone-deutschland-bekommt-einen-neuen-chef-2204-164697-rss.html');
+        $feedItem->setLinks(collect(['https:\/\/www.golem.de\/news\/telekommunikation-vodafone-deutschland-bekommt-einen-neuen-chef-2204-164697-rss.html']));
+        $feedItem->setPermalink('https:\/\/www.golem.de\/news\/telekommunikation-vodafone-deutschland-bekommt-einen-neuen-chef-2204-164697-rss.html');
+        $feedItem->setType('rss-10');
+        $feedItem->setXml('<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<item xmlns=\"http:\/\/purl.org\/rss\/1.0\/\" xmlns:rdf=\"http:\/\/www.w3.org\/1999\/02\/22-rdf-syntax-ns#\" xmlns:dc=\"http:\/\/purl.org\/dc\/elements\/1.1\/\" xmlns:slash=\"http:\/\/purl.org\/rss\/1.0\/modules\/slash\/\" xmlns:content=\"http:\/\/purl.org\/rss\/1.0\/modules\/content\/\" rdf:about=\"https:\/\/www.golem.de\/news\/telekommunikation-vodafone-deutschland-bekommt-einen-neuen-chef-2204-164697-rss.html\">\n        <dc:format>text\/html<\/dc:format>\n        <dc:date>2022-04-19T17:26:02+02:00<\/dc:date>\n        <dc:source>https:\/\/www.golem.de<\/dc:source>\n        <dc:creator>Oliver Nickel<\/dc:creator>\n        <title>Telekommunikation: Vodafone Deutschland bekommt einen neuen Chef<\/title>\n        <link>https:\/\/www.golem.de\/news\/telekommunikation-vodafone-deutschland-bekommt-einen-neuen-chef-2204-164697-rss.html<\/link>\n        <description>Der CEO Hannes Ametsreiter tritt vorzeitig von seinem Chefposten bei Vodafone Deutschland ab. Ihm folgt ein erfahrener Microsoft-Manager. (&lt;a href=\"https:\/\/www.golem.de\/specials\/vodafone\/\"&gt;Vodafone&lt;\/a&gt;, &lt;a href=\"https:\/\/www.golem.de\/specials\/microsoft\/\"&gt;Microsoft&lt;\/a&gt;) &lt;img src=\"https:\/\/cpx.golem.de\/cpx.php?class=17&amp;amp;aid=164697&amp;amp;page=1&amp;amp;ts=1650381962\" alt=\"\" width=\"1\" height=\"1\" \/&gt;<\/description>\n        <slash:comments\/>\n        <content:encoded><![CDATA[<img src=\"https:\/\/www.golem.de\/2204\/164697-323081-323077_rc.jpg\" width=\"140\" height=\"140\" vspace=\"3\" hspace=\"8\" align=\"left\">Der CEO Hannes Ametsreiter tritt vorzeitig von seinem Chefposten bei Vodafone Deutschland ab. Ihm folgt ein erfahrener Microsoft-Manager. (<a href=\"https:\/\/www.golem.de\/specials\/vodafone\/\">Vodafone<\/a>, <a href=\"https:\/\/www.golem.de\/specials\/microsoft\/\">Microsoft<\/a>) <img src=\"https:\/\/cpx.golem.de\/cpx.php?class=17&amp;aid=164697&amp;page=1&amp;ts=1650381962\" alt=\"\" width=\"1\" height=\"1\" \/>]]><\/content:encoded>\n    <\/item>');
+
+        static::assertMatchesSnapshot($feedItem->toJson());
+    }
+
     /**
      * @dataProvider websiteProvider
      * @covers       HeraRssCrawler::discoverFeedUrls()
