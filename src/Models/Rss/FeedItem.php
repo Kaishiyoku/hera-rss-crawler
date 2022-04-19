@@ -3,6 +3,7 @@
 namespace Kaishiyoku\HeraRssCrawler\Models\Rss;
 
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -353,5 +354,37 @@ class FeedItem
         } catch (ReflectionException $e) {
             throw new JsonException('Cannot convert the given feed item to a JSON string.');
         }
+    }
+
+    /**
+     * @param string|array $json
+     * @return self
+     */
+    public static function fromJson($json): self
+    {
+        $jsonArr = is_string($json) ? json_decode($json, true) : $json;
+
+        $feedItem = new self();
+        $feedItem->setChecksum(Arr::get($jsonArr, 'checksum'));
+        $feedItem->setCategories(collect(Arr::get($jsonArr, 'categories')));
+        $feedItem->setAuthors(collect(Arr::get($jsonArr, 'authors')));
+        $feedItem->setTitle(Arr::get($jsonArr, 'title'));
+        $feedItem->setCommentCount(Arr::get($jsonArr, 'commentCount'));
+        $feedItem->setCommentFeedLink(Arr::get($jsonArr, 'commentFeedLink'));
+        $feedItem->setCommentLink(Arr::get($jsonArr, 'commentLink'));
+        $feedItem->setContent(Arr::get($jsonArr, 'content'));
+        $feedItem->setCreatedAt(Carbon::parse(Arr::get($jsonArr, 'createdAt')));
+        $feedItem->setUpdatedAt(Carbon::parse(Arr::get($jsonArr, 'updatedAt')));
+        $feedItem->setDescription(Arr::get($jsonArr, 'description'));
+        $feedItem->setEnclosureUrl(Arr::get($jsonArr, 'enclosureUrl'));
+        $feedItem->setImageUrls(collect(Arr::get($jsonArr, 'imageUrls')));
+        $feedItem->setEncoding(Arr::get($jsonArr, 'encoding'));
+        $feedItem->setId(Arr::get($jsonArr, 'id'));
+        $feedItem->setLinks(collect(Arr::get($jsonArr, 'links')));
+        $feedItem->setPermalink(Arr::get($jsonArr, 'permalink'));
+        $feedItem->setType(Arr::get($jsonArr, 'type'));
+        $feedItem->setXml(Arr::get($jsonArr, 'xml'));
+
+        return $feedItem;
     }
 }
