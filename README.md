@@ -17,7 +17,7 @@ Breaking Changes
 ================
 Version 3.x introduced the following breaking changes:
 
-* FeedItem-method `jsonSerialize` has been renamed to `toJson` and doesn't return `null` anymore but throws a `JsonException` when the serialized JSON is null.
+* FeedItem-method `jsonSerialize` has been renamed to `toJson` and doesn't return `null` anymore but throws a `JsonException` if the serialized JSON is invalid.
 
 Available crawler options
 =========================
