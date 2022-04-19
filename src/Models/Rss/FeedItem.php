@@ -78,6 +78,14 @@ class FeedItem
 
     private ?string $xml = null;
 
+    public function __construct()
+    {
+        $this->categories = collect();
+        $this->authors = collect();
+        $this->imageUrls = collect();
+        $this->links = collect();
+    }
+
     # region getters and setters
 
     public function getChecksum(): string
@@ -173,10 +181,6 @@ class FeedItem
 
     public function setContent(?string $content): void
     {
-        if (!$content) {
-            return;
-        }
-
         $this->content = Helper::trimOrDefaultNull($content);
     }
 
@@ -340,7 +344,7 @@ class FeedItem
         $feedItem->setType($zendFeedItem->getType());
         $feedItem->setXml($zendFeedItem->saveXml());
 
-        $feedItem->setChecksum(HeraRssCrawler::generateChecksumForFeedItem($feedItem));
+        $feedItem->generateChecksum();
 
         return $feedItem;
     }
@@ -354,7 +358,6 @@ class FeedItem
         $jsonArr = is_string($json) ? json_decode($json, true) : $json;
 
         $feedItem = new self();
-        $feedItem->setChecksum(Arr::get($jsonArr, 'checksum'));
         $feedItem->setCategories(collect(Arr::get($jsonArr, 'categories')));
         $feedItem->setAuthors(collect(Arr::get($jsonArr, 'authors')));
         $feedItem->setTitle(Arr::get($jsonArr, 'title'));
@@ -373,6 +376,8 @@ class FeedItem
         $feedItem->setPermalink(Arr::get($jsonArr, 'permalink'));
         $feedItem->setType(Arr::get($jsonArr, 'type'));
         $feedItem->setXml(Arr::get($jsonArr, 'xml'));
+
+        $feedItem->generateChecksum();
 
         return $feedItem;
     }
@@ -420,5 +425,16 @@ class FeedItem
     public function isSimilarTo(float $minimumPercentage, FeedItem $otherFeedItem): bool
     {
         return $this->compareTo($otherFeedItem) >= $minimumPercentage;
+    }
+
+    /**
+     * Generate and set the checksum.
+     * Should be called after manually manipulating a feed item.
+     *
+     * @throws ReflectionException
+     */
+    public function generateChecksum(): void
+    {
+        $this->setChecksum(HeraRssCrawler::generateChecksumForFeedItem($this));
     }
 }
