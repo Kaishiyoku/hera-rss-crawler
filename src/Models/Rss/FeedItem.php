@@ -337,26 +337,6 @@ class FeedItem
     }
 
     /**
-     * @throws JsonException
-     */
-    public function toJson(): string
-    {
-        try {
-            $class = new ReflectionClass(self::class);
-            $methods = collect($class->getMethods(ReflectionMethod::IS_PUBLIC))
-                ->filter(function (ReflectionMethod $method) {
-                    return Str::startsWith($method->getName(), 'get');
-                });
-
-            return $methods->mapWithKeys(function (ReflectionMethod $method) {
-                return [lcfirst(Str::substr($method->getName(), 3)) => $method->invoke($this)];
-            })->toJson();
-        } catch (ReflectionException $e) {
-            throw new JsonException('Cannot convert the given feed item to a JSON string.');
-        }
-    }
-
-    /**
      * @param string|array $json
      * @return self
      */
@@ -386,5 +366,25 @@ class FeedItem
         $feedItem->setXml(Arr::get($jsonArr, 'xml'));
 
         return $feedItem;
+    }
+
+    /**
+     * @throws JsonException
+     */
+    public function toJson(): string
+    {
+        try {
+            $class = new ReflectionClass(self::class);
+            $methods = collect($class->getMethods(ReflectionMethod::IS_PUBLIC))
+                ->filter(function (ReflectionMethod $method) {
+                    return Str::startsWith($method->getName(), 'get');
+                });
+
+            return $methods->mapWithKeys(function (ReflectionMethod $method) {
+                return [lcfirst(Str::substr($method->getName(), 3)) => $method->invoke($this)];
+            })->toJson();
+        } catch (ReflectionException $e) {
+            throw new JsonException('Cannot convert the given feed item to a JSON string.');
+        }
     }
 }
