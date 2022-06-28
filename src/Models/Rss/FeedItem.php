@@ -323,7 +323,16 @@ class FeedItem
 
         $feedItem->setCategories(collect($zendFeedItem->getCategories()->getValues()));
         $feedItem->setAuthors(collect(optional($zendFeedItem->getAuthors(), function ($authors) {
-            return $authors->getValues();
+            return collect($authors)->map(function ($author) {
+                $name = Arr::get($author, 'name');
+                $email = Arr::get($author, 'email');
+
+                if ($name && $email) {
+                    return "{$name} <{$email}>";
+                }
+
+                return $name ?? $email;
+            });
         })));
         $feedItem->setTitle($zendFeedItem->getTitle() ?: ''); // TODO: investigate; why can a title be empty? maybe we should discard those items
         $feedItem->setCommentCount($zendFeedItem->getCommentCount() ?: 0);
