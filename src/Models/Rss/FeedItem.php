@@ -321,6 +321,8 @@ class FeedItem
 
         $feedItem = new self();
 
+        $content = html_entity_decode($zendFeedItem->getContent(), ENT_QUOTES | ENT_HTML5, $zendFeedItem->getEncoding());
+
         $feedItem->setCategories(collect($zendFeedItem->getCategories()->getValues()));
         $feedItem->setAuthors(collect(optional($zendFeedItem->getAuthors(), function ($authors) {
             return collect($authors)->map(function ($author) {
@@ -338,7 +340,7 @@ class FeedItem
         $feedItem->setCommentCount($zendFeedItem->getCommentCount() ?: 0);
         $feedItem->setCommentFeedLink($zendFeedItem->getCommentFeedLink());
         $feedItem->setCommentLink($zendFeedItem->getCommentLink());
-        $feedItem->setContent($zendFeedItem->getContent());
+        $feedItem->setContent($content);
         $feedItem->setCreatedAt($zendFeedItem->getDateCreated() == null ? null : Carbon::parse($zendFeedItem->getDateCreated()));
         $feedItem->setUpdatedAt($zendFeedItem->getDateModified() == null ? null : Carbon::parse($zendFeedItem->getDateModified()));
         $feedItem->setDescription($zendFeedItem->getDescription());
