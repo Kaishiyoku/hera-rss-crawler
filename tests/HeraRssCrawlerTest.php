@@ -382,7 +382,11 @@ class HeraRssCrawlerTest extends TestCase
             'Zeit' => [
                 'https://www.zeit.de',
                 [
-                    'https://newsfeed.zeit.de/index'
+                    'http://newsfeed.zeit.de/index',
+                    'http://newsfeed.zeit.de/wirtschaft/index',
+                    'http://newsfeed.zeit.de/kultur/index',
+                    'http://newsfeed.zeit.de/wissen/index',
+                    'http://newsfeed.zeit.de/politik/index',
                 ],
                 'https://static.zeit.de/p/zeit.web/icons/favicon.svg',
             ],
@@ -435,7 +439,7 @@ class HeraRssCrawlerTest extends TestCase
                 [
                     'https://unknownworlds.com/feed',
                 ],
-                'https://2i1suz1s0n5g1i6ph4z0sw1b-wpengine.netdna-ssl.com/favicon.png',
+                'https://mainwebsite.wpenginepowered.com/favicon.png',
             ],
             'React' => [
                 'https://facebook.github.io/react',

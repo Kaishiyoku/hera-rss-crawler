@@ -237,7 +237,7 @@ class HeraRssCrawler
         $contentType = is_array($contentTypeMixedValue) ? Arr::first($contentTypeMixedValue) : $contentTypeMixedValue;
 
         // the given url itself already is a rss feed
-        if (Str::startsWith($contentType, ['application/rss+xml', 'application/atom+xml'])) {
+        if ($contentType && Str::startsWith($contentType, ['application/rss+xml', 'application/atom+xml'])) {
             return collect([$responseContainer->getRequestUrl()]);
         }
 
