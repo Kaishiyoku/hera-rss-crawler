@@ -15,7 +15,7 @@ Installation
 
 Breaking Changes
 ================
-Version 4.0 introduced the following breaking changes:
+Version 4.x introduced the following breaking changes:
 
 * dropped support for Laravel 8
 
