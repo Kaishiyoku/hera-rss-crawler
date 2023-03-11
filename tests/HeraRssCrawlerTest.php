@@ -131,16 +131,16 @@ class HeraRssCrawlerTest extends TestCase
 
             if (!$throwsConnectException) {
                 if ($expectedValues[$key]) {
-                    $feedArr = [
+                    $feedArr = new Collection([
                         'title' => $feed->getTitle(),
                         'description' => $feed->getDescription(),
                         'feedUrl' => $feed->getFeedUrl(),
                         'id' => $feed->getId(),
                         'language' => $feed->getLanguage(),
                         'url' => $feed->getUrl(),
-                    ];
+                    ]);
 
-                    $this->assertMatchesSnapshot($feedArr);
+                    $this->assertMatchesSnapshot($feedArr->toJson());
 
                     $this->assertNotEmpty($feed->getChecksum());
                     $this->assertGreaterThanOrEqual(0, $feed->getFeedItems()->count());

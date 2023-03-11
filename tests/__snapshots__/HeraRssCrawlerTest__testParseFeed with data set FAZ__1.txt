@@ -1,0 +1,1 @@
+{"title":"Aktuell - FAZ.NET","description":"News, Nachrichten und aktuelle Meldungen aus allen Ressorts. Politik, Wirtschaft, Sport, Feuilleton und Finanzen im \u00dcberblick.","feedUrl":"https:\/\/www.faz.net\/rss\/aktuell\/","id":"https:\/\/www.faz.net\/aktuell\/","language":"de-de","url":"https:\/\/www.faz.net\/aktuell\/"}
