@@ -15,15 +15,16 @@ Installation
 
 Breaking Changes
 ================
-Version 5.x introduced the following breaking changes:
+
+## Version 5.x
 
 * dropped support for PHP 7.4
 
-Version 4.x introduced the following breaking changes:
+## Version 4.x
 
 * dropped support for Laravel 8
 
-Version 3.x introduced the following breaking changes:
+## Version 3.x
 
 * FeedItem-method `jsonSerialize` has been renamed to `toJson` and doesn't return `null` anymore but throws a `JsonException` if the serialized JSON is invalid.
 
