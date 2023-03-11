@@ -1,11 +1,10 @@
-About
-=====
+# About
 
 This project tries to make fetching and parsing RSS feeds easier. With Hera RSS you can discover, fetch and parse RSS feeds.
 
 
-Installation
-============
+# Installation
+
 1. simply run `composer require kaishiyoku/hera-rss-crawler`
 2. create a new crawler instance using `$heraRssCrawler = new HeraRssCrawler()`
 3. discover a feed, for example `$feedUrls = $heraRssCrawler->discoverFeedUrls('https://laravel-news.com/')`
@@ -13,18 +12,25 @@ Installation
 5. fetch the feed: `$feed = $heraRssCrawler->parseFeed($feedUrls->get(0))`
 6. fetch the articles: `$feedItems = $feed->getFeedItems()`
 
-Breaking Changes
-================
-Version 4.x introduced the following breaking changes:
+
+# Breaking Changes
+
+## Version 5.x
+
+* dropped support for PHP 7.4
+
+
+## Version 4.x
 
 * dropped support for Laravel 8
 
-Version 3.x introduced the following breaking changes:
+
+## Version 3.x
 
 * FeedItem-method `jsonSerialize` has been renamed to `toJson` and doesn't return `null` anymore but throws a `JsonException` if the serialized JSON is invalid.
 
-Available crawler options
-=========================
+
+# Available crawler options
 
 ```php
 setRetryCount(int $retryCount): void
@@ -45,7 +51,6 @@ setUrlReplacementMap(array $urlReplacementMap): void
 ```
 
 Useful for websites which redirect to another subdomain when visiting the site, e.g. for Reddit.
-
 
 ```php
 public function setFeedDiscoverers(Collection $feedDiscoverers): void
@@ -108,8 +113,7 @@ the `FeedDiscovererByHtmlAnchorElements` discoverer should be the first discover
 in the collection.
 
 
-Available crawler methods
-=========================
+# Available crawler methods
 
 ```php
 parseFeed(string $url): ?Feed
@@ -155,20 +159,17 @@ checkIfConsumableFeed(string $url): bool
 Check if a given url is a consumable RSS feed.
 
 
-Contribution
-============
+# Contribution
 
 Found any issues or have an idea to improve the crawler? Feel free to open an issue or submit a pull request.
 
 
-Plans for the future
-====================
+# Plans for the future
 
 - [ ] add a Laravel facade
 
 
-Author
-======
+# Author
 
 Email: dev@andreas-wiedel.de  
 Website: https://andreas-wiedel.de  
