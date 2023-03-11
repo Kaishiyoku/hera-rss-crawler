@@ -13,6 +13,11 @@ use Kaishiyoku\HeraRssCrawler\Models\ResponseContainer;
  */
 class FeedDiscovererByContentType implements FeedDiscoverer
 {
+    /**
+     * @param Client $httpClient
+     * @param ResponseContainer $responseContainer
+     * @return Collection<int, string>
+     */
     public function discover(Client $httpClient, ResponseContainer $responseContainer): Collection
     {
         $contentTypeMixedValue = Arr::get($responseContainer->getResponse()->getHeaders(), 'Content-Type');

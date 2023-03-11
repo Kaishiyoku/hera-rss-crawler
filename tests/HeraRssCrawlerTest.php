@@ -4,8 +4,13 @@ namespace Kaishiyoku\HeraRssCrawler;
 
 use Carbon\Carbon;
 use Exception;
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
+use Kaishiyoku\HeraRssCrawler\FeedDiscoverers\FeedDiscoverer;
+use Kaishiyoku\HeraRssCrawler\FeedDiscoverers\FeedDiscovererByContentType;
+use Kaishiyoku\HeraRssCrawler\Models\ResponseContainer;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\Feed;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\FeedItem;
 use PHPUnit\Framework\TestCase;
@@ -323,6 +328,65 @@ class HeraRssCrawlerTest extends TestCase
 
         $feedUrls = $heraRssCrawler->discoverFeedUrls('https://www.reddit.com/r/ns2/new/');
         $this->assertEmpty($feedUrls->toArray());
+    }
+
+    /**
+     * @covers HeraRssCrawler::setFeedDiscoverers
+     */
+    public function testSetFeedDiscoverers(): void
+    {
+        $customFeedDiscoverer = new class implements FeedDiscoverer {
+            /**
+             * @param Client $httpClient
+             * @param ResponseContainer $responseContainer
+             * @return Collection<int, string>
+             */
+            public function discover(Client $httpClient, ResponseContainer $responseContainer): Collection
+            {
+                return new Collection(['It works!']);
+            }
+        };
+
+        $feedDiscoverers = new Collection([
+            $customFeedDiscoverer,
+            new FeedDiscovererByContentType(),
+        ]);
+
+        $heraRssCrawler = new HeraRssCrawler();
+        $heraRssCrawler->setFeedDiscoverers($feedDiscoverers);
+
+        $feedUrls = $heraRssCrawler->discoverFeedUrls('https://zeit.de');
+
+        static::assertSame(['It works!'], $feedUrls->toArray());
+    }
+
+    /**
+     * @covers HeraRssCrawler::setFeedDiscoverers
+     */
+    public function testSetInvalidFeedDiscoverer(): void
+    {
+        $invalidFeedDiscoverer = new class {
+            /**
+             * @param Client $httpClient
+             * @param ResponseContainer $responseContainer
+             * @return Collection<int, string>
+             */
+            public function discover(Client $httpClient, ResponseContainer $responseContainer): Collection
+            {
+                return new Collection();
+            }
+        };
+
+        $feedDiscoverers = new Collection([
+            $invalidFeedDiscoverer,
+            new FeedDiscovererByContentType(),
+        ]);
+
+        $heraRssCrawler = new HeraRssCrawler();
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $heraRssCrawler->setFeedDiscoverers($feedDiscoverers);
     }
 
     /**

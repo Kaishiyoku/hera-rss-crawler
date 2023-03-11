@@ -9,6 +9,7 @@ use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Kaishiyoku\HeraRssCrawler\FeedDiscoverers\FeedDiscoverer;
 use Kaishiyoku\HeraRssCrawler\FeedDiscoverers\FeedDiscovererByContentType;
 use Kaishiyoku\HeraRssCrawler\FeedDiscoverers\FeedDiscovererByFeedly;
@@ -50,6 +51,11 @@ class HeraRssCrawler
 
     private ?LoggerInterface $logger = null;
 
+    /**
+     * @var Collection<int, mixed>
+     */
+    private Collection $feedDiscoverers;
+
     public function __construct()
     {
         $name = Str::snake(Arr::last(explode('\\', self::class)));
@@ -63,6 +69,12 @@ class HeraRssCrawler
             ],
         ]);
         $this->cssConverter = new CssSelectorConverter();
+        $this->feedDiscoverers = new Collection([
+            new FeedDiscovererByContentType(),
+            new FeedDiscovererByHtmlHeadElements(),
+            new FeedDiscovererByHtmlAnchorElements(),
+            new FeedDiscovererByFeedly(),
+        ]);
     }
 
     /**
@@ -97,6 +109,24 @@ class HeraRssCrawler
     public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
+    }
+
+    /**
+     * Set feed discoverer classes.
+     *
+     * @param Collection<int, mixed> $feedDiscoverers
+     * @return void
+     */
+    public function setFeedDiscoverers(Collection $feedDiscoverers): void
+    {
+        // make sure that every discoverer implements the FeedDiscoverer interface
+        $feedDiscoverers->each(function ($discoverer) {
+            if (!is_subclass_of($discoverer, FeedDiscoverer::class)) {
+                throw new InvalidArgumentException($discoverer::class . ' is not a valid feed discoverer.');
+            }
+        });
+
+        $this->feedDiscoverers = $feedDiscoverers;
     }
 
     /**
@@ -145,15 +175,8 @@ class HeraRssCrawler
             $response = $this->httpClient->get($adjustedUrl);
             $responseContainer = new ResponseContainer($adjustedUrl, $response);
 
-            $discoverers = new Collection([
-                new FeedDiscovererByContentType(),
-                new FeedDiscovererByHtmlHeadElements(),
-                new FeedDiscovererByHtmlAnchorElements(),
-                new FeedDiscovererByFeedly(),
-            ]);
-
             /*** @var Collection $urls */
-            $urls = $discoverers->reduce(function (Collection $carry, FeedDiscoverer $discoverer) use ($responseContainer) {
+            $urls = $this->feedDiscoverers->reduce(function (Collection $carry, FeedDiscoverer $discoverer) use ($responseContainer) {
                 // only get the firstly fetched urls
                 if ($carry->isEmpty()) {
                     return $discoverer->discover($this->httpClient, $responseContainer);

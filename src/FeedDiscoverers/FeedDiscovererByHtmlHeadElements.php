@@ -14,6 +14,11 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 class FeedDiscovererByHtmlHeadElements implements FeedDiscoverer
 {
+    /**
+     * @param Client $httpClient
+     * @param ResponseContainer $responseContainer
+     * @return Collection<int, string>
+     */
     public function discover(Client $httpClient, ResponseContainer $responseContainer): Collection
     {
         $cssConverter = new CssSelectorConverter();

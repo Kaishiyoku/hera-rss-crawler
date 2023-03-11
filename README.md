@@ -47,6 +47,67 @@ setUrlReplacementMap(array $urlReplacementMap): void
 Useful for websites which redirect to another subdomain when visiting the site, e.g. for Reddit.
 
 
+```php
+public function setFeedDiscoverers(Collection $feedDiscoverers): void
+```
+
+With that you can set your own feed discoverers.
+
+You can even write your own, just make sure to implement the `FeedDiscoverer` interface:
+
+```php
+<?php
+
+namespace Kaishiyoku\HeraRssCrawler\FeedDiscoverers;
+
+use GuzzleHttp\Client;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
+use Kaishiyoku\HeraRssCrawler\Models\ResponseContainer;
+
+/**
+ * Discover feed URL by parsing a direct RSS feed url.
+ */
+class FeedDiscovererByContentType implements FeedDiscoverer
+{
+    public function discover(Client $httpClient, ResponseContainer $responseContainer): Collection
+    {
+        $contentTypeMixedValue = Arr::get($responseContainer->getResponse()->getHeaders(), 'Content-Type');
+
+        $contentType = is_array($contentTypeMixedValue) ? Arr::first($contentTypeMixedValue) : $contentTypeMixedValue;
+
+        // the given url is no valid RSS feed
+        if (!$contentType || !Str::startsWith($contentType, ['application/rss+xml', 'application/atom+xml'])) {
+            return new Collection();
+        }
+
+        return new Collection([$responseContainer->getRequestUrl()]);
+    }
+}
+```
+
+The default feed discoverers are as follows:
+
+```php
+new Collection([
+    new FeedDiscovererByContentType(),
+    new FeedDiscovererByHtmlHeadElements(),
+    new FeedDiscovererByHtmlAnchorElements(),
+    new FeedDiscovererByFeedly(),
+])
+```
+
+The ordering is important here because the discoverers will be called
+sequentially until at least one feed URL has been found and then stops.
+
+That means that once the discoverer found a feed remaining discoverers won't be called.
+
+If you want to mainly discover feeds by using HTML anchor elements,
+the `FeedDiscovererByHtmlAnchorElements` discoverer should be the first discoverer
+in the collection.
+
+
 Available crawler methods
 =========================
 
