@@ -15,6 +15,10 @@ Installation
 
 Breaking Changes
 ================
+Version 5.x introduced the following breaking changes:
+
+* dropped support for PHP 7.4
+
 Version 4.x introduced the following breaking changes:
 
 * dropped support for Laravel 8
