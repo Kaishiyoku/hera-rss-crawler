@@ -168,9 +168,22 @@ class HeraRssCrawlerTest extends TestCase
     public function testDiscoverAndParseFeeds(): void
     {
         $feeds = $this->heraRssCrawler->discoverAndParseFeeds('https://byorgey.wordpress.com/');
-        $actual = $feeds->map(function (Feed $feed) {
-            return $feed->getTitle();
-        })->toArray();
+        $actual = $feeds->map(fn(Feed $feed) => $feed->getTitle())->toArray();
+
+        $this->assertMatchesSnapshot($actual);
+    }
+
+    public function testDiscoverAndParseFeedsCheckFeedUrls(): void
+    {
+        $feeds = $this->heraRssCrawler->discoverAndParseFeeds('https://www.rki.de');
+        $actual = $feeds->map(fn(Feed $feed) => [
+            'title' => $feed->getTitle(),
+            'description' => $feed->getDescription(),
+            'feedUrl' => $feed->getFeedUrl(),
+            'id' => $feed->getId(),
+            'language' => $feed->getLanguage(),
+            'url' => $feed->getUrl(),
+        ])->toArray();
 
         $this->assertMatchesSnapshot($actual);
     }

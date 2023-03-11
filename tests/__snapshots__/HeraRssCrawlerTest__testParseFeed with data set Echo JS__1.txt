@@ -1,1 +1,1 @@
-{"title":"Echo JS","description":"Description pending","feedUrl":null,"id":"http:\/\/www.echojs.com","language":null,"url":"http:\/\/www.echojs.com"}
+{"title":"Echo JS","description":"Description pending","feedUrl":"http:\/\/www.echojs.com\/rss","id":"http:\/\/www.echojs.com","language":null,"url":"http:\/\/www.echojs.com"}

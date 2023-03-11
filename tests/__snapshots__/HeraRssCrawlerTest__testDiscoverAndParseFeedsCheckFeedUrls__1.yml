@@ -1,0 +1,14 @@
+-
+    title: 'Robert Koch-Institut News'
+    description: 'Dies ist der RSS Feed des Robert Koch-Instituts.'
+    feedUrl: 'https://www.rki.de/SiteGlobals/Functions/RSSFeed/RSSGenerator.xml'
+    id: 'https://www.rki.de/'
+    language: de-de
+    url: 'https://www.rki.de/'
+-
+    title: 'Robert Koch-Institut: Stellenangebote'
+    description: 'Dies ist der RSS Feed des Robert Koch-Instituts für aktuelle Stellenangebote.'
+    feedUrl: 'https://www.rki.de/SiteGlobals/Functions/RSSFeed/RSSGenerator_Stellen.xml'
+    id: 'https://www.rki.de/DE/Content/Service/Stellen/Angebote/angebote_node.html'
+    language: de-de
+    url: 'https://www.rki.de/DE/Content/Service/Stellen/Angebote/angebote_node.html'

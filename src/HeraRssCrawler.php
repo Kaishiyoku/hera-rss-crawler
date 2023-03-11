@@ -141,7 +141,7 @@ class HeraRssCrawler
             $content = $this->httpClient->get($url)->getBody()->getContents();
             $zendFeed = Reader::importString($content);
 
-            return Feed::fromZendFeed($zendFeed);
+            return Feed::fromZendFeed($url, $zendFeed);
         });
     }
 

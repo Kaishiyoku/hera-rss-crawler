@@ -1,1 +1,1 @@
-{"title":"React","description":"A JavaScript library for building user interfaces","feedUrl":null,"id":"https:\/\/reactjs.org","language":null,"url":"https:\/\/reactjs.org"}
+{"title":"React","description":"A JavaScript library for building user interfaces","feedUrl":"https:\/\/facebook.github.io\/react\/feed.xml","id":"https:\/\/reactjs.org","language":null,"url":"https:\/\/reactjs.org"}

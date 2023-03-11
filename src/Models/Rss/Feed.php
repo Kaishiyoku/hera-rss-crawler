@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Kaishiyoku\HeraRssCrawler\Helper;
 use Kaishiyoku\HeraRssCrawler\HeraRssCrawler;
+use Laminas\Feed\Reader\Feed\FeedInterface;
 use ReflectionException;
 
 class Feed
@@ -195,11 +196,12 @@ class Feed
     }
 
     /**
-     * @param mixed $zendFeed
+     * @param string $feedUrl
+     * @param FeedInterface $zendFeed
      * @return Feed
      * @throws ReflectionException
      */
-    public static function fromZendFeed($zendFeed): Feed
+    public static function fromZendFeed(string $feedUrl, FeedInterface $zendFeed): Feed
     {
         $authors = (new Collection($zendFeed->getAuthors()))->map(fn($authorData) => Arr::get($authorData, 'name'));
 
@@ -211,7 +213,7 @@ class Feed
         $feed->setCreatedAt(Helper::parseDate($zendFeed->getDateCreated()));
         $feed->setUpdatedAt(Helper::parseDate($zendFeed->getDateModified()));
         $feed->setDescription($zendFeed->getDescription());
-        $feed->setFeedUrl($zendFeed->getFeedLink());
+        $feed->setFeedUrl($zendFeed->getFeedLink() ?? $feedUrl);
         $feed->setId($zendFeed->getId());
         $feed->setLanguage($zendFeed->getLanguage());
         $feed->setUrl($zendFeed->getLink());
