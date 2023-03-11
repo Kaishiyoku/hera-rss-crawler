@@ -3,3 +3,5 @@ parameters:
         - src
         - tests
     level: 7
+
+    checkGenericClassInNonGenericObjectType: false
