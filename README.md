@@ -53,7 +53,7 @@ setUrlReplacementMap(array $urlReplacementMap): void
 Useful for websites which redirect to another subdomain when visiting the site, e.g. for Reddit.
 
 ```php
-public function setFeedDiscoverers(Collection $feedDiscoverers): void
+setFeedDiscoverers(Collection $feedDiscoverers): void
 ```
 
 With that you can set your own feed discoverers.
