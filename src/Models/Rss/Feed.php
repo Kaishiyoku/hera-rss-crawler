@@ -14,12 +14,12 @@ class Feed
     private string $checksum;
 
     /**
-     * @var Collection<string>
+     * @var Collection<int, string>
      */
     private Collection $categories;
 
     /**
-     * @var Collection<string>
+     * @var Collection<int, string>
      */
     private Collection $authors;
 
@@ -42,7 +42,7 @@ class Feed
     private ?string $url = null;
 
     /**
-     * @var Collection<FeedItem>
+     * @var Collection<int, FeedItem>
      */
     private Collection $feedItems;
 
@@ -57,7 +57,7 @@ class Feed
     }
 
     /**
-     * @return Collection<string>
+     * @return Collection<int, string>
      */
     public function getCategories(): Collection
     {
@@ -65,17 +65,15 @@ class Feed
     }
 
     /**
-     * @param Collection<string> $categories
+     * @param Collection<int, mixed> $categories
      */
     public function setCategories(Collection $categories): void
     {
-        $this->categories = $categories->map(function ($category) {
-            return Helper::trimOrDefaultNull($category);
-        });
+        $this->categories = Helper::trimStringCollection($categories);
     }
 
     /**
-     * @return Collection<string>
+     * @return Collection<int, string>
      */
     public function getAuthors(): Collection
     {
@@ -83,13 +81,11 @@ class Feed
     }
 
     /**
-     * @param Collection<string> $authors
+     * @param Collection<int, mixed> $authors
      */
     public function setAuthors(Collection $authors): void
     {
-        $this->authors = $authors->map(function ($author) {
-            return Helper::trimOrDefaultNull($author);
-        });
+        $this->authors = Helper::trimStringCollection($authors);
     }
 
     public function getTitle(): string
@@ -183,7 +179,7 @@ class Feed
     }
 
     /**
-     * @return Collection<FeedItem>
+     * @return Collection<int, FeedItem>
      */
     public function getFeedItems(): Collection
     {
@@ -191,7 +187,7 @@ class Feed
     }
 
     /**
-     * @param Collection<FeedItem> $feedItems
+     * @param Collection<int, FeedItem> $feedItems
      */
     public function setFeedItems(Collection $feedItems): void
     {
@@ -205,12 +201,10 @@ class Feed
      */
     public static function fromZendFeed($zendFeed): Feed
     {
-        $authors = collect($zendFeed->getAuthors())->map(function ($authorData) {
-            return Arr::get($authorData, 'name');
-        });
+        $authors = (new Collection($zendFeed->getAuthors()))->map(fn($authorData) => Arr::get($authorData, 'name'));
 
         $feed = new self();
-        $feed->setCategories(collect($zendFeed->getCategories()->getValues()));
+        $feed->setCategories(new Collection($zendFeed->getCategories()->getValues()));
         $feed->setAuthors($authors);
         $feed->setTitle($zendFeed->getTitle() ?? '');
         $feed->setCopyright($zendFeed->getCopyright());
@@ -222,7 +216,7 @@ class Feed
         $feed->setLanguage($zendFeed->getLanguage());
         $feed->setUrl($zendFeed->getLink());
 
-        $feedItems = collect();
+        $feedItems = new Collection();
 
         foreach ($zendFeed as $zendFeedItem) {
             $feedItems->add(FeedItem::fromZendFeedItem($zendFeedItem));

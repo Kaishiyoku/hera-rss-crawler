@@ -119,7 +119,7 @@ class HeraRssCrawler
      * Discover the first feed URL of a website and parse the feed.
      *
      * @param string $url
-     * @return Collection<Feed>
+     * @return Collection<int, Feed>
      * @throws Exception
      */
     public function discoverAndParseFeeds(string $url): Collection
@@ -134,7 +134,7 @@ class HeraRssCrawler
      * Discover all available feed URLs of a website.
      *
      * @param string $url
-     * @return Collection<string>
+     * @return Collection<int, string>
      * @throws Exception
      */
     public function discoverFeedUrls(string $url): Collection
@@ -179,8 +179,8 @@ class HeraRssCrawler
             $nodes = $crawler->filterXPath($this->converter->toXPath('head > link'));
 
             $faviconUrls = collect($nodes)
-                ->filter(fn(DOMElement $node) => Str::contains($node->getAttribute('rel'), 'icon'))
-                ->map(fn(DOMElement $node) => Helper::normalizeUrl(Helper::transformUrl($url, $node->getAttribute('href'))));
+                ->filter(fn(DOMElement $node) => Str::contains($node->getAttribute('rel'), 'icon')) /** @phpstan-ignore-line */
+                ->map(fn(DOMElement $node) => Helper::normalizeUrl(Helper::transformUrl($url, $node->getAttribute('href')))); /** @phpstan-ignore-line */
 
             if ($faviconUrls->isEmpty()) {
                 return null;
@@ -210,7 +210,7 @@ class HeraRssCrawler
      * Discover feed URLs using the Feedly API.
      *
      * @param ResponseContainer $responseContainer
-     * @return Collection<string>
+     * @return Collection<int, string>
      * @throws GuzzleException
      */
     private function discoverFeedUrlByFeedly(ResponseContainer $responseContainer): Collection
@@ -228,7 +228,7 @@ class HeraRssCrawler
      * Discover feed URLs by parsing the website's HTML content.
      *
      * @param ResponseContainer $responseContainer
-     * @return Collection<string>
+     * @return Collection<int, string>
      */
     private function discoverFeedUrlByContentType(ResponseContainer $responseContainer): Collection
     {
@@ -248,7 +248,7 @@ class HeraRssCrawler
      * Discover feed URLs by parsing the website's HTML head elements.
      *
      * @param ResponseContainer $responseContainer
-     * @return Collection<string>
+     * @return Collection<int, string>
      */
     private function discoverFeedUrlByHtmlHeadElements(ResponseContainer $responseContainer): Collection
     {
@@ -262,15 +262,14 @@ class HeraRssCrawler
      * Discover feed URLs by searching for HTML anchor elements.
      *
      * @param ResponseContainer $responseContainer
-     * @return Collection<string>
+     * @return Collection<int, string>
      */
     private function discoverFeedUrlByHtmlAnchorElements(ResponseContainer $responseContainer): Collection
     {
         $crawler = new Crawler($responseContainer->getResponse()->getBody()->getContents());
         $nodes = $crawler->filterXPath($this->converter->toXPath('a'));
 
-        return collect($nodes->each(fn(Crawler $node) => $this->transformNodeToUrl($responseContainer->getRequestUrl(), $node)))
-            ->filter(fn($url) => Str::contains($url, 'rss'));
+        return (new Collection($nodes->each(fn(Crawler $node) => $this->transformNodeToUrl($responseContainer->getRequestUrl(), $node))))->filter(fn($url) => Str::contains($url, 'rss'));
     }
 
     /**
@@ -350,9 +349,11 @@ class HeraRssCrawler
     }
 
     /**
+     * @param callable $callback
+     * @return mixed
      * @throws Exception
      */
-    private function withRetries(callable $callback)
+    private function withRetries(callable $callback): mixed
     {
         return Helper::withRetries($callback, 1, $this->getRetryCount());
     }

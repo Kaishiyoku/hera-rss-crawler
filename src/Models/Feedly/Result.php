@@ -11,92 +11,92 @@ use Kaishiyoku\HeraRssCrawler\Models\DeserializableModel;
 class Result implements DeserializableModel
 {
     /**
-     * the feed name.
+     * The feed name.
      */
     private string $title;
 
     /**
-     * the website associated with this feed.
+     * The website associated with this feed.
      */
     private ?string $website = null;
 
     /**
-     * the unique, immutable id of this feed
+     * The unique, immutable id of this feed.
      */
     private string $feedId;
 
     /**
-     * the timestamp, in ms, of the last article received for this feed. This value is useful to find “dormant” feeds
-     * (feeds that haven’t updated in over 3 months
+     * The timestamp, in ms, of the last article received for this feed. This value is useful to find "dormant" feeds
+     * (feeds that haven’t updated in over 3 months.
      */
     private ?Carbon $lastUpdated = null;
 
     /**
-     * the average number of articles published weekly. This number is updated every few days.
+     * The average number of articles published weekly. This number is updated every few days.
      */
     private float $velocity;
 
     /**
-     * number of feedly cloud subscribers who have this feed in their subscription list.
+     * Number of feedly cloud subscribers who have this feed in their subscription list.
      */
     private int $subscribers;
 
     private bool $curated;
 
     /**
-     * if true, this feed is featured (recommended) for the topic or search query
+     * Ff true, this feed is featured (recommended) for the topic or search query.
      */
     private bool $featured;
 
     /**
-     * the auto-detected type of entries this feed publishes. Values include “article” (most common),
+     * The auto-detected type of entries this feed publishes. Values include “article” (most common),
      * “longform” (for longer article), “videos” (for YouTube, Vimeo and other video-centric feeds),
      * and “audio” (for podcast feeds etc).
      */
     private ?string $contentType = null;
 
     /**
-     * this field is a combination of the language reported by the RSS feed, and the language automatically
+     * This field is a combination of the language reported by the RSS feed, and the language automatically
      * detected from the feed’s content. It might not be accurate, as many feeds misreport it.
      */
     private ?string $language = null;
 
     /**
-     * the feed description.
+     * The feed description.
      */
     private ?string $description = null;
 
     /**
-     * a small (square) icon URL
+     * A small (square) icon URL.
      */
     private ?string $iconUrl = null;
 
     /**
-     * a larger (square) icon URL
+     * A larger (square) icon URL.
      */
     private ?string $visualUrl = null;
 
     /**
-     * a large (rectangular) background image
+     * A large (rectangular) background image.
      */
     private ?string $coverUrl = null;
 
     /**
-     * a small (square) icon URL with transparency
+     * A small (square) icon URL with transparency.
      */
     private ?string $logo = null;
 
     private bool $partial;
 
     /**
-     * the background cover color
+     * The background cover color.
      */
     private ?string $coverColor = null;
 
     /**
-     * @var Collection<string>
+     * @var Collection<int, string>
      */
-    private $deliciousTags;
+    private Collection $deliciousTags;
 
     public function getTitle(): string
     {
@@ -269,7 +269,7 @@ class Result implements DeserializableModel
     }
 
     /**
-     * @return Collection<string>
+     * @return Collection<int, string>
      */
     public function getDeliciousTags(): Collection
     {
@@ -277,7 +277,7 @@ class Result implements DeserializableModel
     }
 
     /**
-     * @param Collection<string> $deliciousTags
+     * @param Collection<int, string> $deliciousTags
      */
     public function setDeliciousTags(Collection $deliciousTags): void
     {
@@ -293,11 +293,7 @@ class Result implements DeserializableModel
         return $this->getFeedId();
     }
 
-    /**
-     * @param mixed $json
-     * @return Result
-     */
-    public static function fromJson($json): Result
+    public static function fromJson(mixed $json): Result
     {
         $result = new self();
         $result->setFeedId($json['feedId']);
@@ -315,9 +311,8 @@ class Result implements DeserializableModel
         $result->setLogo(Arr::get($json, 'logo'));
         $result->setContentType(Arr::get($json, 'contentType'));
         $result->setCoverColor(Arr::get($json, 'coverColor'));
-
         $result->setCurated(Arr::get($json, 'curated', false));
-        $result->setDeliciousTags(collect(Arr::get($json, 'deliciousTags')));
+        $result->setDeliciousTags(new Collection(Arr::get($json, 'deliciousTags')));
         $result->setPartial(Arr::get($json, 'partial', false));
 
         return $result;

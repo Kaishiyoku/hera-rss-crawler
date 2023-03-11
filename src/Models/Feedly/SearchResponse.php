@@ -11,12 +11,12 @@ class SearchResponse implements DeserializableModel
     private ?string $hint = null;
 
     /**
-     * @var Collection<Result>
+     * @var Collection<int, Result>
      */
     private Collection $results;
 
     /**
-     * @var Collection<string>
+     * @var Collection<int, string>
      */
     private Collection $related;
 
@@ -31,7 +31,7 @@ class SearchResponse implements DeserializableModel
     }
 
     /**
-     * @return Collection<Result>
+     * @return Collection<int, Result>
      */
     public function getResults(): Collection
     {
@@ -39,7 +39,7 @@ class SearchResponse implements DeserializableModel
     }
 
     /**
-     * @param Collection<Result> $results
+     * @param Collection<int, Result> $results
      */
     public function setResults(Collection $results): void
     {
@@ -47,7 +47,7 @@ class SearchResponse implements DeserializableModel
     }
 
     /**
-     * @return Collection<string>
+     * @return Collection<int, string>
      */
     public function getRelated(): Collection
     {
@@ -55,27 +55,19 @@ class SearchResponse implements DeserializableModel
     }
 
     /**
-     * @param Collection<string> $related
+     * @param Collection<int, string> $related
      */
     public function setRelated(Collection $related): void
     {
         $this->related = $related;
     }
 
-    /**
-     * @param mixed $json
-     * @return SearchResponse
-     */
-    public static function fromJson($json): SearchResponse
+    public static function fromJson(mixed $json): SearchResponse
     {
         $searchResponse = new self();
         $searchResponse->setHint(Arr::get($json, 'hint'));
-        $searchResponse->setRelated(collect(Arr::get($json, 'related')));
-
-        $results = collect($json['results'])->map(function ($jsonResult) {
-            return Result::fromJson($jsonResult);
-        });
-        $searchResponse->setResults($results);
+        $searchResponse->setRelated(new Collection(Arr::get($json, 'related')));
+        $searchResponse->setResults((new Collection($json['results']))->map(fn($jsonResult) => Result::fromJson($jsonResult)));
 
         return $searchResponse;
     }

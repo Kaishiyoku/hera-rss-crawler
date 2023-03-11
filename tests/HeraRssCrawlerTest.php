@@ -5,6 +5,7 @@ namespace Kaishiyoku\HeraRssCrawler;
 use Carbon\Carbon;
 use Exception;
 use GuzzleHttp\Exception\ConnectException;
+use Illuminate\Support\Collection;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\Feed;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\FeedItem;
 use PHPUnit\Framework\TestCase;
@@ -33,8 +34,8 @@ class HeraRssCrawlerTest extends TestCase
         $this->heraRssCrawler = new HeraRssCrawler();
 
         $this->sampleFeedItem = new FeedItem();
-        $this->sampleFeedItem->setCategories(collect(['News', 'Tech']));
-        $this->sampleFeedItem->setAuthors(collect(['John Doe', 'Jane Doe']));
+        $this->sampleFeedItem->setCategories(new Collection(['News', 'Tech']));
+        $this->sampleFeedItem->setAuthors(new Collection(['John Doe', 'Jane Doe']));
         $this->sampleFeedItem->setTitle('Telekommunikation: Vodafone Deutschland bekommt einen neuen Chef');
         $this->sampleFeedItem->setCommentCount(5);
         $this->sampleFeedItem->setCommentFeedLink(null);
@@ -44,10 +45,10 @@ class HeraRssCrawlerTest extends TestCase
         $this->sampleFeedItem->setUpdatedAt(Carbon::parse('2022-04-19T15:26:02.000000Z'));
         $this->sampleFeedItem->setDescription('Der CEO Hannes Ametsreiter tritt vorzeitig von seinem Chefposten bei Vodafone Deutschland ab. Ihm folgt ein erfahrener Microsoft-Manager. (<a href=\"https:\/\/www.golem.de\/specials\/vodafone\/\">Vodafone<\/a>, <a href=\"https:\/\/www.golem.de\/specials\/microsoft\/\">Microsoft<\/a>) <img src=\"https:\/\/cpx.golem.de\/cpx.php?class=17&amp;aid=164697&amp;page=1&amp;ts=1650381962\" alt=\"\" width=\"1\" height=\"1\" \/>');
         $this->sampleFeedItem->setEnclosureUrl(null);
-        $this->sampleFeedItem->setImageUrls(collect(['https:\/\/www.golem.de\/2204\/164697-323081-323077_rc.jpg', 'https:\/\/cpx.golem.de\/cpx.php?class=17&amp;aid=164697&amp;page=1&amp;ts=1650381962']));
+        $this->sampleFeedItem->setImageUrls(new Collection(['https:\/\/www.golem.de\/2204\/164697-323081-323077_rc.jpg', 'https:\/\/cpx.golem.de\/cpx.php?class=17&amp;aid=164697&amp;page=1&amp;ts=1650381962']));
         $this->sampleFeedItem->setEncoding('ISO-8859-1');
         $this->sampleFeedItem->setId('https:\/\/www.golem.de\/news\/telekommunikation-vodafone-deutschland-bekommt-einen-neuen-chef-2204-164697-rss.html');
-        $this->sampleFeedItem->setLinks(collect(['https:\/\/www.golem.de\/news\/telekommunikation-vodafone-deutschland-bekommt-einen-neuen-chef-2204-164697-rss.html']));
+        $this->sampleFeedItem->setLinks(new Collection(['https:\/\/www.golem.de\/news\/telekommunikation-vodafone-deutschland-bekommt-einen-neuen-chef-2204-164697-rss.html']));
         $this->sampleFeedItem->setPermalink('https:\/\/www.golem.de\/news\/telekommunikation-vodafone-deutschland-bekommt-einen-neuen-chef-2204-164697-rss.html');
         $this->sampleFeedItem->setType('rss-10');
         $this->sampleFeedItem->setXml('<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<item xmlns=\"http:\/\/purl.org\/rss\/1.0\/\" xmlns:rdf=\"http:\/\/www.w3.org\/1999\/02\/22-rdf-syntax-ns#\" xmlns:dc=\"http:\/\/purl.org\/dc\/elements\/1.1\/\" xmlns:slash=\"http:\/\/purl.org\/rss\/1.0\/modules\/slash\/\" xmlns:content=\"http:\/\/purl.org\/rss\/1.0\/modules\/content\/\" rdf:about=\"https:\/\/www.golem.de\/news\/telekommunikation-vodafone-deutschland-bekommt-einen-neuen-chef-2204-164697-rss.html\">\n        <dc:format>text\/html<\/dc:format>\n        <dc:date>2022-04-19T17:26:02+02:00<\/dc:date>\n        <dc:source>https:\/\/www.golem.de<\/dc:source>\n        <dc:creator>Oliver Nickel<\/dc:creator>\n        <title>Telekommunikation: Vodafone Deutschland bekommt einen neuen Chef<\/title>\n        <link>https:\/\/www.golem.de\/news\/telekommunikation-vodafone-deutschland-bekommt-einen-neuen-chef-2204-164697-rss.html<\/link>\n        <description>Der CEO Hannes Ametsreiter tritt vorzeitig von seinem Chefposten bei Vodafone Deutschland ab. Ihm folgt ein erfahrener Microsoft-Manager. (&lt;a href=\"https:\/\/www.golem.de\/specials\/vodafone\/\"&gt;Vodafone&lt;\/a&gt;, &lt;a href=\"https:\/\/www.golem.de\/specials\/microsoft\/\"&gt;Microsoft&lt;\/a&gt;) &lt;img src=\"https:\/\/cpx.golem.de\/cpx.php?class=17&amp;amp;aid=164697&amp;amp;page=1&amp;amp;ts=1650381962\" alt=\"\" width=\"1\" height=\"1\" \/&gt;<\/description>\n        <slash:comments\/>\n        <content:encoded><![CDATA[<img src=\"https:\/\/www.golem.de\/2204\/164697-323081-323077_rc.jpg\" width=\"140\" height=\"140\" vspace=\"3\" hspace=\"8\" align=\"left\">Der CEO Hannes Ametsreiter tritt vorzeitig von seinem Chefposten bei Vodafone Deutschland ab. Ihm folgt ein erfahrener Microsoft-Manager. (<a href=\"https:\/\/www.golem.de\/specials\/vodafone\/\">Vodafone<\/a>, <a href=\"https:\/\/www.golem.de\/specials\/microsoft\/\">Microsoft<\/a>) <img src=\"https:\/\/cpx.golem.de\/cpx.php?class=17&amp;aid=164697&amp;page=1&amp;ts=1650381962\" alt=\"\" width=\"1\" height=\"1\" \/>]]><\/content:encoded>\n    <\/item>');
@@ -214,7 +215,7 @@ class HeraRssCrawlerTest extends TestCase
         $expectedSha512 = '1d025eb44d8035465b5a573646e5f95379bcff8c49b6cfc704e12bee3ffef930a4c9129897bef1b9746d625e2a9894eb662160e4ecc6f088a9c96df2590d0205';
 
         $feed3 = clone $feed;
-        $feed3->setFeedItems(collect([self::getSampleFeedItem(), self::getSampleFeedItem()]));
+        $feed3->setFeedItems(new Collection([self::getSampleFeedItem(), self::getSampleFeedItem()]));
 
         $this->assertNotEquals($expected, HeraRssCrawler::generateChecksumForFeed($feed3));
 
@@ -334,10 +335,10 @@ class HeraRssCrawlerTest extends TestCase
         $feed->setCreatedAt(Carbon::parse('2019-12-22 18:28:44.0 +00:00'));
         $feed->setUpdatedAt(Carbon::parse('2019-12-22 18:28:44.0 +00:00'));
         $feed->setTitle('Test');
-        $feed->setAuthors(collect(['John Doe', 'Jane Doe']));
-        $feed->setCategories(collect(['A', 'B']));
+        $feed->setAuthors(new Collection(['John Doe', 'Jane Doe']));
+        $feed->setCategories(new Collection(['A', 'B']));
         $feed->setCopyright('None');
-        $feed->setFeedItems(collect([self::getSampleFeedItem()]));
+        $feed->setFeedItems(new Collection([self::getSampleFeedItem()]));
         $feed->setFeedUrl('https://google.com');
         $feed->setId('Sample-ID');
         $feed->setLanguage('en');
@@ -352,8 +353,8 @@ class HeraRssCrawlerTest extends TestCase
     private static function getSampleFeedItem(): FeedItem
     {
         $feedItem = new FeedItem();
-        $feedItem->setCategories(collect(['Zeitgeschehen']));
-        $feedItem->setAuthors(collect(['ZEIT ONLINE: Zeitgeschehen - Alena Kammer']));
+        $feedItem->setCategories(new Collection(['Zeitgeschehen']));
+        $feedItem->setAuthors(new Collection(['ZEIT ONLINE: Zeitgeschehen - Alena Kammer']));
         $feedItem->setTitle('Gabun: Piraten töten Kapitän und entführen Matrosen');
         $feedItem->setCommentCount(0);
         $feedItem->setCommentFeedLink(null);
@@ -364,7 +365,7 @@ class HeraRssCrawlerTest extends TestCase
         $feedItem->setEnclosureUrl(null);
         $feedItem->setEncoding('UTF-8');
         $feedItem->setId('{urn:uuid:a56e1e5f-a630-4cd6-aa51-cdb896904ee9}');
-        $feedItem->setLinks(collect(['https://www.zeit.de/gesellschaft/zeitgeschehen/2019-12/gabun-piraterie-angriff-libreville-entfuehrung']));
+        $feedItem->setLinks(new Collection(['https://www.zeit.de/gesellschaft/zeitgeschehen/2019-12/gabun-piraterie-angriff-libreville-entfuehrung']));
         $feedItem->setPermalink('https://www.zeit.de/gesellschaft/zeitgeschehen/2019-12/gabun-piraterie-angriff-libreville-entfuehrung');
         $feedItem->setType('rss-20');
         $feedItem->setContent('');

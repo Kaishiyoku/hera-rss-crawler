@@ -10,6 +10,7 @@ use InvalidArgumentException;
 use JsonException;
 use Kaishiyoku\HeraRssCrawler\Helper;
 use Kaishiyoku\HeraRssCrawler\HeraRssCrawler;
+use Kaishiyoku\HeraRssCrawler\Models\DeserializableModel;
 use Laminas\Feed\Reader\Entry\Atom;
 use Laminas\Feed\Reader\Entry\EntryInterface;
 use Laminas\Feed\Reader\Entry\Rss;
@@ -17,7 +18,7 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
 
-class FeedItem
+class FeedItem implements DeserializableModel
 {
     private const COMPARISON_FIELDS = [
         'title',
@@ -31,12 +32,12 @@ class FeedItem
     private string $checksum;
 
     /**
-     * @var Collection<string>
+     * @var Collection<int, string>
      */
     private Collection $categories;
 
     /**
-     * @var Collection<string>
+     * @var Collection<int, string>
      */
     private Collection $authors;
 
@@ -59,7 +60,7 @@ class FeedItem
     private ?string $enclosureUrl = null;
 
     /**
-     * @var Collection<string>
+     * @var Collection<int, string>
      */
     private Collection $imageUrls;
 
@@ -68,7 +69,7 @@ class FeedItem
     private string $id;
 
     /**
-     * @var Collection<string>
+     * @var Collection<int, string>
      */
     private Collection $links;
 
@@ -80,10 +81,10 @@ class FeedItem
 
     public function __construct()
     {
-        $this->categories = collect();
-        $this->authors = collect();
-        $this->imageUrls = collect();
-        $this->links = collect();
+        $this->categories = new Collection();
+        $this->authors = new Collection();
+        $this->imageUrls = new Collection();
+        $this->links = new Collection();
     }
 
     # region getters and setters
@@ -99,7 +100,7 @@ class FeedItem
     }
 
     /**
-     * @return Collection<string>
+     * @return Collection<int, string>
      */
     public function getCategories(): Collection
     {
@@ -107,17 +108,15 @@ class FeedItem
     }
 
     /**
-     * @param Collection<string> $categories
+     * @param Collection<int, mixed> $categories
      */
     public function setCategories(Collection $categories): void
     {
-        $this->categories = $categories->map(function ($category) {
-            return Helper::trimOrDefaultNull($category);
-        });
+        $this->categories = Helper::trimStringCollection($categories);
     }
 
     /**
-     * @return Collection<string>
+     * @return Collection<int, string>
      */
     public function getAuthors(): Collection
     {
@@ -125,13 +124,11 @@ class FeedItem
     }
 
     /**
-     * @param Collection<string> $authors
+     * @param Collection<int, mixed> $authors
      */
     public function setAuthors(Collection $authors): void
     {
-        $this->authors = $authors->map(function ($author) {
-            return Helper::trimOrDefaultNull($author);
-        });
+        $this->authors = Helper::trimStringCollection($authors);
     }
 
     public function getTitle(): string
@@ -225,7 +222,7 @@ class FeedItem
     }
 
     /**
-     * @return Collection<string>
+     * @return Collection<int, string>
      */
     public function getImageUrls(): Collection
     {
@@ -233,7 +230,7 @@ class FeedItem
     }
 
     /**
-     * @param Collection<string> $imageUrls
+     * @param Collection<int, string> $imageUrls
      */
     public function setImageUrls(Collection $imageUrls): void
     {
@@ -261,7 +258,7 @@ class FeedItem
     }
 
     /**
-     * @return Collection<string>
+     * @return Collection<int, string>
      */
     public function getLinks(): Collection
     {
@@ -269,13 +266,11 @@ class FeedItem
     }
 
     /**
-     * @param Collection<string> $links
+     * @param Collection<int, mixed> $links
      */
     public function setLinks(Collection $links): void
     {
-        $this->links = $links->map(function ($link) {
-            return Helper::trimOrDefaultNull($link);
-        });
+        $this->links = Helper::trimStringCollection($links);
     }
 
     public function getPermalink(): string
@@ -323,9 +318,9 @@ class FeedItem
 
         $content = html_entity_decode($zendFeedItem->getContent(), ENT_QUOTES | ENT_HTML5, $zendFeedItem->getEncoding());
 
-        $feedItem->setCategories(collect($zendFeedItem->getCategories()->getValues()));
-        $feedItem->setAuthors(collect(optional($zendFeedItem->getAuthors(), function ($authors) {
-            return collect($authors)->map(function ($author) {
+        $feedItem->setCategories(new Collection($zendFeedItem->getCategories()->getValues()));
+        $feedItem->setAuthors(new Collection(optional($zendFeedItem->getAuthors(), function ($authors) {
+            return (new Collection($authors))->map(function ($author) {
                 $name = Arr::get($author, 'name');
                 $email = Arr::get($author, 'email');
 
@@ -344,13 +339,11 @@ class FeedItem
         $feedItem->setCreatedAt($zendFeedItem->getDateCreated() == null ? null : Carbon::parse($zendFeedItem->getDateCreated()));
         $feedItem->setUpdatedAt($zendFeedItem->getDateModified() == null ? null : Carbon::parse($zendFeedItem->getDateModified()));
         $feedItem->setDescription($zendFeedItem->getDescription());
-        $feedItem->setEnclosureUrl(optional($zendFeedItem->getEnclosure(), function ($enclosure) {
-            return $enclosure->url;
-        }));
-        $feedItem->setImageUrls(collect(Helper::getImageUrls($feedItem->getContent())));
+        $feedItem->setEnclosureUrl(optional($zendFeedItem->getEnclosure(), fn($enclosure) => $enclosure->url));
+        $feedItem->setImageUrls(new Collection(Helper::getImageUrls($feedItem->getContent())));
         $feedItem->setEncoding($zendFeedItem->getEncoding());
         $feedItem->setId($zendFeedItem->getId());
-        $feedItem->setLinks(collect($zendFeedItem->getLinks()));
+        $feedItem->setLinks(new Collection($zendFeedItem->getLinks()));
         $feedItem->setPermalink($zendFeedItem->getPermalink() ?: ''); // TODO: investigate; why can a permalink be empty? maybe we should discard those items
         $feedItem->setType($zendFeedItem->getType());
         $feedItem->setXml($zendFeedItem->saveXml());
@@ -361,16 +354,16 @@ class FeedItem
     }
 
     /**
-     * @param string|array $json
+     * @param string|array<string, mixed> $json
      * @return self
      */
-    public static function fromJson($json): self
+    public static function fromJson(mixed $json): self
     {
         $jsonArr = is_string($json) ? json_decode($json, true) : $json;
 
         $feedItem = new self();
-        $feedItem->setCategories(collect(Arr::get($jsonArr, 'categories')));
-        $feedItem->setAuthors(collect(Arr::get($jsonArr, 'authors')));
+        $feedItem->setCategories(new Collection(Arr::get($jsonArr, 'categories')));
+        $feedItem->setAuthors(new Collection(Arr::get($jsonArr, 'authors')));
         $feedItem->setTitle(Arr::get($jsonArr, 'title'));
         $feedItem->setCommentCount(Arr::get($jsonArr, 'commentCount'));
         $feedItem->setCommentFeedLink(Arr::get($jsonArr, 'commentFeedLink'));
@@ -380,10 +373,10 @@ class FeedItem
         $feedItem->setUpdatedAt(Carbon::parse(Arr::get($jsonArr, 'updatedAt')));
         $feedItem->setDescription(Arr::get($jsonArr, 'description'));
         $feedItem->setEnclosureUrl(Arr::get($jsonArr, 'enclosureUrl'));
-        $feedItem->setImageUrls(collect(Arr::get($jsonArr, 'imageUrls')));
+        $feedItem->setImageUrls(new Collection(Arr::get($jsonArr, 'imageUrls')));
         $feedItem->setEncoding(Arr::get($jsonArr, 'encoding'));
         $feedItem->setId(Arr::get($jsonArr, 'id'));
-        $feedItem->setLinks(collect(Arr::get($jsonArr, 'links')));
+        $feedItem->setLinks(new Collection(Arr::get($jsonArr, 'links')));
         $feedItem->setPermalink(Arr::get($jsonArr, 'permalink'));
         $feedItem->setType(Arr::get($jsonArr, 'type'));
         $feedItem->setXml(Arr::get($jsonArr, 'xml'));
@@ -394,6 +387,8 @@ class FeedItem
     }
 
     /**
+     * @param string[] $fields
+     * @return string
      * @throws JsonException
      */
     public function toJson(array $fields = []): string
@@ -401,12 +396,10 @@ class FeedItem
         try {
             $class = new ReflectionClass(self::class);
             $methods = count($fields) > 0
-                ? collect($fields)->map(fn(string $field) => $class->getMethod(Str::of($field)->ucfirst()->prepend('get')->toString()))
-                : collect($class->getMethods(ReflectionMethod::IS_PUBLIC))->filter(fn(ReflectionMethod $method) => Str::startsWith($method->getName(), 'get'));
+                ? (new Collection($fields))->map(fn(string $field) => $class->getMethod(Str::of($field)->ucfirst()->prepend('get')->toString()))
+                : (new Collection($class->getMethods(ReflectionMethod::IS_PUBLIC)))->filter(fn(ReflectionMethod $method) => Str::startsWith($method->getName(), 'get'));
 
-            return $methods->mapWithKeys(function (ReflectionMethod $method) {
-                return [Str::of($method->getName())->substr(3)->lcfirst()->toString() => $method->invoke($this)];
-            })->toJson();
+            return $methods->mapWithKeys(fn(ReflectionMethod $method) => [Str::of($method->getName())->substr(3)->lcfirst()->toString() => $method->invoke($this)])->toJson();
         } catch (ReflectionException $e) {
             throw new JsonException('Cannot convert the given feed item to a JSON string.');
         }

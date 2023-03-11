@@ -4,6 +4,7 @@ namespace Kaishiyoku\HeraRssCrawler;
 
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class Helper
@@ -63,7 +64,7 @@ class Helper
      * @return mixed
      * @throws Exception
      */
-    public static function withRetries(callable $callback, int $delay = 1, int $retries = 3)
+    public static function withRetries(callable $callback, int $delay = 1, int $retries = 3): mixed
     {
         try {
             return $callback();
@@ -102,5 +103,16 @@ class Helper
         [, $imageUrls] = $matches;
 
         return $imageUrls;
+    }
+
+    /**
+     * Trims all collection values and filters out NULL values.
+     *
+     * @param Collection<int, string|null> $collection
+     * @return Collection<int, string>
+     */
+    public static function trimStringCollection(Collection $collection): Collection
+    {
+        return $collection->map(fn($category) => Helper::trimOrDefaultNull($category))->filter(); /** @phpstan-ignore-line */
     }
 }
