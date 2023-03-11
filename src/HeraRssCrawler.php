@@ -29,7 +29,7 @@ class HeraRssCrawler
 
     private ?Client $httpClient;
 
-    private ?CssSelectorConverter $converter;
+    private ?CssSelectorConverter $cssConverter;
 
     /**
      * The number of retries to attempt on HTTP requests.
@@ -62,7 +62,7 @@ class HeraRssCrawler
                 'Accept-Encoding' => 'gzip, deflate',
             ],
         ]);
-        $this->converter = new CssSelectorConverter();
+        $this->cssConverter = new CssSelectorConverter();
     }
 
     /**
@@ -145,13 +145,14 @@ class HeraRssCrawler
             $response = $this->httpClient->get($adjustedUrl);
             $responseContainer = new ResponseContainer($adjustedUrl, $response);
 
-            $discoveryFns = collect([
+            $discoveryFns = new Collection([
                 fn($responseContainer) => $this->discoverFeedUrlByContentType($responseContainer),
                 fn($responseContainer) => $this->discoverFeedUrlByHtmlHeadElements($responseContainer),
                 fn($responseContainer) => $this->discoverFeedUrlByHtmlAnchorElements($responseContainer),
                 fn($responseContainer) => $this->discoverFeedUrlByFeedly($responseContainer),
             ]);
 
+            /*** @var Collection $urls */
             $urls = $discoveryFns->reduce(function (Collection $carry, $discoveryFn) use ($responseContainer) {
                 // only get the firstly fetched urls
                 if ($carry->isEmpty()) {
@@ -159,7 +160,7 @@ class HeraRssCrawler
                 }
 
                 return $carry;
-            }, collect());
+            }, new Collection());
 
             return $urls->map(fn($adjustedUrl) => Helper::normalizeUrl($adjustedUrl))->unique()->values();
         });
@@ -176,9 +177,9 @@ class HeraRssCrawler
             $response = $this->httpClient->get($url);
 
             $crawler = new Crawler($response->getBody()->getContents());
-            $nodes = $crawler->filterXPath($this->converter->toXPath('head > link'));
+            $nodes = $crawler->filterXPath($this->cssConverter->toXPath('head > link'));
 
-            $faviconUrls = collect($nodes)
+            $faviconUrls = (new Collection($nodes))
                 ->filter(fn(DOMElement $node) => Str::contains($node->getAttribute('rel'), 'icon')) /** @phpstan-ignore-line */
                 ->map(fn(DOMElement $node) => Helper::normalizeUrl(Helper::transformUrl($url, $node->getAttribute('href')))); /** @phpstan-ignore-line */
 
@@ -219,7 +220,7 @@ class HeraRssCrawler
             'query' => ['query' => $responseContainer->getRequestUrl()],
         ]);
 
-        $searchResponse = SearchResponse::fromJson(json_decode($response->getBody()->getContents(), true, 512));
+        $searchResponse = SearchResponse::fromJson(json_decode($response->getBody()->getContents(), true));
 
         return $searchResponse->getResults()->map(fn(Result $result) => $result->getFeedUrl());
     }
@@ -238,10 +239,10 @@ class HeraRssCrawler
 
         // the given url itself already is a rss feed
         if ($contentType && Str::startsWith($contentType, ['application/rss+xml', 'application/atom+xml'])) {
-            return collect([$responseContainer->getRequestUrl()]);
+            return new Collection([$responseContainer->getRequestUrl()]);
         }
 
-        return collect();
+        return new Collection();
     }
 
     /**
@@ -253,9 +254,9 @@ class HeraRssCrawler
     private function discoverFeedUrlByHtmlHeadElements(ResponseContainer $responseContainer): Collection
     {
         $crawler = new Crawler($responseContainer->getResponse()->getBody()->getContents());
-        $nodes = $crawler->filterXPath($this->converter->toXPath('head > link[type="application/rss+xml"], head > link[type="application/atom+xml"]'));
+        $nodes = $crawler->filterXPath($this->cssConverter->toXPath('head > link[type="application/rss+xml"], head > link[type="application/atom+xml"]'));
 
-        return collect($nodes->each(fn(Crawler $node) => $this->transformNodeToUrl($responseContainer->getRequestUrl(), $node)));
+        return new Collection($nodes->each(fn(Crawler $node) => $this->transformNodeToUrl($responseContainer->getRequestUrl(), $node)));
     }
 
     /**
@@ -267,7 +268,7 @@ class HeraRssCrawler
     private function discoverFeedUrlByHtmlAnchorElements(ResponseContainer $responseContainer): Collection
     {
         $crawler = new Crawler($responseContainer->getResponse()->getBody()->getContents());
-        $nodes = $crawler->filterXPath($this->converter->toXPath('a'));
+        $nodes = $crawler->filterXPath($this->cssConverter->toXPath('a'));
 
         return (new Collection($nodes->each(fn(Crawler $node) => $this->transformNodeToUrl($responseContainer->getRequestUrl(), $node))))->filter(fn($url) => Str::contains($url, 'rss'));
     }
@@ -300,7 +301,7 @@ class HeraRssCrawler
         ];
 
         $class = new ReflectionClass(FeedItem::class);
-        $allValuesConcatenated = trim(collect($class->getMethods(ReflectionMethod::IS_PUBLIC))
+        $allValuesConcatenated = trim((new Collection($class->getMethods(ReflectionMethod::IS_PUBLIC)))
             ->filter(fn(ReflectionMethod $method) => in_array($method->getName(), array_map(fn($property) => 'get' . Str::ucfirst($property), $properties), true))
             ->reduce(fn($carry, ReflectionMethod $method) => $carry . $delimiter . $method->invoke($feedItem), ''), $delimiter);
 
@@ -329,7 +330,7 @@ class HeraRssCrawler
         ];
 
         $class = new ReflectionClass(Feed::class);
-        $allValuesConcatenated = trim(collect($class->getMethods(ReflectionMethod::IS_PUBLIC))
+        $allValuesConcatenated = trim((new Collection($class->getMethods(ReflectionMethod::IS_PUBLIC)))
             ->filter(function (ReflectionMethod $method) use ($properties) {
                 return in_array($method->getName(), array_map(function ($property) {
                     return 'get' . Str::ucfirst($property);

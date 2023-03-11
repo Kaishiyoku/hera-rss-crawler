@@ -52,7 +52,7 @@ class Helper
      */
     public static function replaceBaseUrls(string $url, array $urlReplacementMap): string
     {
-        return collect($urlReplacementMap)->keys()->reduce(
+        return (new Collection($urlReplacementMap))->keys()->reduce(
             fn($carry, $oldBaseUrl) => self::replaceBaseUrl($carry, $oldBaseUrl, $urlReplacementMap[$oldBaseUrl]), $url
         );
     }
