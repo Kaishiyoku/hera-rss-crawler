@@ -6,12 +6,14 @@ use DOMElement;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use Kaishiyoku\HeraRssCrawler\Models\Feedly\Result;
-use Kaishiyoku\HeraRssCrawler\Models\Feedly\SearchResponse;
+use Kaishiyoku\HeraRssCrawler\FeedDiscoverers\FeedDiscoverer;
+use Kaishiyoku\HeraRssCrawler\FeedDiscoverers\FeedDiscovererByContentType;
+use Kaishiyoku\HeraRssCrawler\FeedDiscoverers\FeedDiscovererByFeedly;
+use Kaishiyoku\HeraRssCrawler\FeedDiscoverers\FeedDiscovererByHtmlAnchorElements;
+use Kaishiyoku\HeraRssCrawler\FeedDiscoverers\FeedDiscovererByHtmlHeadElements;
 use Kaishiyoku\HeraRssCrawler\Models\ResponseContainer;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\Feed;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\FeedItem;
@@ -47,8 +49,6 @@ class HeraRssCrawler
     ];
 
     private ?LoggerInterface $logger = null;
-
-    private const FEEDLY_API_BASE_URL = 'https://cloud.feedly.com/v3';
 
     public function __construct()
     {
@@ -145,18 +145,18 @@ class HeraRssCrawler
             $response = $this->httpClient->get($adjustedUrl);
             $responseContainer = new ResponseContainer($adjustedUrl, $response);
 
-            $discoveryFns = new Collection([
-                fn($responseContainer) => $this->discoverFeedUrlByContentType($responseContainer),
-                fn($responseContainer) => $this->discoverFeedUrlByHtmlHeadElements($responseContainer),
-                fn($responseContainer) => $this->discoverFeedUrlByHtmlAnchorElements($responseContainer),
-                fn($responseContainer) => $this->discoverFeedUrlByFeedly($responseContainer),
+            $discoverers = new Collection([
+                new FeedDiscovererByContentType(),
+                new FeedDiscovererByHtmlHeadElements(),
+                new FeedDiscovererByHtmlAnchorElements(),
+                new FeedDiscovererByFeedly(),
             ]);
 
             /*** @var Collection $urls */
-            $urls = $discoveryFns->reduce(function (Collection $carry, $discoveryFn) use ($responseContainer) {
+            $urls = $discoverers->reduce(function (Collection $carry, FeedDiscoverer $discoverer) use ($responseContainer) {
                 // only get the firstly fetched urls
                 if ($carry->isEmpty()) {
-                    return $discoveryFn($responseContainer);
+                    return $discoverer->discover($this->httpClient, $responseContainer);
                 }
 
                 return $carry;
@@ -205,80 +205,6 @@ class HeraRssCrawler
 
             return false;
         }
-    }
-
-    /**
-     * Discover feed URLs using the Feedly API.
-     *
-     * @param ResponseContainer $responseContainer
-     * @return Collection<int, string>
-     * @throws GuzzleException
-     */
-    private function discoverFeedUrlByFeedly(ResponseContainer $responseContainer): Collection
-    {
-        $response = $this->httpClient->get(self::FEEDLY_API_BASE_URL . '/search/feeds', [
-            'query' => ['query' => $responseContainer->getRequestUrl()],
-        ]);
-
-        $searchResponse = SearchResponse::fromJson(json_decode($response->getBody()->getContents(), true));
-
-        return $searchResponse->getResults()->map(fn(Result $result) => $result->getFeedUrl());
-    }
-
-    /**
-     * Discover feed URLs by parsing the website's HTML content.
-     *
-     * @param ResponseContainer $responseContainer
-     * @return Collection<int, string>
-     */
-    private function discoverFeedUrlByContentType(ResponseContainer $responseContainer): Collection
-    {
-        $contentTypeMixedValue = Arr::get($responseContainer->getResponse()->getHeaders(), 'Content-Type');
-
-        $contentType = is_array($contentTypeMixedValue) ? Arr::first($contentTypeMixedValue) : $contentTypeMixedValue;
-
-        // the given url itself already is a rss feed
-        if ($contentType && Str::startsWith($contentType, ['application/rss+xml', 'application/atom+xml'])) {
-            return new Collection([$responseContainer->getRequestUrl()]);
-        }
-
-        return new Collection();
-    }
-
-    /**
-     * Discover feed URLs by parsing the website's HTML head elements.
-     *
-     * @param ResponseContainer $responseContainer
-     * @return Collection<int, string>
-     */
-    private function discoverFeedUrlByHtmlHeadElements(ResponseContainer $responseContainer): Collection
-    {
-        $crawler = new Crawler($responseContainer->getResponse()->getBody()->getContents());
-        $nodes = $crawler->filterXPath($this->cssConverter->toXPath('head > link[type="application/rss+xml"], head > link[type="application/atom+xml"]'));
-
-        return new Collection($nodes->each(fn(Crawler $node) => $this->transformNodeToUrl($responseContainer->getRequestUrl(), $node)));
-    }
-
-    /**
-     * Discover feed URLs by searching for HTML anchor elements.
-     *
-     * @param ResponseContainer $responseContainer
-     * @return Collection<int, string>
-     */
-    private function discoverFeedUrlByHtmlAnchorElements(ResponseContainer $responseContainer): Collection
-    {
-        $crawler = new Crawler($responseContainer->getResponse()->getBody()->getContents());
-        $nodes = $crawler->filterXPath($this->cssConverter->toXPath('a'));
-
-        return (new Collection($nodes->each(fn(Crawler $node) => $this->transformNodeToUrl($responseContainer->getRequestUrl(), $node))))->filter(fn($url) => Str::contains($url, 'rss'));
-    }
-
-    /**
-     * Transform a Crawler node to a string URL.
-     */
-    private function transformNodeToUrl(string $baseUrl, Crawler $node): string
-    {
-        return Helper::transformUrl($baseUrl, $node->attr('href'));
     }
 
     /**

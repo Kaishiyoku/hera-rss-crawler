@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Symfony\Component\DomCrawler\Crawler;
 
 class Helper
 {
@@ -24,6 +25,9 @@ class Helper
         return $str === null ? null : trim($str);
     }
 
+    /**
+     * Transform a Crawler node to a string URL.
+     */
     public static function transformUrl(string $baseUrl, string $url): string
     {
         if (self::isValidUrl($url)) {
@@ -38,6 +42,11 @@ class Helper
         $host = parse_url($baseUrl, PHP_URL_HOST);
 
         return $scheme . '://' . $host . '/' . $url;
+    }
+
+    public static function transformNodeToUrl(string $baseUrl, Crawler $node): string
+    {
+        return self::transformUrl($baseUrl, $node->attr('href'));
     }
 
     public static function replaceBaseUrl(string $url, string $oldBaseUrl, string $newBaseUrl): string
