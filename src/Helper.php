@@ -139,7 +139,7 @@ class Helper
      */
     public static function trimStringCollection(Collection $collection): Collection
     {
+        /** @phpstan-ignore-next-line */
         return $collection->map(fn($category) => Helper::trimOrDefaultNull($category))->filter();
-        /** @phpstan-ignore-line */
     }
 }
