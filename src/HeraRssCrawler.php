@@ -67,7 +67,7 @@ class HeraRssCrawler
                 'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
                 'Accept-Encoding' => 'gzip, deflate',
             ],
-            'timeout' => 2,
+            'timeout' => 5,
         ]);
         $this->cssConverter = new CssSelectorConverter();
         $this->feedDiscoverers = new Collection([
