@@ -28,7 +28,7 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class HeraRssCrawler
 {
-    private const VERSION = '5.1.3';
+    private const VERSION = '5.1.4';
 
     private ?Client $httpClient;
 
