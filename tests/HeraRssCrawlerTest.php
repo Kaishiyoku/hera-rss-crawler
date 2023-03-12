@@ -565,6 +565,14 @@ class HeraRssCrawlerTest extends TestCase
     public static function feedProvider(): array
     {
         return [
+            'Grandma\'s World Of Skyrim' => [
+                [
+                    'https://www.blogger.com/feeds/2146985069025381500/posts/default',
+                ],
+                [
+                    true,
+                ],
+            ],
             'Zeit' => [
                 [
                     'https://newsfeed.zeit.de/index',
