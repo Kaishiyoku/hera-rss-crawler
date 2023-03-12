@@ -4,6 +4,7 @@ namespace Kaishiyoku\HeraRssCrawler;
 
 use Carbon\Carbon;
 use Exception;
+use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Symfony\Component\DomCrawler\Crawler;
@@ -99,19 +100,23 @@ class Helper
 
     /**
      * @param string|null $content
-     * @return string[]
+     * @param Client $httpClient
+     * @return Collection<int, string>
      */
-    public static function getImageUrls(?string $content): array
+    public static function getImageUrls(?string $content, Client $httpClient): Collection
     {
         if (!$content) {
-            return [];
+            return new Collection();
         }
 
         preg_match_all('/<img[^>]+src=[\'"]([^\'"]+)[\'"][^>]*>/i', $content, $matches);
 
         [, $imageUrls] = $matches;
 
-        return $imageUrls;
+        // don't allow GIF images because those will most likely be tracking pixels
+        return (new Collection($imageUrls))->filter(function (string $imageUrl) use ($httpClient) {
+            return $httpClient->get($imageUrl)->getHeaderLine('Content-Type') !== 'image/gif';
+        });
     }
 
     /**

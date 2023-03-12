@@ -3,6 +3,7 @@
 namespace Kaishiyoku\HeraRssCrawler\Models\Rss;
 
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -308,7 +309,7 @@ class FeedItem implements DeserializableModel
     /**
      * Generate a feed item from a given XML entity.
      */
-    public static function fromZendFeedItem(EntryInterface $zendFeedItem): FeedItem
+    public static function fromZendFeedItem(EntryInterface $zendFeedItem, Client $httpClient): FeedItem
     {
         if (!$zendFeedItem instanceof Rss && !$zendFeedItem instanceof Atom) {
             throw new InvalidArgumentException('given feed item neither is from a RSS or Atom feed');
@@ -340,7 +341,7 @@ class FeedItem implements DeserializableModel
         $feedItem->setUpdatedAt($zendFeedItem->getDateModified() == null ? null : Carbon::parse($zendFeedItem->getDateModified()));
         $feedItem->setDescription($zendFeedItem->getDescription());
         $feedItem->setEnclosureUrl(optional($zendFeedItem->getEnclosure(), fn($enclosure) => $enclosure->url));
-        $feedItem->setImageUrls(new Collection(Helper::getImageUrls($feedItem->getContent())));
+        $feedItem->setImageUrls(Helper::getImageUrls($feedItem->getContent(), $httpClient));
         $feedItem->setEncoding($zendFeedItem->getEncoding());
         $feedItem->setId($zendFeedItem->getId());
         $feedItem->setLinks(new Collection($zendFeedItem->getLinks()));

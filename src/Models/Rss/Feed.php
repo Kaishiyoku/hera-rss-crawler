@@ -3,6 +3,7 @@
 namespace Kaishiyoku\HeraRssCrawler\Models\Rss;
 
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Kaishiyoku\HeraRssCrawler\Helper;
@@ -198,10 +199,11 @@ class Feed
     /**
      * @param string $feedUrl
      * @param FeedInterface $zendFeed
+     * @param Client $httpClient
      * @return Feed
      * @throws ReflectionException
      */
-    public static function fromZendFeed(string $feedUrl, FeedInterface $zendFeed): Feed
+    public static function fromZendFeed(string $feedUrl, FeedInterface $zendFeed, Client $httpClient): Feed
     {
         $authors = (new Collection($zendFeed->getAuthors()))->map(fn($authorData) => Arr::get($authorData, 'name'));
 
@@ -221,7 +223,7 @@ class Feed
         $feedItems = new Collection();
 
         foreach ($zendFeed as $zendFeedItem) {
-            $feedItems->add(FeedItem::fromZendFeedItem($zendFeedItem));
+            $feedItems->add(FeedItem::fromZendFeedItem($zendFeedItem, $httpClient));
         }
 
         $feed->setFeedItems($feedItems);
