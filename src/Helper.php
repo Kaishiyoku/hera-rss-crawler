@@ -13,7 +13,7 @@ class Helper
 {
     public static function isValidUrl(string $url): bool
     {
-        return (bool) filter_var($url, FILTER_VALIDATE_URL);
+        return (bool)filter_var($url, FILTER_VALIDATE_URL);
     }
 
     public static function normalizeUrl(string $url): string
@@ -99,12 +99,18 @@ class Helper
     }
 
     /**
+     * @param string $feedItemUrl
      * @param string|null $content
      * @param Client $httpClient
      * @return Collection<int, string>
      */
-    public static function getImageUrls(?string $content, Client $httpClient): Collection
+    public static function getImageUrlsForFeedItem(string $feedItemUrl, ?string $content, Client $httpClient): Collection
     {
+        $urlScheme = parse_url($feedItemUrl, PHP_URL_SCHEME);
+        $urlHost = parse_url($feedItemUrl, PHP_URL_HOST);
+
+        $baseUrl = $urlScheme . '://' . $urlHost;
+
         if (!$content) {
             return new Collection();
         }
@@ -114,9 +120,15 @@ class Helper
         [, $imageUrls] = $matches;
 
         // don't allow GIF images because those will most likely be tracking pixels
-        return (new Collection($imageUrls))->filter(function (string $imageUrl) use ($httpClient) {
-            return $httpClient->get($imageUrl)->getHeaderLine('Content-Type') !== 'image/gif';
-        });
+        return (new Collection($imageUrls))
+            ->map(function (string $imageUrl) use ($baseUrl) {
+                if (Str::startsWith($imageUrl, 'http')) {
+                    return $imageUrl;
+                }
+
+                return $baseUrl . '/' . ltrim($imageUrl, '/');
+            })
+            ->filter(fn(string $imageUrl) => $httpClient->get($imageUrl)->getHeaderLine('Content-Type') !== 'image/gif');
     }
 
     /**
@@ -127,6 +139,7 @@ class Helper
      */
     public static function trimStringCollection(Collection $collection): Collection
     {
-        return $collection->map(fn($category) => Helper::trimOrDefaultNull($category))->filter(); /** @phpstan-ignore-line */
+        return $collection->map(fn($category) => Helper::trimOrDefaultNull($category))->filter();
+        /** @phpstan-ignore-line */
     }
 }

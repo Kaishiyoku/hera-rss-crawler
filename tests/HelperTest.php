@@ -38,11 +38,12 @@ class HelperTest extends TestCase
         $this->failingTestClassMock->shouldHaveReceived('fail')->times(4);
     }
 
-    public function testGetImageUrls(): void
+    public function testGetImageUrlsForFeedItem(): void
     {
-        $content = '<img src="https://www.golem.de/2107/158391-284735-284731_rc.jpg" width="140" height="140" vspace="3" hspace="8" align="left">Mit einer Tages- oder Monatskarte des E-Scooter-Anbieters Voi sollen Nutzer so viel fahren können, wie sie wollen - können sie aber nicht. (<a href="https://www.golem.de/specials/e-scooter/">E-Scooter</a>, <a href="https://www.golem.de/specials/verbraucherschutz/">Verbraucherschutz</a>) <img src="https://cpx.golem.de/cpx.php?class=17&amp;aid=158391&amp;page=1&amp;ts=1627054380" alt="" width="1" height="1" />';
+        $feedItemUrl = 'https://www.golem.de/2107';
+        $content = '<img src="/2107/158391-284735-284731_rc.jpg" width="140" height="140" vspace="3" hspace="8" align="left">Mit einer Tages- oder Monatskarte des E-Scooter-Anbieters Voi sollen Nutzer so viel fahren können, wie sie wollen - können sie aber nicht. (<a href="https://www.golem.de/specials/e-scooter/">E-Scooter</a>, <a href="https://www.golem.de/specials/verbraucherschutz/">Verbraucherschutz</a>) <img src="https://cpx.golem.de/cpx.php?class=17&amp;aid=158391&amp;page=1&amp;ts=1627054380" alt="" width="1" height="1" />';
 
-        $imageUrls = Helper::getImageUrls($content, new Client());
+        $imageUrls = Helper::getImageUrlsForFeedItem($feedItemUrl, $content, new Client());
 
         $this->assertEquals(['https://www.golem.de/2107/158391-284735-284731_rc.jpg'], $imageUrls->toArray());
     }
