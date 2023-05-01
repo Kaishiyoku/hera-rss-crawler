@@ -318,6 +318,7 @@ class FeedItem implements DeserializableModel
         $feedItem = new self();
 
         $content = html_entity_decode($zendFeedItem->getContent(), ENT_QUOTES | ENT_HTML5, $zendFeedItem->getEncoding());
+        $imageUrls = $zendFeedItem->getPermalink() ? Helper::getImageUrlsForFeedItem($zendFeedItem->getPermalink(), $content, $httpClient) : new Collection();
 
         $feedItem->setCategories(new Collection($zendFeedItem->getCategories()->getValues()));
         $feedItem->setAuthors(new Collection(optional($zendFeedItem->getAuthors(), function ($authors) {
@@ -341,7 +342,7 @@ class FeedItem implements DeserializableModel
         $feedItem->setUpdatedAt($zendFeedItem->getDateModified() == null ? null : Carbon::parse($zendFeedItem->getDateModified()));
         $feedItem->setDescription($zendFeedItem->getDescription());
         $feedItem->setEnclosureUrl(optional($zendFeedItem->getEnclosure(), fn($enclosure) => $enclosure->url));
-        $feedItem->setImageUrls(Helper::getImageUrlsForFeedItem($zendFeedItem->getPermalink(), $feedItem->getContent(), $httpClient));
+        $feedItem->setImageUrls($imageUrls);
         $feedItem->setEncoding($zendFeedItem->getEncoding());
         $feedItem->setId($zendFeedItem->getId());
         $feedItem->setLinks(new Collection($zendFeedItem->getLinks()));
