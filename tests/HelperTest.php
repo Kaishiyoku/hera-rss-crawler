@@ -48,10 +48,40 @@ class HelperTest extends TestCase
         $this->assertEquals(['https://www.golem.de/2107/158391-284735-284731_rc.jpg'], $imageUrls->toArray());
     }
 
+    /**
+     * @dataProvider faviconProvider
+     */
+    public function testGetHttpContentTypeForUrl(string $faviconUrl, ?string $expectedContentType): void
+    {
+        $this->assertSame($expectedContentType, Helper::getHttpContentTypeForUrl($faviconUrl, new Client()));
+    }
+
     protected function tearDown(): void
     {
         parent::tearDown();
 
         $this->addToAssertionCount($this->failingTestClassMock->mockery_getExpectationCount());
+    }
+
+    public static function faviconProvider(): array
+    {
+        return [
+            'PetaPixel' => [
+                'https://petapixel.com/wp-content/themes/petapixel-2017/assets/prod/img/favicon.ico',
+                'image/x-icon',
+            ],
+            'Hacker News' => [
+                'https://news.ycombinator.com/favicon.ico',
+                'image/x-icon',
+            ],
+            'Laravel News' => [
+                'https://laravel-news.com/apple-touch-icon.png',
+                'image/png',
+            ],
+            'Invalid Url' => [
+                'https://test.dev',
+                null,
+            ],
+        ];
     }
 }

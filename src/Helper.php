@@ -5,6 +5,7 @@ namespace Kaishiyoku\HeraRssCrawler;
 use Carbon\Carbon;
 use Exception;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Symfony\Component\DomCrawler\Crawler;
@@ -128,7 +129,16 @@ class Helper
 
                 return $baseUrl . '/' . ltrim($imageUrl, '/');
             })
-            ->filter(fn(string $imageUrl) => $httpClient->get($imageUrl)->getHeaderLine('Content-Type') !== 'image/gif');
+            ->filter(fn(string $imageUrl) => self::getHttpContentTypeForUrl($imageUrl, $httpClient) !== 'image/gif');
+    }
+
+    public static function getHttpContentTypeForUrl(string $url, Client $httpClient): ?string
+    {
+        try {
+            return $httpClient->get($url)->getHeaderLine('Content-Type');
+        } catch (ConnectException) {
+            return null;
+        }
     }
 
     /**
