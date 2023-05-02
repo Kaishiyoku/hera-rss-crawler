@@ -1,1 +1,1 @@
-{"title":"Videos | NutritionFacts.org","description":"The Latest in Nutrition Research","feedUrl":"https:\/\/nutritionfacts.org\/feed\/?post_type=video","id":"https:\/\/nutritionfacts.org","language":"en-US","url":"https:\/\/nutritionfacts.org"}
+{"title":"Videos","description":"The Latest in Nutrition Research","feedUrl":"https:\/\/nutritionfacts.org\/feed\/?post_type=video","id":"https:\/\/nutritionfacts.org","language":"en-US","url":"https:\/\/nutritionfacts.org"}

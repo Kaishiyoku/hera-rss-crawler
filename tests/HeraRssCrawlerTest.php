@@ -520,11 +520,9 @@ class HeraRssCrawlerTest extends TestCase
                 'https://mainwebsite.wpenginepowered.com/favicon.png',
             ],
             'React' => [
-                'https://facebook.github.io/react',
-                [
-                    'https://facebook.github.io/react/feed.xml'
-                ],
-                'https://facebook.github.io/react/favicon.ico',
+                'https://react.dev/blog',
+                [],
+                null,
             ],
             'PHP Internals' => [
                 'https://phpinternals.news/',

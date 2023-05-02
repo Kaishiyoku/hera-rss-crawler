@@ -56,13 +56,6 @@ class HelperTest extends TestCase
         $this->assertSame($expectedContentType, Helper::getHttpContentTypeForUrl($faviconUrl, new Client()));
     }
 
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-
-        $this->addToAssertionCount($this->failingTestClassMock->mockery_getExpectationCount());
-    }
-
     public static function faviconProvider(): array
     {
         return [
@@ -83,5 +76,12 @@ class HelperTest extends TestCase
                 null,
             ],
         ];
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        $this->addToAssertionCount($this->failingTestClassMock->mockery_getExpectationCount());
     }
 }
