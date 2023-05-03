@@ -136,7 +136,7 @@ class HeraRssCrawler
      * @throws ConnectException
      * @throws Exception
      */
-    public function parseFeed(string $url): ?Feed
+    public function parseFeed(string $url): Feed
     {
         return $this->withRetries(function () use ($url) {
             $content = $this->httpClient->get($url)->getBody()->getContents();
