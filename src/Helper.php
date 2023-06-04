@@ -152,4 +152,13 @@ class Helper
         /** @phpstan-ignore-next-line */
         return $collection->map(fn($category) => Helper::trimOrDefaultNull($category))->filter();
     }
+
+    public static function entityDecode(string $encoding, ?string $str): ?string
+    {
+        if (!$str) {
+            return $str;
+        }
+
+        return html_entity_decode($str, ENT_QUOTES | ENT_HTML5, $encoding);
+    }
 }
