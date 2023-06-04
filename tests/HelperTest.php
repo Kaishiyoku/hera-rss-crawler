@@ -56,6 +56,9 @@ class HelperTest extends TestCase
         $this->assertSame($expectedContentType, Helper::getHttpContentTypeForUrl($faviconUrl, new Client()));
     }
 
+    /**
+     * @return array<string, array<string|null>>
+     */
     public static function faviconProvider(): array
     {
         return [
