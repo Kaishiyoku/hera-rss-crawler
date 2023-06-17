@@ -5,6 +5,7 @@ namespace Kaishiyoku\HeraRssCrawler;
 use Carbon\Carbon;
 use Exception;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -138,6 +139,13 @@ class Helper
             return $httpClient->get($url)->getHeaderLine('Content-Type');
         } catch (ConnectException) {
             return null;
+        } catch (ClientException $exception) {
+            // return null for HTTP Not Found Exceptions
+            if ($exception->getResponse()->getStatusCode() === 404) {
+                return null;
+            }
+
+            throw $exception;
         }
     }
 
