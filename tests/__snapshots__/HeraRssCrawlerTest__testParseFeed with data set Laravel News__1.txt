@@ -1,1 +1,0 @@
-{"title":"Laravel News","description":"Your official Laravel news source.","feedUrl":"https:\/\/feed.laravel-news.com\/","id":"https:\/\/laravel-news.com","language":"en-US","url":"https:\/\/laravel-news.com"}

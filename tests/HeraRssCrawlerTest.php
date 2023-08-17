@@ -145,7 +145,7 @@ class HeraRssCrawlerTest extends TestCase
                         'url' => $feed->getUrl(),
                     ]);
 
-                    $this->assertMatchesSnapshot($feedArr->toJson());
+                    $this->assertMatchesSnapshot($feedArr->toArray());
 
                     $this->assertNotEmpty($feed->getChecksum());
                     $this->assertGreaterThanOrEqual(0, $feed->getFeedItems()->count());
@@ -521,7 +521,9 @@ class HeraRssCrawlerTest extends TestCase
             ],
             'React' => [
                 'https://react.dev/blog',
-                [],
+                [
+                    'https://replit-api-services.sorrycc.repl.co/react-dev-blog',
+                ],
                 null,
             ],
             'PHP Internals' => [
@@ -537,6 +539,7 @@ class HeraRssCrawlerTest extends TestCase
                     'http://nutritionfacts.org/feed',
                     'http://nutritionfacts.org/feed/?post_type=video',
                     'http://nutritionfacts.org/audio/feed/podcast',
+                    'https://nutritionfacts.org/videos/feed/podcast',
                     'http://nutritionfacts.org/feed/podcast',
                 ],
                 'https://nutritionfacts.org/apple-touch-icon.png',
