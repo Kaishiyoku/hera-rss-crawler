@@ -106,13 +106,13 @@ class HeraRssCrawlerTest extends TestCase
     public function testDiscoverFeedUrls(string $url, array $expectedUrls, ?string $expectedFaviconUrl = null, bool $throwsConnectException = false): void
     {
         if ($throwsConnectException) {
-            $this->expectException(ConnectException::class);
+            static::expectException(ConnectException::class);
         }
 
         $actual = $this->heraRssCrawler->discoverFeedUrls($url);
 
         if (!$throwsConnectException) {
-            $this->assertEquals($expectedUrls, $actual->toArray());
+            static::assertEquals($expectedUrls, $actual->toArray());
         }
     }
 
@@ -129,7 +129,7 @@ class HeraRssCrawlerTest extends TestCase
     {
         foreach ($feedUrls as $key => $feedUrl) {
             if ($throwsConnectException) {
-                $this->expectException(ConnectException::class);
+                static::expectException(ConnectException::class);
             }
 
             $feed = $this->heraRssCrawler->parseFeed($feedUrl);
@@ -145,16 +145,16 @@ class HeraRssCrawlerTest extends TestCase
                         'url' => $feed->getUrl(),
                     ]);
 
-                    $this->assertMatchesSnapshot($feedArr->toArray());
+                    static::assertMatchesSnapshot($feedArr->toArray());
 
-                    $this->assertNotEmpty($feed->getChecksum());
-                    $this->assertGreaterThanOrEqual(0, $feed->getFeedItems()->count());
+                    static::assertNotEmpty($feed->getChecksum());
+                    static::assertGreaterThanOrEqual(0, $feed->getFeedItems()->count());
 
                     if ($feed->getFeedItems()->isNotEmpty()) {
-                        $this->assertNotEmpty($feed->getFeedItems()->first()->getChecksum());
+                        static::assertNotEmpty($feed->getFeedItems()->first()->getChecksum());
                     }
                 } else {
-                    $this->assertNull($feed);
+                    static::assertNull($feed);
                 }
             }
         }
@@ -170,7 +170,7 @@ class HeraRssCrawlerTest extends TestCase
         $feeds = $this->heraRssCrawler->discoverAndParseFeeds('https://byorgey.wordpress.com/');
         $actual = $feeds->map(fn(Feed $feed) => $feed->getTitle())->toArray();
 
-        $this->assertMatchesSnapshot($actual);
+        static::assertMatchesSnapshot($actual);
     }
 
     public function testDiscoverAndParseFeedsCheckFeedUrls(): void
@@ -185,7 +185,7 @@ class HeraRssCrawlerTest extends TestCase
             'url' => $feed->getUrl(),
         ])->toArray();
 
-        $this->assertMatchesSnapshot($actual);
+        static::assertMatchesSnapshot($actual);
     }
 
     /**
@@ -199,17 +199,17 @@ class HeraRssCrawlerTest extends TestCase
 
         $feedItem = self::getSampleFeedItem();
 
-        $this->assertEquals($expected, HeraRssCrawler::generateChecksumForFeedItem($feedItem));
+        static::assertEquals($expected, HeraRssCrawler::generateChecksumForFeedItem($feedItem));
 
         $feedItem2 = clone $feedItem;
         $feedItem2->setTitle('Title has changed');
 
-        $this->assertNotEquals($expected, HeraRssCrawler::generateChecksumForFeedItem($feedItem2));
+        static::assertNotEquals($expected, HeraRssCrawler::generateChecksumForFeedItem($feedItem2));
 
         $expectedSha512 = 'a64b86da753fcc3d85fdcd5c9d2ef65530b20cf9c0eb9acfa972a53dbda2fbea94b733c1958a341535ef3a9785916f6297f41ab5ed0e497cfe6540451158fc04';
 
-        $this->assertEquals($expectedSha512, HeraRssCrawler::generateChecksumForFeedItem($feedItem, '__', Hash::SHA_512));
-        $this->assertNotEquals($expectedSha512, HeraRssCrawler::generateChecksumForFeedItem($feedItem, '--', Hash::SHA_512));
+        static::assertEquals($expectedSha512, HeraRssCrawler::generateChecksumForFeedItem($feedItem, '__', Hash::SHA_512));
+        assertNotEquals($expectedSha512, HeraRssCrawler::generateChecksumForFeedItem($feedItem, '--', Hash::SHA_512));
     }
 
     /**
@@ -223,22 +223,22 @@ class HeraRssCrawlerTest extends TestCase
 
         $feed = self::getSampleFeed();
 
-        $this->assertEquals($expected, HeraRssCrawler::generateChecksumForFeed($feed));
+        static::assertEquals($expected, HeraRssCrawler::generateChecksumForFeed($feed));
 
         $feed2 = clone $feed;
         $feed2->setTitle('Title has changed');
 
-        $this->assertNotEquals($expected, HeraRssCrawler::generateChecksumForFeed($feed2));
+        static::assertNotEquals($expected, HeraRssCrawler::generateChecksumForFeed($feed2));
 
         $expectedSha512 = '1d025eb44d8035465b5a573646e5f95379bcff8c49b6cfc704e12bee3ffef930a4c9129897bef1b9746d625e2a9894eb662160e4ecc6f088a9c96df2590d0205';
 
         $feed3 = clone $feed;
         $feed3->setFeedItems(new Collection([self::getSampleFeedItem(), self::getSampleFeedItem()]));
 
-        $this->assertNotEquals($expected, HeraRssCrawler::generateChecksumForFeed($feed3));
+        static::assertNotEquals($expected, HeraRssCrawler::generateChecksumForFeed($feed3));
 
-        $this->assertEquals($expectedSha512, HeraRssCrawler::generateChecksumForFeed($feed, '__', Hash::SHA_512));
-        $this->assertNotEquals($expectedSha512, HeraRssCrawler::generateChecksumForFeed($feed, '--', Hash::SHA_512));
+        static::assertEquals($expectedSha512, HeraRssCrawler::generateChecksumForFeed($feed, '__', Hash::SHA_512));
+        static::assertNotEquals($expectedSha512, HeraRssCrawler::generateChecksumForFeed($feed, '--', Hash::SHA_512));
     }
 
     /**
@@ -254,13 +254,13 @@ class HeraRssCrawlerTest extends TestCase
     public function testDiscoverFavicon(string $url, array $expectedUrls, ?string $expectedFaviconUrl = null, bool $throwsConnectException = false): void
     {
         if ($throwsConnectException) {
-            $this->expectException(ConnectException::class);
+            static::expectException(ConnectException::class);
         }
 
         $faviconUrl = $this->heraRssCrawler->discoverFavicon($url);
 
         if (!$throwsConnectException) {
-            $this->assertEquals($expectedFaviconUrl, $faviconUrl);
+            static::assertEquals($expectedFaviconUrl, $faviconUrl);
         }
     }
 
@@ -275,7 +275,7 @@ class HeraRssCrawlerTest extends TestCase
         foreach ($feedUrls as $key => $feedUrl) {
             $isConsumableFeed = $this->heraRssCrawler->checkIfConsumableFeed($feedUrl);
 
-            $this->assertEquals($expectedValues[$key], $isConsumableFeed);
+            static::assertEquals($expectedValues[$key], $isConsumableFeed);
         }
     }
 
@@ -285,13 +285,13 @@ class HeraRssCrawlerTest extends TestCase
     public function testReplaceBaseUrl(): void
     {
         $newUrl = Helper::replaceBaseUrl('https://www.reddit.com/r/ns2/new/', 'https://www.reddit.com/', 'https://old.reddit.com/');
-        $this->assertEquals('https://old.reddit.com/r/ns2/new/', $newUrl);
+        static::assertEquals('https://old.reddit.com/r/ns2/new/', $newUrl);
 
         $newUrl2 = Helper::replaceBaseUrl('https://site.dev/test?query=hello_world', 'https://site.dev', 'https://new.site.dev');
-        $this->assertEquals('https://new.site.dev/test?query=hello_world', $newUrl2);
+        static::assertEquals('https://new.site.dev/test?query=hello_world', $newUrl2);
 
         $newUrl3 = Helper::replaceBaseUrl('https://www.google.com/?query=hello_world', 'https://site.dev', 'https://new.site.dev');
-        $this->assertEquals('https://www.google.com/?query=hello_world', $newUrl3);
+        static::assertEquals('https://www.google.com/?query=hello_world', $newUrl3);
     }
 
     /**
@@ -305,13 +305,13 @@ class HeraRssCrawlerTest extends TestCase
         ];
 
         $url = Helper::replaceBaseUrls('https://www.reddit.com/r/ns2/new/', $urlReplacementMap);
-        $this->assertEquals('https://old.reddit.com/r/ns2/new/', $url);
+        static::assertEquals('https://old.reddit.com/r/ns2/new/', $url);
 
         $url2 = Helper::replaceBaseUrls('https://site.dev/test?query=hello_world', $urlReplacementMap);
-        $this->assertEquals('https://new.site.dev/test?query=hello_world', $url2);
+        static::assertEquals('https://new.site.dev/test?query=hello_world', $url2);
 
         $url3 = Helper::replaceBaseUrls('https://www.google.com/?query=hello_world', $urlReplacementMap);
-        $this->assertEquals('https://www.google.com/?query=hello_world', $url3);
+        static::assertEquals('https://www.google.com/?query=hello_world', $url3);
     }
 
     /**
@@ -322,10 +322,10 @@ class HeraRssCrawlerTest extends TestCase
         $heraRssCrawler = new HeraRssCrawler();
 
         $feed = $heraRssCrawler->parseFeed('https://www.reddit.com/r/ns2/new/.rss');
-        $this->assertInstanceOf(Feed::class, $feed);
+        static::assertInstanceOf(Feed::class, $feed);
 
         $feedUrls = $heraRssCrawler->discoverFeedUrls('https://www.reddit.com/r/ns2/new/');
-        $this->assertEquals(['https://old.reddit.com/r/ns2/new/.rss'], $feedUrls->toArray());
+        static::assertEquals(['https://old.reddit.com/r/ns2/new/.rss'], $feedUrls->toArray());
 
         $heraRssCrawler->setUrlReplacementMap([
             'https://site.dev' => 'https://new.site.dev',
@@ -333,14 +333,14 @@ class HeraRssCrawlerTest extends TestCase
         ]);
 
         $feedUrls = $heraRssCrawler->discoverFeedUrls('https://www.reddit.com/r/ns2/new/');
-        $this->assertEquals(['https://old.reddit.com/r/ns2/new/.rss'], $feedUrls->toArray());
+        static::assertEquals(['https://old.reddit.com/r/ns2/new/.rss'], $feedUrls->toArray());
 
         $heraRssCrawler->setUrlReplacementMap([
             'https://site.dev' => 'https://new.site.dev',
         ]);
 
         $feedUrls = $heraRssCrawler->discoverFeedUrls('https://www.reddit.com/r/ns2/new/');
-        $this->assertEmpty($feedUrls->toArray());
+        static::assertEmpty($feedUrls->toArray());
     }
 
     /**
@@ -397,7 +397,7 @@ class HeraRssCrawlerTest extends TestCase
 
         $heraRssCrawler = new HeraRssCrawler();
 
-        $this->expectException(InvalidArgumentException::class);
+        static::expectException(InvalidArgumentException::class);
 
         $heraRssCrawler->setFeedDiscoverers($feedDiscoverers);
     }

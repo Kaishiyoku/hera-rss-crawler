@@ -45,7 +45,7 @@ class HelperTest extends TestCase
 
         $imageUrls = Helper::getImageUrlsForFeedItem($feedItemUrl, $content, new Client());
 
-        $this->assertEquals(['https://www.golem.de/2107/158391-284735-284731_rc.jpg'], $imageUrls->toArray());
+        static::assertEquals(['https://www.golem.de/2107/158391-284735-284731_rc.jpg'], $imageUrls->toArray());
     }
 
     /**
@@ -53,7 +53,7 @@ class HelperTest extends TestCase
      */
     public function testGetHttpContentTypeForUrl(string $faviconUrl, ?string $expectedContentType): void
     {
-        $this->assertSame($expectedContentType, Helper::getHttpContentTypeForUrl($faviconUrl, new Client()));
+        static::assertSame($expectedContentType, Helper::getHttpContentTypeForUrl($faviconUrl, new Client()));
     }
 
     /**
@@ -85,6 +85,6 @@ class HelperTest extends TestCase
     {
         parent::tearDown();
 
-        $this->addToAssertionCount($this->failingTestClassMock->mockery_getExpectationCount());
+        static::addToAssertionCount($this->failingTestClassMock->mockery_getExpectationCount());
     }
 }
