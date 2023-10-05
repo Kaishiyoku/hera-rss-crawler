@@ -70,8 +70,8 @@ class HelperTest extends TestCase
                 'https://news.ycombinator.com/favicon.ico',
                 'image/x-icon',
             ],
-            'Laravel News' => [
-                'https://laravel-news.com/apple-touch-icon.png',
+            'Statamic' => [
+                'https://statamic.dev/img/favicons/apple-touch-icon-57x57.png',
                 'image/png',
             ],
             'Invalid Url' => [

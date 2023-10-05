@@ -209,7 +209,7 @@ class HeraRssCrawlerTest extends TestCase
         $expectedSha512 = 'a64b86da753fcc3d85fdcd5c9d2ef65530b20cf9c0eb9acfa972a53dbda2fbea94b733c1958a341535ef3a9785916f6297f41ab5ed0e497cfe6540451158fc04';
 
         static::assertEquals($expectedSha512, HeraRssCrawler::generateChecksumForFeedItem($feedItem, '__', Hash::SHA_512));
-        assertNotEquals($expectedSha512, HeraRssCrawler::generateChecksumForFeedItem($feedItem, '--', Hash::SHA_512));
+        static::assertNotEquals($expectedSha512, HeraRssCrawler::generateChecksumForFeedItem($feedItem, '--', Hash::SHA_512));
     }
 
     /**
@@ -475,13 +475,12 @@ class HeraRssCrawlerTest extends TestCase
                 ],
                 'https://www.faz.net/favicon.ico',
             ],
-            'Anime2You' => [
-                'https://www.anime2you.de',
+            'vkgy' => [
+                'https://vk.gy/',
                 [
-                    'https://www.anime2you.de/feed',
-                    'https://www.anime2you.de/comments/feed',
+                    'https://vk.gy/rss',
                 ],
-                'https://img.anime2you.de/2021/06/favicon.png',
+                'https://vk.gy/style/icons/apple-touch-icon.png?v=kPx5XXPBc2',
             ],
             'blog :: Brent -> [String]' => [
                 'https://byorgey.wordpress.com/',
@@ -590,9 +589,9 @@ class HeraRssCrawlerTest extends TestCase
                     true,
                 ],
             ],
-            'Anime2You' => [
+            'Statamic' => [
                 [
-                    'http://www.anime2you.de/feed'
+                    'https://statamic.com/blog.rss'
                 ],
                 [
                     true,

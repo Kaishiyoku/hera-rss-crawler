@@ -176,7 +176,7 @@ class HeraRssCrawler
             $response = $this->httpClient->get($adjustedUrl);
             $responseContainer = new ResponseContainer($adjustedUrl, $response);
 
-            /*** @var Collection $urls */
+            /*** @var Collection<int, string> $urls */
             $urls = $this->feedDiscoverers->reduce(function (Collection $carry, FeedDiscoverer $discoverer) use ($responseContainer) {
                 // only get the firstly fetched urls
                 if ($carry->isEmpty()) {

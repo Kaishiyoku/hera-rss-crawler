@@ -1,0 +1,6 @@
+title: 'The Statamic Blog'
+description: 'The latest news, tips, and tales from team. Our secret public journal, if you will.'
+feedUrl: 'https://statamic.com/blog.rss'
+id: 'https://statamic.com/blog/'
+language: en-us
+url: 'https://statamic.com/blog/'
