@@ -39,7 +39,7 @@ class SearchResponse implements DeserializableModel
     }
 
     /**
-     * @param Collection<int, Result> $results
+     * @param  Collection<int, Result>  $results
      */
     public function setResults(Collection $results): void
     {
@@ -55,7 +55,7 @@ class SearchResponse implements DeserializableModel
     }
 
     /**
-     * @param Collection<int, string> $related
+     * @param  Collection<int, string>  $related
      */
     public function setRelated(Collection $related): void
     {
@@ -67,7 +67,7 @@ class SearchResponse implements DeserializableModel
         $searchResponse = new self();
         $searchResponse->setHint(Arr::get($json, 'hint'));
         $searchResponse->setRelated(new Collection(Arr::get($json, 'related')));
-        $searchResponse->setResults((new Collection($json['results']))->map(fn($jsonResult) => Result::fromJson($jsonResult)));
+        $searchResponse->setResults((new Collection($json['results']))->map(fn ($jsonResult) => Result::fromJson($jsonResult)));
 
         return $searchResponse;
     }

@@ -95,15 +95,14 @@ class HeraRssCrawlerTest extends TestCase
 
     /**
      * @dataProvider websiteProvider
+     *
      * @covers       HeraRssCrawler::discoverFeedUrls()
-     * @param string $url
-     * @param string[] $expectedUrls
-     * @param string|null $expectedFaviconUrl
-     * @param bool $throwsConnectException
-     * @return void
+     *
+     * @param  string[]  $expectedUrls
+     *
      * @throws Exception
      */
-    public function testDiscoverFeedUrls(string $url, array $expectedUrls, ?string $expectedFaviconUrl = null, bool $throwsConnectException = false): void
+    public function testDiscoverFeedUrls(string $url, array $expectedUrls, string $expectedFaviconUrl = null, bool $throwsConnectException = false): void
     {
         if ($throwsConnectException) {
             static::expectException(ConnectException::class);
@@ -111,18 +110,19 @@ class HeraRssCrawlerTest extends TestCase
 
         $actual = $this->heraRssCrawler->discoverFeedUrls($url);
 
-        if (!$throwsConnectException) {
+        if (! $throwsConnectException) {
             static::assertEquals($expectedUrls, $actual->toArray());
         }
     }
 
     /**
      * @dataProvider feedProvider
+     *
      * @covers       HeraRssCrawler::parseFeed()
-     * @param string[] $feedUrls
-     * @param bool[] $expectedValues
-     * @param bool $throwsConnectException
-     * @return void
+     *
+     * @param  string[]  $feedUrls
+     * @param  bool[]  $expectedValues
+     *
      * @throws Exception
      */
     public function testParseFeed(array $feedUrls, array $expectedValues, bool $throwsConnectException = false): void
@@ -134,7 +134,7 @@ class HeraRssCrawlerTest extends TestCase
 
             $feed = $this->heraRssCrawler->parseFeed($feedUrl);
 
-            if (!$throwsConnectException) {
+            if (! $throwsConnectException) {
                 if ($expectedValues[$key]) {
                     $feedArr = new Collection([
                         'title' => $feed->getTitle(),
@@ -162,13 +162,13 @@ class HeraRssCrawlerTest extends TestCase
 
     /**
      * @covers HeraRssCrawler::discoverAndParseFeeds()
-     * @return void
+     *
      * @throws Exception
      */
     public function testDiscoverAndParseFeeds(): void
     {
         $feeds = $this->heraRssCrawler->discoverAndParseFeeds('https://byorgey.wordpress.com/');
-        $actual = $feeds->map(fn(Feed $feed) => $feed->getTitle())->toArray();
+        $actual = $feeds->map(fn (Feed $feed) => $feed->getTitle())->toArray();
 
         static::assertMatchesSnapshot($actual);
     }
@@ -176,7 +176,7 @@ class HeraRssCrawlerTest extends TestCase
     public function testDiscoverAndParseFeedsCheckFeedUrls(): void
     {
         $feeds = $this->heraRssCrawler->discoverAndParseFeeds('https://www.rki.de');
-        $actual = $feeds->map(fn(Feed $feed) => [
+        $actual = $feeds->map(fn (Feed $feed) => [
             'title' => $feed->getTitle(),
             'description' => $feed->getDescription(),
             'feedUrl' => $feed->getFeedUrl(),
@@ -190,7 +190,7 @@ class HeraRssCrawlerTest extends TestCase
 
     /**
      * @covers HeraRssCrawler::generateChecksumForFeedItem()
-     * @return void
+     *
      * @throws ReflectionException
      */
     public function testGenerateChecksumForFeedItem(): void
@@ -214,7 +214,7 @@ class HeraRssCrawlerTest extends TestCase
 
     /**
      * @covers HeraRssCrawler::generateChecksumForFeed()
-     * @return void
+     *
      * @throws ReflectionException
      */
     public function testGenerateChecksumForFeed(): void
@@ -243,15 +243,14 @@ class HeraRssCrawlerTest extends TestCase
 
     /**
      * @dataProvider websiteProvider
+     *
      * @covers       HeraRssCrawler::discoverFeedUrls()
-     * @param string $url
-     * @param string[] $expectedUrls
-     * @param string|null $expectedFaviconUrl
-     * @param bool $throwsConnectException
-     * @return void
+     *
+     * @param  string[]  $expectedUrls
+     *
      * @throws Exception
      */
-    public function testDiscoverFavicon(string $url, array $expectedUrls, ?string $expectedFaviconUrl = null, bool $throwsConnectException = false): void
+    public function testDiscoverFavicon(string $url, array $expectedUrls, string $expectedFaviconUrl = null, bool $throwsConnectException = false): void
     {
         if ($throwsConnectException) {
             static::expectException(ConnectException::class);
@@ -259,16 +258,18 @@ class HeraRssCrawlerTest extends TestCase
 
         $faviconUrl = $this->heraRssCrawler->discoverFavicon($url);
 
-        if (!$throwsConnectException) {
+        if (! $throwsConnectException) {
             static::assertEquals($expectedFaviconUrl, $faviconUrl);
         }
     }
 
     /**
      * @dataProvider feedProvider
+     *
      * @covers       HeraRssCrawler::checkIfConsumableFeed()
-     * @param string[] $feedUrls
-     * @param bool[] $expectedValues
+     *
+     * @param  string[]  $feedUrls
+     * @param  bool[]  $expectedValues
      */
     public function testCheckIfConsumableFeed(array $feedUrls, array $expectedValues): void
     {
@@ -348,10 +349,9 @@ class HeraRssCrawlerTest extends TestCase
      */
     public function testSetFeedDiscoverers(): void
     {
-        $customFeedDiscoverer = new class implements FeedDiscoverer {
+        $customFeedDiscoverer = new class implements FeedDiscoverer
+        {
             /**
-             * @param Client $httpClient
-             * @param ResponseContainer $responseContainer
              * @return Collection<int, string>
              */
             public function discover(Client $httpClient, ResponseContainer $responseContainer): Collection
@@ -378,10 +378,9 @@ class HeraRssCrawlerTest extends TestCase
      */
     public function testSetInvalidFeedDiscoverer(): void
     {
-        $invalidFeedDiscoverer = new class {
+        $invalidFeedDiscoverer = new class
+        {
             /**
-             * @param Client $httpClient
-             * @param ResponseContainer $responseContainer
              * @return Collection<int, string>
              */
             public function discover(Client $httpClient, ResponseContainer $responseContainer): Collection
@@ -402,9 +401,6 @@ class HeraRssCrawlerTest extends TestCase
         $heraRssCrawler->setFeedDiscoverers($feedDiscoverers);
     }
 
-    /**
-     * @return Feed
-     */
     private static function getSampleFeed(): Feed
     {
         $feed = new Feed();
@@ -424,9 +420,6 @@ class HeraRssCrawlerTest extends TestCase
         return $feed;
     }
 
-    /**
-     * @return FeedItem
-     */
     private static function getSampleFeedItem(): FeedItem
     {
         $feedItem = new FeedItem();
@@ -471,7 +464,7 @@ class HeraRssCrawlerTest extends TestCase
             'FAZ' => [
                 'https://www.faz.net',
                 [
-                    'https://www.faz.net/rss/aktuell'
+                    'https://www.faz.net/rss/aktuell',
                 ],
                 'https://www.faz.net/favicon.ico',
             ],
@@ -486,28 +479,28 @@ class HeraRssCrawlerTest extends TestCase
                 'https://byorgey.wordpress.com/',
                 [
                     'https://byorgey.wordpress.com/feed',
-                    'https://byorgey.wordpress.com/comments/feed'
+                    'https://byorgey.wordpress.com/comments/feed',
                 ],
                 'https://s1.wp.com/i/favicon.ico',
             ],
             'Echo JS' => [
                 'http://www.echojs.com/',
                 [
-                    'http://www.echojs.com/rss'
+                    'http://www.echojs.com/rss',
                 ],
                 'http://www.echojs.com/favicon.ico',
             ],
             'Hacker News: Newest (min. 100 points)' => [
                 'https://news.ycombinator.com/newest',
                 [
-                    'http://hnrss.org/newest?points=100'
+                    'http://hnrss.org/newest?points=100',
                 ],
                 'https://news.ycombinator.com/favicon.ico',
             ],
             'Laravel News' => [
                 'https://laravel-news.com/',
                 [
-                    'https://feed.laravel-news.com'
+                    'https://feed.laravel-news.com',
                 ],
                 'https://laravel-news.com/apple-touch-icon.png',
             ],
@@ -591,7 +584,7 @@ class HeraRssCrawlerTest extends TestCase
             ],
             'Statamic' => [
                 [
-                    'https://statamic.com/blog.rss'
+                    'https://statamic.com/blog.rss',
                 ],
                 [
                     true,
@@ -600,7 +593,7 @@ class HeraRssCrawlerTest extends TestCase
             'blog :: Brent -> [String]' => [
                 [
                     'https://byorgey.wordpress.com/feed',
-                    'https://byorgey.wordpress.com/comments/feed'
+                    'https://byorgey.wordpress.com/comments/feed',
                 ],
                 [
                     true,
@@ -609,7 +602,7 @@ class HeraRssCrawlerTest extends TestCase
             ],
             'Echo JS' => [
                 [
-                    'http://www.echojs.com/rss'
+                    'http://www.echojs.com/rss',
                 ],
                 [
                     true,
@@ -617,7 +610,7 @@ class HeraRssCrawlerTest extends TestCase
             ],
             'Hacker News: Newest (min. 100 points)' => [
                 [
-                    'http://hnrss.org/newest?points=100'
+                    'http://hnrss.org/newest?points=100',
                 ],
                 [
                     true,
@@ -625,7 +618,7 @@ class HeraRssCrawlerTest extends TestCase
             ],
             'Laravel News' => [
                 [
-                    'https://feed.laravel-news.com'
+                    'https://feed.laravel-news.com',
                 ],
                 [
                     true,
@@ -642,7 +635,7 @@ class HeraRssCrawlerTest extends TestCase
             ],
             'React' => [
                 [
-                    'https://facebook.github.io/react/feed.xml'
+                    'https://facebook.github.io/react/feed.xml',
                 ],
                 [
                     true,

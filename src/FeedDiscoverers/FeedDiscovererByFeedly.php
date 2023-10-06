@@ -16,19 +16,18 @@ class FeedDiscovererByFeedly implements FeedDiscoverer
     private const FEEDLY_API_BASE_URL = 'https://cloud.feedly.com/v3';
 
     /**
-     * @param Client $httpClient
-     * @param ResponseContainer $responseContainer
      * @return Collection<int, string>
+     *
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function discover(Client $httpClient, ResponseContainer $responseContainer): Collection
     {
-        $response = $httpClient->get(self::FEEDLY_API_BASE_URL . '/search/feeds', [
+        $response = $httpClient->get(self::FEEDLY_API_BASE_URL.'/search/feeds', [
             'query' => ['query' => $responseContainer->getRequestUrl()],
         ]);
 
         $searchResponse = SearchResponse::fromJson(json_decode($response->getBody()->getContents(), true));
 
-        return $searchResponse->getResults()->map(fn(Result $result) => $result->getFeedUrl());
+        return $searchResponse->getResults()->map(fn (Result $result) => $result->getFeedUrl());
     }
 }

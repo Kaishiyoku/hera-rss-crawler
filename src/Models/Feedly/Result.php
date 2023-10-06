@@ -277,7 +277,7 @@ class Result implements DeserializableModel
     }
 
     /**
-     * @param Collection<int, string> $deliciousTags
+     * @param  Collection<int, string>  $deliciousTags
      */
     public function setDeliciousTags(Collection $deliciousTags): void
     {

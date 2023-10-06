@@ -41,7 +41,8 @@
     "spatie/phpunit-snapshot-assertions": "^4.2.16",
     "symfony/var-dumper": "^5.4.21|^6.2.7",
     "mockery/mockery": "^1.5.1",
-    "phpstan/phpstan": "^1.10.6"
+    "phpstan/phpstan": "^1.10.6",
+    "laravel/pint": "^1.13"
   },
   "autoload": {
     "psr-4": {
@@ -54,8 +55,7 @@
     ]
   },
   "scripts": {
-    "analyze": [
-      ".\\vendor\\bin\\phpstan analyse"
-    ]
+    "analyze": "./vendor/bin/phpstan analyse",
+    "pint": "./vendor/bin/pint"
   }
 }

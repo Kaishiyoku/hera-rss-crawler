@@ -67,7 +67,7 @@ class Feed
     }
 
     /**
-     * @param Collection<int, mixed> $categories
+     * @param  Collection<int, mixed>  $categories
      */
     public function setCategories(Collection $categories): void
     {
@@ -83,7 +83,7 @@ class Feed
     }
 
     /**
-     * @param Collection<int, mixed> $authors
+     * @param  Collection<int, mixed>  $authors
      */
     public function setAuthors(Collection $authors): void
     {
@@ -189,7 +189,7 @@ class Feed
     }
 
     /**
-     * @param Collection<int, FeedItem> $feedItems
+     * @param  Collection<int, FeedItem>  $feedItems
      */
     public function setFeedItems(Collection $feedItems): void
     {
@@ -197,15 +197,11 @@ class Feed
     }
 
     /**
-     * @param string $feedUrl
-     * @param FeedInterface $zendFeed
-     * @param Client $httpClient
-     * @return Feed
      * @throws ReflectionException
      */
     public static function fromZendFeed(string $feedUrl, FeedInterface $zendFeed, Client $httpClient): Feed
     {
-        $authors = (new Collection($zendFeed->getAuthors()))->map(fn($authorData) => Arr::get($authorData, 'name'));
+        $authors = (new Collection($zendFeed->getAuthors()))->map(fn ($authorData) => Arr::get($authorData, 'name'));
 
         $feed = new self();
         $feed->setCategories(new Collection($zendFeed->getCategories()->getValues()));

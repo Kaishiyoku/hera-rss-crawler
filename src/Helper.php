@@ -15,12 +15,12 @@ class Helper
 {
     public static function isValidUrl(string $url): bool
     {
-        return (bool)filter_var($url, FILTER_VALIDATE_URL);
+        return (bool) filter_var($url, FILTER_VALIDATE_URL);
     }
 
     public static function normalizeUrl(string $url): string
     {
-        return trim(preg_replace('#(^|[^:])//+#', "\\1/", $url), '/');
+        return trim(preg_replace('#(^|[^:])//+#', '\\1/', $url), '/');
     }
 
     public static function trimOrDefaultNull(?string $str): ?string
@@ -38,13 +38,13 @@ class Helper
         }
 
         if (Str::startsWith($url, '/')) {
-            return $baseUrl . '/' . $url;
+            return $baseUrl.'/'.$url;
         }
 
         $scheme = parse_url($baseUrl, PHP_URL_SCHEME);
         $host = parse_url($baseUrl, PHP_URL_HOST);
 
-        return $scheme . '://' . $host . '/' . $url;
+        return $scheme.'://'.$host.'/'.$url;
     }
 
     public static function transformNodeToUrl(string $baseUrl, Crawler $node): string
@@ -54,26 +54,20 @@ class Helper
 
     public static function replaceBaseUrl(string $url, string $oldBaseUrl, string $newBaseUrl): string
     {
-        return preg_replace('/^' . preg_quote($oldBaseUrl, '/') . '/', $newBaseUrl, $url);
+        return preg_replace('/^'.preg_quote($oldBaseUrl, '/').'/', $newBaseUrl, $url);
     }
 
     /**
-     * @param string $url
-     * @param string[] $urlReplacementMap
-     * @return string
+     * @param  string[]  $urlReplacementMap
      */
     public static function replaceBaseUrls(string $url, array $urlReplacementMap): string
     {
         return (new Collection($urlReplacementMap))->keys()->reduce(
-            fn($carry, $oldBaseUrl) => self::replaceBaseUrl($carry, $oldBaseUrl, $urlReplacementMap[$oldBaseUrl]), $url
+            fn ($carry, $oldBaseUrl) => self::replaceBaseUrl($carry, $oldBaseUrl, $urlReplacementMap[$oldBaseUrl]), $url
         );
     }
 
     /**
-     * @param callable $callback
-     * @param int $delay
-     * @param int $retries
-     * @return mixed
      * @throws Exception
      */
     public static function withRetries(callable $callback, int $delay = 1, int $retries = 3): mixed
@@ -92,8 +86,7 @@ class Helper
     }
 
     /**
-     * @param mixed $value
-     * @return Carbon|null
+     * @param  mixed  $value
      */
     public static function parseDate($value): ?Carbon
     {
@@ -101,9 +94,6 @@ class Helper
     }
 
     /**
-     * @param string $feedItemUrl
-     * @param string|null $content
-     * @param Client $httpClient
      * @return Collection<int, string>
      */
     public static function getImageUrlsForFeedItem(string $feedItemUrl, ?string $content, Client $httpClient): Collection
@@ -111,9 +101,9 @@ class Helper
         $urlScheme = parse_url($feedItemUrl, PHP_URL_SCHEME);
         $urlHost = parse_url($feedItemUrl, PHP_URL_HOST);
 
-        $baseUrl = $urlScheme . '://' . $urlHost;
+        $baseUrl = $urlScheme.'://'.$urlHost;
 
-        if (!$content) {
+        if (! $content) {
             return new Collection();
         }
 
@@ -128,9 +118,9 @@ class Helper
                     return $imageUrl;
                 }
 
-                return $baseUrl . '/' . ltrim($imageUrl, '/');
+                return $baseUrl.'/'.ltrim($imageUrl, '/');
             })
-            ->filter(fn(string $imageUrl) => self::getHttpContentTypeForUrl($imageUrl, $httpClient) !== 'image/gif');
+            ->filter(fn (string $imageUrl) => self::getHttpContentTypeForUrl($imageUrl, $httpClient) !== 'image/gif');
     }
 
     public static function getHttpContentTypeForUrl(string $url, Client $httpClient): ?string
@@ -152,18 +142,18 @@ class Helper
     /**
      * Trims all collection values and filters out NULL values.
      *
-     * @param Collection<int, string|null> $collection
+     * @param  Collection<int, string|null>  $collection
      * @return Collection<int, string>
      */
     public static function trimStringCollection(Collection $collection): Collection
     {
         /** @phpstan-ignore-next-line */
-        return $collection->map(fn($category) => Helper::trimOrDefaultNull($category))->filter();
+        return $collection->map(fn ($category) => Helper::trimOrDefaultNull($category))->filter();
     }
 
     public static function entityDecode(string $encoding, ?string $str): ?string
     {
-        if (!$str) {
+        if (! $str) {
             return $str;
         }
 

@@ -9,8 +9,6 @@ use Kaishiyoku\HeraRssCrawler\Models\ResponseContainer;
 interface FeedDiscoverer
 {
     /**
-     * @param Client $httpClient
-     * @param ResponseContainer $responseContainer
      * @return Collection<int, string>
      */
     public function discover(Client $httpClient, ResponseContainer $responseContainer): Collection;

@@ -12,8 +12,6 @@ class ResponseContainer
 
     /**
      * ResponseContainer constructor.
-     * @param string $requestUrl
-     * @param ResponseInterface $response
      */
     public function __construct(string $requestUrl, ResponseInterface $response)
     {

@@ -8,6 +8,7 @@ class FailingTestClass
 {
     /**
      * @return mixed
+     *
      * @throws JsonException
      */
     public function fail()

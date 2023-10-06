@@ -16,8 +16,6 @@ use Symfony\Component\DomCrawler\Crawler;
 class FeedDiscovererByHtmlAnchorElements implements FeedDiscoverer
 {
     /**
-     * @param Client $httpClient
-     * @param ResponseContainer $responseContainer
      * @return Collection<int, string>
      */
     public function discover(Client $httpClient, ResponseContainer $responseContainer): Collection
@@ -26,7 +24,7 @@ class FeedDiscovererByHtmlAnchorElements implements FeedDiscoverer
         $crawler = new Crawler($responseContainer->getResponse()->getBody()->getContents());
         $nodes = $crawler->filterXPath($cssConverter->toXPath('a'));
 
-        return (new Collection($nodes->each(fn(Crawler $node) => Helper::transformNodeToUrl($responseContainer->getRequestUrl(), $node))))
-            ->filter(fn($url) => Str::contains($url, 'rss'));
+        return (new Collection($nodes->each(fn (Crawler $node) => Helper::transformNodeToUrl($responseContainer->getRequestUrl(), $node))))
+            ->filter(fn ($url) => Str::contains($url, 'rss'));
     }
 }

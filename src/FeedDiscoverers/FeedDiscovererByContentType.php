@@ -14,8 +14,6 @@ use Kaishiyoku\HeraRssCrawler\Models\ResponseContainer;
 class FeedDiscovererByContentType implements FeedDiscoverer
 {
     /**
-     * @param Client $httpClient
-     * @param ResponseContainer $responseContainer
      * @return Collection<int, string>
      */
     public function discover(Client $httpClient, ResponseContainer $responseContainer): Collection
@@ -25,7 +23,7 @@ class FeedDiscovererByContentType implements FeedDiscoverer
         $contentType = is_array($contentTypeMixedValue) ? Arr::first($contentTypeMixedValue) : $contentTypeMixedValue;
 
         // the given url is no valid RSS feed
-        if (!$contentType || !Str::startsWith($contentType, ['application/rss+xml', 'application/atom+xml'])) {
+        if (! $contentType || ! Str::startsWith($contentType, ['application/rss+xml', 'application/atom+xml'])) {
             return new Collection();
         }
 

@@ -52,18 +52,13 @@ enum Hash: string
 
     case HAVAL_256_5 = 'haval256,5';
 
-    /**
-     * @param self $algo
-     * @param mixed $value
-     * @return string|null
-     */
     public static function hash(self $algo, mixed $value): ?string
     {
         $availableAlgos = array_map(fn (self $hash) => $hash->value, self::cases());
         $availableAlgosOnMachine = hash_algos();
 
-        if (!in_array($algo->value, $availableAlgos, true) || !in_array($algo->value, $availableAlgosOnMachine, true)) {
-            throw new InvalidArgumentException('The chosen hash algorithm is not supported: ' . $algo->value);
+        if (! in_array($algo->value, $availableAlgos, true) || ! in_array($algo->value, $availableAlgosOnMachine, true)) {
+            throw new InvalidArgumentException('The chosen hash algorithm is not supported: '.$algo->value);
         }
 
         return hash($algo->value, $value);

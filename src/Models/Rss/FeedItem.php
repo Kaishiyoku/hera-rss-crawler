@@ -88,7 +88,7 @@ class FeedItem implements DeserializableModel
         $this->links = new Collection();
     }
 
-    # region getters and setters
+    // region getters and setters
 
     public function getChecksum(): string
     {
@@ -109,7 +109,7 @@ class FeedItem implements DeserializableModel
     }
 
     /**
-     * @param Collection<int, mixed> $categories
+     * @param  Collection<int, mixed>  $categories
      */
     public function setCategories(Collection $categories): void
     {
@@ -125,7 +125,7 @@ class FeedItem implements DeserializableModel
     }
 
     /**
-     * @param Collection<int, mixed> $authors
+     * @param  Collection<int, mixed>  $authors
      */
     public function setAuthors(Collection $authors): void
     {
@@ -231,7 +231,7 @@ class FeedItem implements DeserializableModel
     }
 
     /**
-     * @param Collection<int, string> $imageUrls
+     * @param  Collection<int, string>  $imageUrls
      */
     public function setImageUrls(Collection $imageUrls): void
     {
@@ -267,7 +267,7 @@ class FeedItem implements DeserializableModel
     }
 
     /**
-     * @param Collection<int, mixed> $links
+     * @param  Collection<int, mixed>  $links
      */
     public function setLinks(Collection $links): void
     {
@@ -304,14 +304,14 @@ class FeedItem implements DeserializableModel
         $this->xml = Helper::trimOrDefaultNull($xml);
     }
 
-    # endregion getters and setters
+    // endregion getters and setters
 
     /**
      * Generate a feed item from a given XML entity.
      */
     public static function fromZendFeedItem(EntryInterface $zendFeedItem, Client $httpClient): FeedItem
     {
-        if (!$zendFeedItem instanceof Rss && !$zendFeedItem instanceof Atom) {
+        if (! $zendFeedItem instanceof Rss && ! $zendFeedItem instanceof Atom) {
             throw new InvalidArgumentException('given feed item neither is from a RSS or Atom feed');
         }
 
@@ -342,7 +342,7 @@ class FeedItem implements DeserializableModel
         $feedItem->setCreatedAt($zendFeedItem->getDateCreated() == null ? null : Carbon::parse($zendFeedItem->getDateCreated()));
         $feedItem->setUpdatedAt($zendFeedItem->getDateModified() == null ? null : Carbon::parse($zendFeedItem->getDateModified()));
         $feedItem->setDescription($description);
-        $feedItem->setEnclosureUrl(optional($zendFeedItem->getEnclosure(), fn($enclosure) => $enclosure->url));
+        $feedItem->setEnclosureUrl(optional($zendFeedItem->getEnclosure(), fn ($enclosure) => $enclosure->url));
         $feedItem->setImageUrls($imageUrls);
         $feedItem->setEncoding($zendFeedItem->getEncoding());
         $feedItem->setId($zendFeedItem->getId());
@@ -357,8 +357,7 @@ class FeedItem implements DeserializableModel
     }
 
     /**
-     * @param string|array<string, mixed> $json
-     * @return self
+     * @param  string|array<string, mixed>  $json
      */
     public static function fromJson(mixed $json): self
     {
@@ -390,8 +389,8 @@ class FeedItem implements DeserializableModel
     }
 
     /**
-     * @param string[] $fields
-     * @return string
+     * @param  string[]  $fields
+     *
      * @throws JsonException
      */
     public function toJson(array $fields = []): string
@@ -399,10 +398,10 @@ class FeedItem implements DeserializableModel
         try {
             $class = new ReflectionClass(self::class);
             $methods = count($fields) > 0
-                ? (new Collection($fields))->map(fn(string $field) => $class->getMethod(Str::of($field)->ucfirst()->prepend('get')->toString()))
-                : (new Collection($class->getMethods(ReflectionMethod::IS_PUBLIC)))->filter(fn(ReflectionMethod $method) => Str::startsWith($method->getName(), 'get'));
+                ? (new Collection($fields))->map(fn (string $field) => $class->getMethod(Str::of($field)->ucfirst()->prepend('get')->toString()))
+                : (new Collection($class->getMethods(ReflectionMethod::IS_PUBLIC)))->filter(fn (ReflectionMethod $method) => Str::startsWith($method->getName(), 'get'));
 
-            return $methods->mapWithKeys(fn(ReflectionMethod $method) => [Str::of($method->getName())->substr(3)->lcfirst()->toString() => $method->invoke($this)])->toJson();
+            return $methods->mapWithKeys(fn (ReflectionMethod $method) => [Str::of($method->getName())->substr(3)->lcfirst()->toString() => $method->invoke($this)])->toJson();
         } catch (ReflectionException $e) {
             throw new JsonException('Cannot convert the given feed item to a JSON string.');
         }
