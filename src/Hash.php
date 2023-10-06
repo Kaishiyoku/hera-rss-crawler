@@ -3,75 +3,69 @@
 namespace Kaishiyoku\HeraRssCrawler;
 
 use InvalidArgumentException;
-use ReflectionClass;
-use ReflectionException;
 
-class Hash
+enum Hash: string
 {
-    public const MD5 = 'md5';
+    case MD5 = 'md5';
 
-    public const SHA1 = 'sha1';
+    case SHA1 = 'sha1';
 
-    public const SHA_224 = 'sha224';
+    case SHA_224 = 'sha224';
 
-    public const SHA_256 = 'sha256';
+    case SHA_256 = 'sha256';
 
-    public const SHA_384 = 'sha384';
+    case SHA_384 = 'sha384';
 
-    public const SHA_512 = 'sha512';
+    case SHA_512 = 'sha512';
 
-    public const RIPEMD_124 = 'ripemd128';
+    case RIPEMD_124 = 'ripemd128';
 
-    public const RIPEMD_160 = 'ripemd160';
+    case RIPEMD_160 = 'ripemd160';
 
-    public const RIPEMD_256 = 'ripemd256';
+    case RIPEMD_256 = 'ripemd256';
 
-    public const RIPEMD_320 = 'ripemd320';
+    case RIPEMD_320 = 'ripemd320';
 
-    public const WHIRLPOOL = 'whirlpool';
+    case WHIRLPOOL = 'whirlpool';
 
-    public const TIGER_128_4 = 'tiger128,4';
+    case TIGER_128_4 = 'tiger128,4';
 
-    public const TIGER_160_4 = 'tiger160,4';
+    case TIGER_160_4 = 'tiger160,4';
 
-    public const TIGER_192_4 = 'tiger192,4';
+    case TIGER_192_4 = 'tiger192,4';
 
-    public const SNEFRU = 'snefru';
+    case SNEFRU = 'snefru';
 
-    public const SNEFRU_256 = 'snefru256';
+    case SNEFRU_256 = 'snefru256';
 
-    public const GOST = 'gost';
+    case GOST = 'gost';
 
-    public const GOST_CRYPTO = 'gost-crypto';
+    case GOST_CRYPTO = 'gost-crypto';
 
-    public const HAVAL_128_5 = 'haval128,5';
+    case HAVAL_128_5 = 'haval128,5';
 
-    public const HAVAL_160_5 = 'haval160,5';
+    case HAVAL_160_5 = 'haval160,5';
 
-    public const HAVAL_192_5 = 'haval192,5';
+    case HAVAL_192_5 = 'haval192,5';
 
-    public const HAVAL_224_5 = 'haval224,5';
+    case HAVAL_224_5 = 'haval224,5';
 
-    public const HAVAL_256_5 = 'haval256,5';
+    case HAVAL_256_5 = 'haval256,5';
 
     /**
-     * @param string $algo
+     * @param self $algo
      * @param mixed $value
      * @return string|null
      */
-    public static function hash(string $algo, $value): ?string
+    public static function hash(self $algo, mixed $value): ?string
     {
-        try {
-            $availableAlgos = (new ReflectionClass(self::class))->getConstants();
-            $availableAlgosOnMachine = hash_algos();
+        $availableAlgos = array_map(fn (self $hash) => $hash->value, self::cases());
+        $availableAlgosOnMachine = hash_algos();
 
-            if (!in_array($algo, $availableAlgos, true) || !in_array($algo, $availableAlgosOnMachine, true)) {
-                throw new InvalidArgumentException('The chosen hash algorithm is not supported: ' . $algo);
-            }
-
-            return hash($algo, $value);
-        } catch (ReflectionException $e) {
-            return null;
+        if (!in_array($algo->value, $availableAlgos, true) || !in_array($algo->value, $availableAlgosOnMachine, true)) {
+            throw new InvalidArgumentException('The chosen hash algorithm is not supported: ' . $algo->value);
         }
+
+        return hash($algo->value, $value);
     }
 }

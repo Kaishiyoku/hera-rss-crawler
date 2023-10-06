@@ -237,7 +237,7 @@ class HeraRssCrawler
      *
      * @throws ReflectionException
      */
-    public static function generateChecksumForFeedItem(FeedItem $feedItem, string $delimiter = '|', string $algo = Hash::SHA_256): ?string
+    public static function generateChecksumForFeedItem(FeedItem $feedItem, string $delimiter = '|', Hash $algo = Hash::SHA_256): ?string
     {
         $properties = [
             'categories',
@@ -264,7 +264,7 @@ class HeraRssCrawler
      *
      * @throws ReflectionException
      */
-    public static function generateChecksumForFeed(Feed $feed, string $delimiter = '|', string $algo = Hash::SHA_256): ?string
+    public static function generateChecksumForFeed(Feed $feed, string $delimiter = '|', Hash $algo = Hash::SHA_256): ?string
     {
         $properties = [
             'categories',
