@@ -137,12 +137,11 @@ class HeraRssCrawler
      */
     public function parseFeed(string $url): Feed
     {
-        return $this->withRetries(function () use ($url) {
-            $content = $this->httpClient->get($url)->getBody()->getContents();
-            $zendFeed = Reader::importString($content);
-
-            return Feed::fromZendFeed($url, $zendFeed, $this->httpClient);
-        });
+        return $this->withRetries(fn () => Feed::fromZendFeed(
+            $url,
+            Reader::importString($this->httpClient->get($url)->getBody()->getContents()),
+            $this->httpClient
+        ));
     }
 
     /**
@@ -176,14 +175,11 @@ class HeraRssCrawler
             $responseContainer = new ResponseContainer($adjustedUrl, $response);
 
             /*** @var Collection<int, string> $urls */
-            $urls = $this->feedDiscoverers->reduce(function (Collection $carry, FeedDiscoverer $discoverer) use ($responseContainer) {
-                // only get the firstly fetched urls
-                if ($carry->isEmpty()) {
-                    return $discoverer->discover($this->httpClient, $responseContainer);
-                }
-
-                return $carry;
-            }, new Collection());
+            $urls = $this->feedDiscoverers
+                ->reduce(fn (Collection $carry, FeedDiscoverer $discoverer) => $carry->isEmpty()
+                    ? $discoverer->discover($this->httpClient, $responseContainer)
+                    : $carry, new Collection()
+                );
 
             return $urls->map(fn ($adjustedUrl) => Helper::normalizeUrl($adjustedUrl))->unique()->values();
         });
@@ -282,15 +278,11 @@ class HeraRssCrawler
         $class = new ReflectionClass(Feed::class);
         $allValuesConcatenated = trim((new Collection($class->getMethods(ReflectionMethod::IS_PUBLIC)))
             ->filter(function (ReflectionMethod $method) use ($properties) {
-                return in_array($method->getName(), array_map(function ($property) {
-                    return 'get'.Str::ucfirst($property);
-                }, $properties), true);
+                return in_array($method->getName(), array_map(fn ($property) => 'get'.Str::ucfirst($property), $properties), true);
             })
             ->reduce(function ($carry, ReflectionMethod $method) use ($feed, $delimiter) {
                 if ($method->getName() === 'getFeedItems') {
-                    return $carry.$delimiter.$method->invoke($feed)->reduce(function ($carry, FeedItem $feedItem) use ($delimiter) {
-                        return $carry.$delimiter.self::generateChecksumForFeedItem($feedItem);
-                    });
+                    return $carry.$delimiter.$method->invoke($feed)->reduce(fn ($carry, FeedItem $feedItem) => $carry.$delimiter.self::generateChecksumForFeedItem($feedItem));
                 }
 
                 return $carry.$delimiter.$method->invoke($feed);
