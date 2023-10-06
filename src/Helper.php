@@ -85,10 +85,7 @@ class Helper
         }
     }
 
-    /**
-     * @param  mixed  $value
-     */
-    public static function parseDate($value): ?Carbon
+    public static function parseDate(mixed $value): ?Carbon
     {
         return $value === null ? null : Carbon::parse($value);
     }
