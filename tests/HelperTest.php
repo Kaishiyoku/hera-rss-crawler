@@ -67,8 +67,8 @@ class HelperTest extends TestCase
                 'image/x-icon',
             ],
             'Hacker News' => [
-                'https://news.ycombinator.com/favicon.ico',
-                'image/x-icon',
+                'https://news.ycombinator.com/y18.svg',
+                'image/svg+xml',
             ],
             'Statamic' => [
                 'https://statamic.dev/img/favicons/apple-touch-icon-57x57.png',

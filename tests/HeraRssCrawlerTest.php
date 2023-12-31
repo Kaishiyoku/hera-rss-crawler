@@ -453,11 +453,7 @@ class HeraRssCrawlerTest extends TestCase
             'Zeit' => [
                 'https://www.zeit.de',
                 [
-                    'http://newsfeed.zeit.de/index',
-                    'http://newsfeed.zeit.de/wirtschaft/index',
-                    'http://newsfeed.zeit.de/kultur/index',
-                    'http://newsfeed.zeit.de/wissen/index',
-                    'http://newsfeed.zeit.de/politik/index',
+                    'https://newsfeed.zeit.de/index',
                 ],
                 'https://static.zeit.de/p/zeit.web/icons/favicon.svg',
             ],
@@ -495,7 +491,7 @@ class HeraRssCrawlerTest extends TestCase
                 [
                     'http://hnrss.org/newest?points=100',
                 ],
-                'https://news.ycombinator.com/favicon.ico',
+                'https://news.ycombinator.com/y18.svg',
             ],
             'Laravel News' => [
                 'https://laravel-news.com/',
