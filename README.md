@@ -15,6 +15,11 @@ This project tries to make fetching and parsing RSS feeds easier. With Hera RSS 
 
 # Breaking Changes
 
+## Version 6.x
+
+* dropped support for PHP 8.0
+
+
 ## Version 5.x
 
 * dropped support for PHP 7.4
