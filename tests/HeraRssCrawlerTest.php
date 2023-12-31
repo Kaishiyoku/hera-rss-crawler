@@ -102,7 +102,7 @@ class HeraRssCrawlerTest extends TestCase
      *
      * @throws Exception
      */
-    public function testDiscoverFeedUrls(string $url, array $expectedUrls, string $expectedFaviconUrl = null, bool $throwsConnectException = false): void
+    public function testDiscoverFeedUrls(string $url, array $expectedUrls, ?string $expectedFaviconUrl = null, bool $throwsConnectException = false): void
     {
         if ($throwsConnectException) {
             static::expectException(ConnectException::class);
@@ -250,7 +250,7 @@ class HeraRssCrawlerTest extends TestCase
      *
      * @throws Exception
      */
-    public function testDiscoverFavicon(string $url, array $expectedUrls, string $expectedFaviconUrl = null, bool $throwsConnectException = false): void
+    public function testDiscoverFavicon(string $url, array $expectedUrls, ?string $expectedFaviconUrl = null, bool $throwsConnectException = false): void
     {
         if ($throwsConnectException) {
             static::expectException(ConnectException::class);
