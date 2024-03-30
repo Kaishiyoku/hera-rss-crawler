@@ -510,7 +510,7 @@ class HeraRssCrawlerTest extends TestCase
             'React' => [
                 'https://react.dev/blog',
                 [
-                    'https://replit-api-services.sorrycc.repl.co/react-dev-blog',
+                    'https://rss-scraper.deno.dev/feed.xml?url=https%3A%2F%2Freact.dev%2Fblog&itemSelector=a&titleSelector=h2',
                 ],
                 null,
             ],
@@ -537,7 +537,7 @@ class HeraRssCrawlerTest extends TestCase
                 [
                     'https://jrocknews.com/feed',
                 ],
-                'https://jrocknews.com/wp-content/uploads/2015/05/cropped-JRN-icon-2017-150x150.png',
+                'https://jrocknews.com/wp-content/uploads/2015/05/cropped-jrock-news-plain-symbol-favico-32x32.png',
             ],
             'Non-existent website' => [
                 'https://www.nonexistent-website.dev',
