@@ -462,7 +462,7 @@ class HeraRssCrawlerTest extends TestCase
                 [
                     'https://www.faz.net/rss/aktuell',
                 ],
-                'https://www.faz.net/favicon.ico',
+                'https://www.faz.net/favicon.png',
             ],
             'vkgy' => [
                 'https://vk.gy/',
@@ -500,19 +500,12 @@ class HeraRssCrawlerTest extends TestCase
                 ],
                 'https://laravel-news.com/apple-touch-icon.png',
             ],
-            'Unknown Worlds Entertainment' => [
-                'https://unknownworlds.com/',
-                [
-                    'https://unknownworlds.com/feed',
-                ],
-                'https://mainwebsite.wpenginepowered.com/favicon.png',
-            ],
             'React' => [
-                'https://react.dev/blog',
+                'https://react.dev',
                 [
-                    'https://rss-scraper.deno.dev/feed.xml?url=https%3A%2F%2Freact.dev%2Fblog&itemSelector=a&titleSelector=h2',
+                    'https://react.dev/rss.xml',
                 ],
-                null,
+                'https://react.dev/apple-touch-icon.png',
             ],
             'PHP Internals' => [
                 'https://phpinternals.news/',
@@ -528,7 +521,7 @@ class HeraRssCrawlerTest extends TestCase
                     'http://nutritionfacts.org/feed/?post_type=video',
                     'http://nutritionfacts.org/audio/feed/podcast',
                     'https://nutritionfacts.org/videos/feed/podcast',
-                    'http://nutritionfacts.org/feed/podcast',
+                    'https://nutritionfacts.org/blog/feed',
                 ],
                 'https://nutritionfacts.org/apple-touch-icon.png',
             ],
@@ -617,15 +610,6 @@ class HeraRssCrawlerTest extends TestCase
                     'https://feed.laravel-news.com',
                 ],
                 [
-                    true,
-                ],
-            ],
-            'Unknown Worlds Entertainment' => [
-                [
-                    'https://unknownworlds.com/feed',
-                ],
-                [
-                    true,
                     true,
                 ],
             ],

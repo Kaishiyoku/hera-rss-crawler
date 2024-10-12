@@ -1,6 +1,6 @@
-title: React
-description: 'A JavaScript library for building user interfaces'
-feedUrl: 'https://facebook.github.io/react/feed.xml'
-id: 'https://reactjs.org'
-language: null
-url: 'https://reactjs.org'
+title: 'React Blog'
+description: 'This blog is the official source for the updates from the React team. Anything important, including release notes or deprecation notices, will be posted here first.'
+feedUrl: 'https://react.dev/rss.xml'
+id: 'https://react.dev/'
+language: en
+url: 'https://react.dev/'
