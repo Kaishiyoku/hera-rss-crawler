@@ -37,14 +37,10 @@ class Helper
             return $url;
         }
 
-        if (Str::startsWith($url, '/')) {
-            return $baseUrl.'/'.$url;
-        }
-
         $scheme = parse_url($baseUrl, PHP_URL_SCHEME);
         $host = parse_url($baseUrl, PHP_URL_HOST);
 
-        return $scheme.'://'.$host.'/'.$url;
+        return "{$scheme}://{$host}/{$url}";
     }
 
     public static function transformNodeToUrl(string $baseUrl, Crawler $node): string
