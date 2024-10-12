@@ -18,6 +18,7 @@ use Kaishiyoku\HeraRssCrawler\FeedDiscoverers\FeedDiscovererByHtmlHeadElements;
 use Kaishiyoku\HeraRssCrawler\Models\ResponseContainer;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\Feed;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\FeedItem;
+use Laminas\Feed\Reader\Exception\RuntimeException;
 use Laminas\Feed\Reader\Reader;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
@@ -135,13 +136,21 @@ class HeraRssCrawler
      * @throws ConnectException
      * @throws Exception
      */
-    public function parseFeed(string $url): Feed
+    public function parseFeed(string $url): ?Feed
     {
-        return $this->withRetries(fn () => Feed::fromZendFeed(
-            $url,
-            Reader::importString($this->httpClient->get($url)->getBody()->getContents()),
-            $this->httpClient
-        ));
+        return $this->withRetries(function () use ($url) {
+            try {
+                return Feed::fromZendFeed(
+                    $url,
+                    Reader::importString($this->httpClient->get($url)->getBody()->getContents()),
+                    $this->httpClient
+                );
+            } catch (RuntimeException $exception) {
+                $this->logger?->error("Feed with URL {$url} not consumable: {$exception->getMessage()}");
+
+                return null;
+            }
+        });
     }
 
     /**
@@ -156,6 +165,7 @@ class HeraRssCrawler
         return $this->withRetries(
             fn () => $this->discoverFeedUrls($url)
                 ->map(fn ($feedUrl) => $this->parseFeed($feedUrl))
+                ->filter(fn (?Feed $feed) => $feed !== null)
         );
     }
 
@@ -218,10 +228,8 @@ class HeraRssCrawler
     {
         try {
             return $this->withRetries(fn () => $this->parseFeed($url) instanceof Feed);
-        } catch (Exception $e) {
-            if ($this->logger) {
-                $this->logger->error('Feed not consumable: '.$e->getMessage());
-            }
+        } catch (Exception $exception) {
+            $this->logger?->error("Feed with URL {$url} not consumable: {$exception->getMessage()}");
 
             return false;
         }
