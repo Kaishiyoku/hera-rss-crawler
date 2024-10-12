@@ -24,7 +24,7 @@ class FeedDiscovererByContentType implements FeedDiscoverer
 
         // the given url is no valid RSS feed
         if (! $contentType || ! Str::startsWith($contentType, ['application/rss+xml', 'application/atom+xml'])) {
-            return new Collection();
+            return new Collection;
         }
 
         return new Collection([$responseContainer->getRequestUrl()]);

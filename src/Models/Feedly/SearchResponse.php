@@ -64,7 +64,7 @@ class SearchResponse implements DeserializableModel
 
     public static function fromJson(mixed $json): SearchResponse
     {
-        $searchResponse = new self();
+        $searchResponse = new self;
         $searchResponse->setHint(Arr::get($json, 'hint'));
         $searchResponse->setRelated(new Collection(Arr::get($json, 'related')));
         $searchResponse->setResults((new Collection($json['results']))->map(fn ($jsonResult) => Result::fromJson($jsonResult)));

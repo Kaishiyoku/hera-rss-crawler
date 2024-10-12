@@ -19,7 +19,7 @@ class FeedDiscovererByHtmlHeadElements implements FeedDiscoverer
      */
     public function discover(Client $httpClient, ResponseContainer $responseContainer): Collection
     {
-        $cssConverter = new CssSelectorConverter();
+        $cssConverter = new CssSelectorConverter;
         $crawler = new Crawler($responseContainer->getResponse()->getBody()->getContents());
 
         $nodes = $crawler->filterXPath($cssConverter->toXPath('head > link[type="application/rss+xml"], head > link[type="application/atom+xml"]'));

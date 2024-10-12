@@ -203,7 +203,7 @@ class Feed
     {
         $authors = (new Collection($zendFeed->getAuthors()))->map(fn ($authorData) => Arr::get($authorData, 'name'));
 
-        $feed = new self();
+        $feed = new self;
         $feed->setCategories(new Collection($zendFeed->getCategories()->getValues()));
         $feed->setAuthors($authors);
         $feed->setTitle($zendFeed->getTitle() ?? '');
@@ -216,7 +216,7 @@ class Feed
         $feed->setLanguage($zendFeed->getLanguage());
         $feed->setUrl($zendFeed->getLink());
 
-        $feedItems = new Collection();
+        $feedItems = new Collection;
 
         foreach ($zendFeed as $zendFeedItem) {
             $feedItems->add(FeedItem::fromZendFeedItem($zendFeedItem, $httpClient));

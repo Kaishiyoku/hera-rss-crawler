@@ -97,7 +97,7 @@ class Helper
         $baseUrl = $urlScheme.'://'.$urlHost;
 
         if (! $content) {
-            return new Collection();
+            return new Collection;
         }
 
         preg_match_all('/<img[^>]+src=[\'"]([^\'"]+)[\'"][^>]*>/i', $content, $matches);

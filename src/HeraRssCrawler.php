@@ -69,12 +69,12 @@ class HeraRssCrawler
             ],
             'timeout' => 5,
         ]);
-        $this->cssConverter = new CssSelectorConverter();
+        $this->cssConverter = new CssSelectorConverter;
         $this->feedDiscoverers = new Collection([
-            new FeedDiscovererByContentType(),
-            new FeedDiscovererByHtmlHeadElements(),
-            new FeedDiscovererByHtmlAnchorElements(),
-            new FeedDiscovererByFeedly(),
+            new FeedDiscovererByContentType,
+            new FeedDiscovererByHtmlHeadElements,
+            new FeedDiscovererByHtmlAnchorElements,
+            new FeedDiscovererByFeedly,
         ]);
     }
 
@@ -178,7 +178,7 @@ class HeraRssCrawler
             $urls = $this->feedDiscoverers
                 ->reduce(fn (Collection $carry, FeedDiscoverer $discoverer) => $carry->isEmpty()
                     ? $discoverer->discover($this->httpClient, $responseContainer)
-                    : $carry, new Collection()
+                    : $carry, new Collection
                 );
 
             return $urls->map(fn ($adjustedUrl) => Helper::normalizeUrl($adjustedUrl))->unique()->values();

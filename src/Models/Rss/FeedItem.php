@@ -82,10 +82,10 @@ class FeedItem implements DeserializableModel
 
     public function __construct()
     {
-        $this->categories = new Collection();
-        $this->authors = new Collection();
-        $this->imageUrls = new Collection();
-        $this->links = new Collection();
+        $this->categories = new Collection;
+        $this->authors = new Collection;
+        $this->imageUrls = new Collection;
+        $this->links = new Collection;
     }
 
     // region getters and setters
@@ -315,11 +315,11 @@ class FeedItem implements DeserializableModel
             throw new InvalidArgumentException('given feed item neither is from a RSS or Atom feed');
         }
 
-        $feedItem = new self();
+        $feedItem = new self;
 
         $content = Helper::entityDecode($zendFeedItem->getEncoding(), $zendFeedItem->getContent());
         $description = Helper::entityDecode($zendFeedItem->getEncoding(), $zendFeedItem->getDescription());
-        $imageUrls = $zendFeedItem->getPermalink() ? Helper::getImageUrlsForFeedItem($zendFeedItem->getPermalink(), $content, $httpClient) : new Collection();
+        $imageUrls = $zendFeedItem->getPermalink() ? Helper::getImageUrlsForFeedItem($zendFeedItem->getPermalink(), $content, $httpClient) : new Collection;
 
         $feedItem->setCategories(new Collection($zendFeedItem->getCategories()->getValues()));
         $feedItem->setAuthors(new Collection(optional($zendFeedItem->getAuthors(), function ($authors) {
@@ -342,7 +342,7 @@ class FeedItem implements DeserializableModel
         $feedItem->setCreatedAt($zendFeedItem->getDateCreated() == null ? null : Carbon::parse($zendFeedItem->getDateCreated()));
         $feedItem->setUpdatedAt($zendFeedItem->getDateModified() == null ? null : Carbon::parse($zendFeedItem->getDateModified()));
         $feedItem->setDescription($description);
-        $feedItem->setEnclosureUrl(optional($zendFeedItem->getEnclosure(), fn ($enclosure) => $enclosure->url));
+        $feedItem->setEnclosureUrl(optional($zendFeedItem->getEnclosure(), fn ($enclosure) => $enclosure->url ?? null));
         $feedItem->setImageUrls($imageUrls);
         $feedItem->setEncoding($zendFeedItem->getEncoding());
         $feedItem->setId($zendFeedItem->getId());
@@ -363,7 +363,7 @@ class FeedItem implements DeserializableModel
     {
         $jsonArr = is_string($json) ? json_decode($json, true) : $json;
 
-        $feedItem = new self();
+        $feedItem = new self;
         $feedItem->setCategories(new Collection(Arr::get($jsonArr, 'categories')));
         $feedItem->setAuthors(new Collection(Arr::get($jsonArr, 'authors')));
         $feedItem->setTitle(Arr::get($jsonArr, 'title'));

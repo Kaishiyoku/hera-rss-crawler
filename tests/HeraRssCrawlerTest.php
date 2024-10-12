@@ -36,9 +36,9 @@ class HeraRssCrawlerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->heraRssCrawler = new HeraRssCrawler();
+        $this->heraRssCrawler = new HeraRssCrawler;
 
-        $this->sampleFeedItem = new FeedItem();
+        $this->sampleFeedItem = new FeedItem;
         $this->sampleFeedItem->setCategories(new Collection(['News', 'Tech']));
         $this->sampleFeedItem->setAuthors(new Collection(['John Doe', 'Jane Doe']));
         $this->sampleFeedItem->setTitle('Telekommunikation: Vodafone Deutschland bekommt einen neuen Chef');
@@ -320,7 +320,7 @@ class HeraRssCrawlerTest extends TestCase
      */
     public function testDiscoverRedditFeedUrls(): void
     {
-        $heraRssCrawler = new HeraRssCrawler();
+        $heraRssCrawler = new HeraRssCrawler;
 
         $feed = $heraRssCrawler->parseFeed('https://www.reddit.com/r/ns2/new/.rss');
         static::assertInstanceOf(Feed::class, $feed);
@@ -362,10 +362,10 @@ class HeraRssCrawlerTest extends TestCase
 
         $feedDiscoverers = new Collection([
             $customFeedDiscoverer,
-            new FeedDiscovererByContentType(),
+            new FeedDiscovererByContentType,
         ]);
 
-        $heraRssCrawler = new HeraRssCrawler();
+        $heraRssCrawler = new HeraRssCrawler;
         $heraRssCrawler->setFeedDiscoverers($feedDiscoverers);
 
         $feedUrls = $heraRssCrawler->discoverFeedUrls('https://zeit.de');
@@ -385,16 +385,16 @@ class HeraRssCrawlerTest extends TestCase
              */
             public function discover(Client $httpClient, ResponseContainer $responseContainer): Collection
             {
-                return new Collection();
+                return new Collection;
             }
         };
 
         $feedDiscoverers = new Collection([
             $invalidFeedDiscoverer,
-            new FeedDiscovererByContentType(),
+            new FeedDiscovererByContentType,
         ]);
 
-        $heraRssCrawler = new HeraRssCrawler();
+        $heraRssCrawler = new HeraRssCrawler;
 
         static::expectException(InvalidArgumentException::class);
 
@@ -403,7 +403,7 @@ class HeraRssCrawlerTest extends TestCase
 
     private static function getSampleFeed(): Feed
     {
-        $feed = new Feed();
+        $feed = new Feed;
         $feed->setDescription('Lorem ipsum.');
         $feed->setCreatedAt(Carbon::parse('2019-12-22 18:28:44.0 +00:00'));
         $feed->setUpdatedAt(Carbon::parse('2019-12-22 18:28:44.0 +00:00'));
@@ -422,7 +422,7 @@ class HeraRssCrawlerTest extends TestCase
 
     private static function getSampleFeedItem(): FeedItem
     {
-        $feedItem = new FeedItem();
+        $feedItem = new FeedItem;
         $feedItem->setCategories(new Collection(['Zeitgeschehen']));
         $feedItem->setAuthors(new Collection(['ZEIT ONLINE: Zeitgeschehen - Alena Kammer']));
         $feedItem->setTitle('Gabun: Piraten töten Kapitän und entführen Matrosen');
