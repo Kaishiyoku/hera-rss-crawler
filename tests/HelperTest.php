@@ -4,6 +4,7 @@ namespace Kaishiyoku\HeraRssCrawler;
 
 use Exception;
 use GuzzleHttp\Client;
+use Illuminate\Support\Collection;
 use Kaishiyoku\HeraRssCrawler\TestClasses\FailingTestClass;
 use Mockery;
 use PHPUnit\Framework\TestCase;
@@ -48,12 +49,25 @@ class HelperTest extends TestCase
         static::assertEquals(['https://www.golem.de/2107/158391-284735-284731_rc.jpg'], $imageUrls->toArray());
     }
 
-    /**
-     * @dataProvider faviconProvider
-     */
-    public function testGetHttpContentTypeForUrl(string $faviconUrl, ?string $expectedContentType): void
+    public function testFilterImageUrls(): void
     {
-        static::assertSame($expectedContentType, Helper::getHttpContentTypeForUrl($faviconUrl, new Client));
+        $imageUrls = new Collection([
+            'https://petapixel.com/wp-content/themes/petapixel-2017/assets/prod/img/favicon.ico',
+            'https://news.ycombinator.com/y18.svg',
+            'https://statamic.dev/img/favicons/apple-touch-icon-57x57.png',
+            'https://upload.wikimedia.org/wikipedia/commons/e/ea/Test.gif',
+            'https://invalid-url.dev',
+        ]);
+
+        $filteredImageUrls = Helper::filterImageUrls($imageUrls, new Client);
+
+        $expectedImageUrls = [
+            'https://petapixel.com/wp-content/themes/petapixel-2017/assets/prod/img/favicon.ico',
+            'https://news.ycombinator.com/y18.svg',
+            'https://statamic.dev/img/favicons/apple-touch-icon-57x57.png',
+        ];
+
+        static::assertSame($expectedImageUrls, $filteredImageUrls->toArray());
     }
 
     /**

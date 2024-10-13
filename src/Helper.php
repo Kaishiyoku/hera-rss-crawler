@@ -5,8 +5,10 @@ namespace Kaishiyoku\HeraRssCrawler;
 use Carbon\Carbon;
 use Exception;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Promise\PromiseInterface;
+use GuzzleHttp\Promise\Utils;
+use GuzzleHttp\Psr7\Response;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Symfony\Component\DomCrawler\Crawler;
@@ -105,31 +107,36 @@ class Helper
         [, $imageUrls] = $matches;
 
         // don't allow GIF images because those will most likely be tracking pixels
-        return (new Collection($imageUrls))
-            ->map(function (string $imageUrl) use ($baseUrl) {
-                if (Str::startsWith($imageUrl, 'http')) {
-                    return $imageUrl;
-                }
-
-                return $baseUrl.'/'.ltrim($imageUrl, '/');
-            })
-            ->filter(fn (string $imageUrl) => self::getHttpContentTypeForUrl($imageUrl, $httpClient) !== 'image/gif');
+        return self::filterImageUrls(
+            (new Collection($imageUrls))
+                ->map(fn (string $imageUrl) => Str::startsWith($imageUrl, 'http') ? $imageUrl : $baseUrl.'/'.ltrim($imageUrl, '/')),
+            $httpClient
+        )
+            ->unique();
     }
 
-    public static function getHttpContentTypeForUrl(string $url, Client $httpClient): ?string
+    /**
+     * @param  Collection<string>  $urls
+     * @param  Client  $httpClient
+     * @return Collection<string>
+     */
+    public static function filterImageUrls(Collection $urls, Client $httpClient): Collection
     {
-        try {
-            return $httpClient->get($url)->getHeaderLine('Content-Type');
-        } catch (ConnectException) {
-            return null;
-        } catch (ClientException $exception) {
-            // return null for HTTP Not Found Exceptions
-            if ($exception->getResponse()->getStatusCode() === 404) {
-                return null;
-            }
+        $promises = $urls->map(fn (string $url) => $httpClient->getAsync($url));
 
-            throw $exception;
-        }
+        return (new Collection(Utils::inspectAll($promises->toArray())))
+            ->filter(fn (array $result) => Arr::get($result, 'state') === PromiseInterface::FULFILLED)
+            ->map(function (array $result, int $index) use ($urls) {
+                /*** @var $response Response */
+                $response = Arr::get($result, 'value');
+
+                return [
+                    'url' => $urls->get($index),
+                    'contentType' => $response->getHeaderLine('Content-Type'),
+                ];
+            })
+            ->filter(fn (array $result) => Str::startsWith(Arr::get($result, 'contentType'), 'image/') && Arr::get($result, 'contentType') !== 'image/gif')
+            ->map(fn (array $result) => Arr::get($result, 'url'));
     }
 
     /**

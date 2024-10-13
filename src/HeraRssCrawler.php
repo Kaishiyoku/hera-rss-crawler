@@ -208,10 +208,12 @@ class HeraRssCrawler
             $crawler = new Crawler($response->getBody()->getContents());
             $nodes = $crawler->filterXPath($this->cssConverter->toXPath('head > link'));
 
-            $faviconUrls = (new Collection($nodes))
-                ->filter(fn (DOMElement $node) => Str::contains($node->getAttribute('rel'), 'icon')) /** @phpstan-ignore-line */
-                ->map(fn (DOMElement $node) => Helper::normalizeUrl(Helper::transformUrl($url, $node->getAttribute('href')))) /** @phpstan-ignore-line */
-                ->filter(fn (string $imageUrl) => Helper::getHttpContentTypeForUrl($imageUrl, $this->httpClient) !== null);
+            $faviconUrls = Helper::filterImageUrls(
+                (new Collection($nodes))
+                    ->filter(fn (DOMElement $node) => Str::contains($node->getAttribute('rel'), 'icon')) /** @phpstan-ignore-line */
+                    ->map(fn (DOMElement $node) => Helper::normalizeUrl(Helper::transformUrl($url, $node->getAttribute('href')))), /** @phpstan-ignore-line */
+                $this->httpClient
+            );
 
             if ($faviconUrls->isEmpty()) {
                 return null;
