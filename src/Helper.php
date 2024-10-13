@@ -109,6 +109,7 @@ class Helper
         // don't allow GIF images because those will most likely be tracking pixels
         return self::filterImageUrls(
             (new Collection($imageUrls))
+                ->take(3) // limit the number of images
                 ->map(fn (string $imageUrl) => Str::startsWith($imageUrl, 'http') ? $imageUrl : $baseUrl.'/'.ltrim($imageUrl, '/')),
             $httpClient
         )
