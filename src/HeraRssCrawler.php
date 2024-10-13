@@ -28,8 +28,6 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class HeraRssCrawler
 {
-    private const VERSION = '6.2.0';
-
     private ?Client $httpClient;
 
     private ?CssSelectorConverter $cssConverter;
