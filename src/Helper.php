@@ -117,7 +117,6 @@ class Helper
 
     /**
      * @param  Collection<string>  $urls
-     * @param  Client  $httpClient
      * @return Collection<string>
      */
     public static function filterImageUrls(Collection $urls, Client $httpClient): Collection
