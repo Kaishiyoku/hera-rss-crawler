@@ -175,7 +175,7 @@ class HeraRssCrawlerTest extends TestCase
 
     public function testDiscoverAndParseFeedsCheckFeedUrls(): void
     {
-        $feeds = $this->heraRssCrawler->discoverAndParseFeeds('https://www.rki.de');
+        $feeds = $this->heraRssCrawler->discoverAndParseFeeds('https://tailwindcss.com/');
         $actual = $feeds->map(fn (Feed $feed) => [
             'title' => $feed->getTitle(),
             'description' => $feed->getDescription(),
@@ -462,7 +462,7 @@ class HeraRssCrawlerTest extends TestCase
                 [
                     'https://www.faz.net/rss/aktuell',
                 ],
-                'https://www.faz.net/favicon.png',
+                'https://www.faz.net/favicon.svg',
             ],
             'vkgy' => [
                 'https://vk.gy/',
@@ -493,12 +493,13 @@ class HeraRssCrawlerTest extends TestCase
                 ],
                 'https://news.ycombinator.com/y18.svg',
             ],
-            'Laravel News' => [
-                'https://laravel-news.com/',
+            'Tailwind CSS' => [
+                'https://tailwindcss.com//',
                 [
-                    'https://feed.laravel-news.com',
+                    'https://tailwindcss.com/feeds/feed.xml',
+                    'https://tailwindcss.com/feeds/atom.xml',
                 ],
-                'https://laravel-news.com/apple-touch-icon.png',
+                'https://tailwindcss.com/favicons/apple-touch-icon.png?v=4',
             ],
             'React' => [
                 'https://react.dev',
@@ -605,9 +606,9 @@ class HeraRssCrawlerTest extends TestCase
                     true,
                 ],
             ],
-            'Laravel News' => [
+            'Tailwind CSS' => [
                 [
-                    'https://feed.laravel-news.com',
+                    'https://tailwindcss.com/feeds/feed.xml',
                 ],
                 [
                     true,

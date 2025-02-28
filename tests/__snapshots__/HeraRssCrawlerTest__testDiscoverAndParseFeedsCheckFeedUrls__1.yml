@@ -1,7 +1,14 @@
 -
-    title: 'Robert Koch-Institut News'
-    description: 'Dies ist der RSS Feed des Robert Koch-Instituts.'
-    feedUrl: 'https://www.rki.de/SiteGlobals/Functions/RSSFeed/RSSGenerator.xml'
-    id: 'https://www.rki.de/'
-    language: de-de
-    url: 'https://www.rki.de/'
+    title: 'Tailwind CSS Blog'
+    description: 'All the latest Tailwind CSS news, straight from the team.'
+    feedUrl: 'https://tailwindcss.com/feeds/feed.xml'
+    id: 'https://tailwindcss.com/blog'
+    language: en
+    url: 'https://tailwindcss.com/blog'
+-
+    title: 'Tailwind CSS Blog'
+    description: 'All the latest Tailwind CSS news, straight from the team.'
+    feedUrl: 'https://tailwindcss.com/feeds/atom.xml'
+    id: 'https://tailwindcss.com/blog'
+    language: null
+    url: 'https://tailwindcss.com/blog'
