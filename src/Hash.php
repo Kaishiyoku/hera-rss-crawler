@@ -52,7 +52,7 @@ enum Hash: string
 
     case HAVAL_256_5 = 'haval256,5';
 
-    public static function hash(self $algo, mixed $value): ?string
+    public static function hash(self $algo, mixed $value): string
     {
         $availableAlgos = array_map(fn (self $hash) => $hash->value, self::cases());
         $availableAlgosOnMachine = hash_algos();

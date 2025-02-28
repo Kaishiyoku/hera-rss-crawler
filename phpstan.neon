@@ -4,4 +4,6 @@ parameters:
         - tests
     level: 7
 
-    checkGenericClassInNonGenericObjectType: false
+    ignoreErrors:
+            -
+                identifier: missingType.generics

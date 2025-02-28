@@ -28,9 +28,9 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class HeraRssCrawler
 {
-    private ?Client $httpClient;
+    private Client $httpClient;
 
-    private ?CssSelectorConverter $cssConverter;
+    private CssSelectorConverter $cssConverter;
 
     /**
      * The number of retries to attempt on HTTP requests.
