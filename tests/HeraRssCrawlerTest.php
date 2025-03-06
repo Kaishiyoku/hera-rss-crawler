@@ -530,6 +530,7 @@ class HeraRssCrawlerTest extends TestCase
                 'https://www.jrocknews.com/',
                 [
                     'https://jrocknews.com/feed',
+                    'https://jrocknews.com/comments/feed',
                 ],
                 'https://jrocknews.com/wp-content/uploads/2015/05/cropped-jrock-news-plain-symbol-favico-32x32.png',
             ],
