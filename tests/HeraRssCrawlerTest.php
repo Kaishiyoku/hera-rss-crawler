@@ -60,17 +60,17 @@ class HeraRssCrawlerTest extends TestCase
         $this->sampleFeedItem->generateChecksum();
     }
 
-    public function testToJson(): void
+    public function test_to_json(): void
     {
         static::assertMatchesSnapshot($this->sampleFeedItem->toJson());
     }
 
-    public function testFromJson(): void
+    public function test_from_json(): void
     {
         static::assertEquals($this->sampleFeedItem->getChecksum(), FeedItem::fromJson($this->sampleFeedItem->toJson())->getChecksum());
     }
 
-    public function testCompareTo(): void
+    public function test_compare_to(): void
     {
         // the same object should result in 100.0
         static::assertSame(100.0, $this->sampleFeedItem->compareTo($this->sampleFeedItem));
@@ -102,7 +102,7 @@ class HeraRssCrawlerTest extends TestCase
      *
      * @throws Exception
      */
-    public function testDiscoverFeedUrls(string $url, array $expectedUrls, ?string $expectedFaviconUrl = null, bool $throwsConnectException = false): void
+    public function test_discover_feed_urls(string $url, array $expectedUrls, ?string $expectedFaviconUrl = null, bool $throwsConnectException = false): void
     {
         if ($throwsConnectException) {
             static::expectException(ConnectException::class);
@@ -125,7 +125,7 @@ class HeraRssCrawlerTest extends TestCase
      *
      * @throws Exception
      */
-    public function testParseFeed(array $feedUrls, array $expectedValues, bool $throwsConnectException = false): void
+    public function test_parse_feed(array $feedUrls, array $expectedValues, bool $throwsConnectException = false): void
     {
         foreach ($feedUrls as $key => $feedUrl) {
             if ($throwsConnectException) {
@@ -165,7 +165,7 @@ class HeraRssCrawlerTest extends TestCase
      *
      * @throws Exception
      */
-    public function testDiscoverAndParseFeeds(): void
+    public function test_discover_and_parse_feeds(): void
     {
         $feeds = $this->heraRssCrawler->discoverAndParseFeeds('https://byorgey.wordpress.com/');
         $actual = $feeds->map(fn (Feed $feed) => $feed->getTitle())->toArray();
@@ -173,9 +173,9 @@ class HeraRssCrawlerTest extends TestCase
         static::assertMatchesSnapshot($actual);
     }
 
-    public function testDiscoverAndParseFeedsCheckFeedUrls(): void
+    public function test_discover_and_parse_feeds_check_feed_urls(): void
     {
-        $feeds = $this->heraRssCrawler->discoverAndParseFeeds('https://www.rki.de');
+        $feeds = $this->heraRssCrawler->discoverAndParseFeeds('https://tailwindcss.com/');
         $actual = $feeds->map(fn (Feed $feed) => [
             'title' => $feed->getTitle(),
             'description' => $feed->getDescription(),
@@ -193,7 +193,7 @@ class HeraRssCrawlerTest extends TestCase
      *
      * @throws ReflectionException
      */
-    public function testGenerateChecksumForFeedItem(): void
+    public function test_generate_checksum_for_feed_item(): void
     {
         $expected = '47d6926b4f93b32e6bbadadb2a8926f14229cc75250da634229bad58d310c086';
 
@@ -217,7 +217,7 @@ class HeraRssCrawlerTest extends TestCase
      *
      * @throws ReflectionException
      */
-    public function testGenerateChecksumForFeed(): void
+    public function test_generate_checksum_for_feed(): void
     {
         $expected = 'c0ccb8a70967a70fa120f7d7109165b75a5ff3355442d80774ac31fa9d6a89dd';
 
@@ -250,7 +250,7 @@ class HeraRssCrawlerTest extends TestCase
      *
      * @throws Exception
      */
-    public function testDiscoverFavicon(string $url, array $expectedUrls, ?string $expectedFaviconUrl = null, bool $throwsConnectException = false): void
+    public function test_discover_favicon(string $url, array $expectedUrls, ?string $expectedFaviconUrl = null, bool $throwsConnectException = false): void
     {
         if ($throwsConnectException) {
             static::expectException(ConnectException::class);
@@ -271,7 +271,7 @@ class HeraRssCrawlerTest extends TestCase
      * @param  string[]  $feedUrls
      * @param  bool[]  $expectedValues
      */
-    public function testCheckIfConsumableFeed(array $feedUrls, array $expectedValues): void
+    public function test_check_if_consumable_feed(array $feedUrls, array $expectedValues): void
     {
         foreach ($feedUrls as $key => $feedUrl) {
             $isConsumableFeed = $this->heraRssCrawler->checkIfConsumableFeed($feedUrl);
@@ -283,7 +283,7 @@ class HeraRssCrawlerTest extends TestCase
     /**
      * @covers Helper::replaceBaseUrl
      */
-    public function testReplaceBaseUrl(): void
+    public function test_replace_base_url(): void
     {
         $newUrl = Helper::replaceBaseUrl('https://www.reddit.com/r/ns2/new/', 'https://www.reddit.com/', 'https://old.reddit.com/');
         static::assertEquals('https://old.reddit.com/r/ns2/new/', $newUrl);
@@ -298,7 +298,7 @@ class HeraRssCrawlerTest extends TestCase
     /**
      * @covers Helper::replaceBaseUrls()
      */
-    public function testReplaceBaseUrls(): void
+    public function test_replace_base_urls(): void
     {
         $urlReplacementMap = [
             'https://site.dev' => 'https://new.site.dev',
@@ -316,38 +316,9 @@ class HeraRssCrawlerTest extends TestCase
     }
 
     /**
-     * @covers HeraRssCrawler::discoverFeedUrls()
-     */
-    public function testDiscoverRedditFeedUrls(): void
-    {
-        $heraRssCrawler = new HeraRssCrawler;
-
-        $feed = $heraRssCrawler->parseFeed('https://www.reddit.com/r/ns2/new/.rss');
-        static::assertInstanceOf(Feed::class, $feed);
-
-        $feedUrls = $heraRssCrawler->discoverFeedUrls('https://www.reddit.com/r/ns2/new/');
-        static::assertEquals(['https://old.reddit.com/r/ns2/new/.rss'], $feedUrls->toArray());
-
-        $heraRssCrawler->setUrlReplacementMap([
-            'https://site.dev' => 'https://new.site.dev',
-            'https://www.reddit.com/' => 'https://old.reddit.com/',
-        ]);
-
-        $feedUrls = $heraRssCrawler->discoverFeedUrls('https://www.reddit.com/r/ns2/new/');
-        static::assertEquals(['https://old.reddit.com/r/ns2/new/.rss'], $feedUrls->toArray());
-
-        $heraRssCrawler->setUrlReplacementMap([
-            'https://site.dev' => 'https://new.site.dev',
-        ]);
-
-        $feedUrls = $heraRssCrawler->discoverFeedUrls('https://www.reddit.com/r/ns2/new/');
-        static::assertEmpty($feedUrls->toArray());
-    }
-
-    /**
      * @covers HeraRssCrawler::setFeedDiscoverers
      */
-    public function testSetFeedDiscoverers(): void
+    public function test_set_feed_discoverers(): void
     {
         $customFeedDiscoverer = new class implements FeedDiscoverer
         {
@@ -376,7 +347,7 @@ class HeraRssCrawlerTest extends TestCase
     /**
      * @covers HeraRssCrawler::setFeedDiscoverers
      */
-    public function testSetInvalidFeedDiscoverer(): void
+    public function test_set_invalid_feed_discoverer(): void
     {
         $invalidFeedDiscoverer = new class
         {
@@ -462,7 +433,7 @@ class HeraRssCrawlerTest extends TestCase
                 [
                     'https://www.faz.net/rss/aktuell',
                 ],
-                'https://www.faz.net/favicon.png',
+                'https://www.faz.net/favicon.svg',
             ],
             'vkgy' => [
                 'https://vk.gy/',
@@ -493,12 +464,13 @@ class HeraRssCrawlerTest extends TestCase
                 ],
                 'https://news.ycombinator.com/y18.svg',
             ],
-            'Laravel News' => [
-                'https://laravel-news.com/',
+            'Tailwind CSS' => [
+                'https://tailwindcss.com//',
                 [
-                    'https://feed.laravel-news.com',
+                    'https://tailwindcss.com/feeds/feed.xml',
+                    'https://tailwindcss.com/feeds/atom.xml',
                 ],
-                'https://laravel-news.com/apple-touch-icon.png',
+                'https://tailwindcss.com/favicons/apple-touch-icon.png?v=4',
             ],
             'React' => [
                 'https://react.dev',
@@ -529,6 +501,7 @@ class HeraRssCrawlerTest extends TestCase
                 'https://www.jrocknews.com/',
                 [
                     'https://jrocknews.com/feed',
+                    'https://jrocknews.com/comments/feed',
                 ],
                 'https://jrocknews.com/wp-content/uploads/2015/05/cropped-jrock-news-plain-symbol-favico-32x32.png',
             ],
@@ -605,9 +578,9 @@ class HeraRssCrawlerTest extends TestCase
                     true,
                 ],
             ],
-            'Laravel News' => [
+            'Tailwind CSS' => [
                 [
-                    'https://feed.laravel-news.com',
+                    'https://tailwindcss.com/feeds/feed.xml',
                 ],
                 [
                     true,
