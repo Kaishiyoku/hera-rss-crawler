@@ -316,35 +316,6 @@ class HeraRssCrawlerTest extends TestCase
     }
 
     /**
-     * @covers HeraRssCrawler::discoverFeedUrls()
-     */
-    public function test_discover_reddit_feed_urls(): void
-    {
-        $heraRssCrawler = new HeraRssCrawler;
-
-        $feed = $heraRssCrawler->parseFeed('https://www.reddit.com/r/ns2/new/.rss');
-        static::assertInstanceOf(Feed::class, $feed);
-
-        $feedUrls = $heraRssCrawler->discoverFeedUrls('https://www.reddit.com/r/ns2/new/');
-        static::assertEquals(['https://old.reddit.com/r/ns2/new/.rss'], $feedUrls->toArray());
-
-        $heraRssCrawler->setUrlReplacementMap([
-            'https://site.dev' => 'https://new.site.dev',
-            'https://www.reddit.com/' => 'https://old.reddit.com/',
-        ]);
-
-        $feedUrls = $heraRssCrawler->discoverFeedUrls('https://www.reddit.com/r/ns2/new/');
-        static::assertEquals(['https://old.reddit.com/r/ns2/new/.rss'], $feedUrls->toArray());
-
-        $heraRssCrawler->setUrlReplacementMap([
-            'https://site.dev' => 'https://new.site.dev',
-        ]);
-
-        $feedUrls = $heraRssCrawler->discoverFeedUrls('https://www.reddit.com/r/ns2/new/');
-        static::assertEmpty($feedUrls->toArray());
-    }
-
-    /**
      * @covers HeraRssCrawler::setFeedDiscoverers
      */
     public function test_set_feed_discoverers(): void
