@@ -28,7 +28,7 @@
     "symfony/dom-crawler": "^5.4.21|^6.2.7|^v7.2.0",
     "symfony/css-selector": "^5.4.21|^6.2.7|^v7.2.0",
     "guzzlehttp/guzzle": "^7.5.0",
-    "illuminate/support": "^9.0|^10.0|^11.0|^12.0",
+    "illuminate/support": "^11.0|^12.0",
     "nesbot/carbon": "^2.66.0|^3.0",
     "laminas/laminas-xml": "^1.5.0",
     "laminas/laminas-feed": "^2.20.0",
