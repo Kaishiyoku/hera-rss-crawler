@@ -253,7 +253,7 @@ class HeraRssCrawlerTest extends TestCase
      * @param  bool[]  $expectedValues
      */
     #[DataProvider('feedProvider')]
-    public function test_check_if_consumable_feed(array $feedUrls, array $expectedValues): void
+    public function test_check_if_consumable_feed(array $feedUrls, array $expectedValues, bool $throwsConnectException = false): void
     {
         foreach ($feedUrls as $key => $feedUrl) {
             $isConsumableFeed = $this->heraRssCrawler->checkIfConsumableFeed($feedUrl);
