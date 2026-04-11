@@ -136,9 +136,9 @@ class HeraRssCrawler
         return $this->withRetries(function () use ($url) {
             try {
                 return Feed::fromZendFeed(
-                    $url,
-                    Reader::importString($this->httpClient->get($url)->getBody()->getContents()),
-                    $this->httpClient
+                    feedUrl: $url,
+                    zendFeed: Reader::importString($this->httpClient->get($url)->getBody()->getContents()),
+                    httpClient: $this->httpClient
                 );
             } catch (RuntimeException $exception) {
                 $this->logger?->error("Feed with URL {$url} not consumable: {$exception->getMessage()}");

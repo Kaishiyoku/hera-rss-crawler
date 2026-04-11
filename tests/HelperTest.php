@@ -7,11 +7,10 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
 use Kaishiyoku\HeraRssCrawler\TestClasses\FailingTestClass;
 use Mockery;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers HeraRssCrawler
- */
+#[CoversClass(HeraRssCrawler::class)]
 class HelperTest extends TestCase
 {
     /**

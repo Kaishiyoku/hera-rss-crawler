@@ -13,13 +13,13 @@ use Kaishiyoku\HeraRssCrawler\FeedDiscoverers\FeedDiscovererByContentType;
 use Kaishiyoku\HeraRssCrawler\Models\ResponseContainer;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\Feed;
 use Kaishiyoku\HeraRssCrawler\Models\Rss\FeedItem;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
 use Spatie\Snapshots\MatchesSnapshots;
 
-/**
- * @covers HeraRssCrawler
- */
+#[CoversClass(HeraRssCrawler::class)]
 class HeraRssCrawlerTest extends TestCase
 {
     use MatchesSnapshots;
@@ -94,14 +94,11 @@ class HeraRssCrawlerTest extends TestCase
     }
 
     /**
-     * @dataProvider websiteProvider
-     *
-     * @covers       HeraRssCrawler::discoverFeedUrls()
-     *
      * @param  string[]  $expectedUrls
      *
      * @throws Exception
      */
+    #[DataProvider('websiteProvider')]
     public function test_discover_feed_urls(string $url, array $expectedUrls, ?string $expectedFaviconUrl = null, bool $throwsConnectException = false): void
     {
         if ($throwsConnectException) {
@@ -116,15 +113,12 @@ class HeraRssCrawlerTest extends TestCase
     }
 
     /**
-     * @dataProvider feedProvider
-     *
-     * @covers       HeraRssCrawler::parseFeed()
-     *
      * @param  string[]  $feedUrls
      * @param  bool[]  $expectedValues
      *
      * @throws Exception
      */
+    #[DataProvider('feedProvider')]
     public function test_parse_feed(array $feedUrls, array $expectedValues, bool $throwsConnectException = false): void
     {
         foreach ($feedUrls as $key => $feedUrl) {
@@ -161,8 +155,6 @@ class HeraRssCrawlerTest extends TestCase
     }
 
     /**
-     * @covers HeraRssCrawler::discoverAndParseFeeds()
-     *
      * @throws Exception
      */
     public function test_discover_and_parse_feeds(): void
@@ -189,8 +181,6 @@ class HeraRssCrawlerTest extends TestCase
     }
 
     /**
-     * @covers HeraRssCrawler::generateChecksumForFeedItem()
-     *
      * @throws ReflectionException
      */
     public function test_generate_checksum_for_feed_item(): void
@@ -213,8 +203,6 @@ class HeraRssCrawlerTest extends TestCase
     }
 
     /**
-     * @covers HeraRssCrawler::generateChecksumForFeed()
-     *
      * @throws ReflectionException
      */
     public function test_generate_checksum_for_feed(): void
@@ -242,14 +230,11 @@ class HeraRssCrawlerTest extends TestCase
     }
 
     /**
-     * @dataProvider websiteProvider
-     *
-     * @covers       HeraRssCrawler::discoverFeedUrls()
-     *
      * @param  string[]  $expectedUrls
      *
      * @throws Exception
      */
+    #[DataProvider('websiteProvider')]
     public function test_discover_favicon(string $url, array $expectedUrls, ?string $expectedFaviconUrl = null, bool $throwsConnectException = false): void
     {
         if ($throwsConnectException) {
@@ -264,13 +249,10 @@ class HeraRssCrawlerTest extends TestCase
     }
 
     /**
-     * @dataProvider feedProvider
-     *
-     * @covers       HeraRssCrawler::checkIfConsumableFeed()
-     *
      * @param  string[]  $feedUrls
      * @param  bool[]  $expectedValues
      */
+    #[DataProvider('feedProvider')]
     public function test_check_if_consumable_feed(array $feedUrls, array $expectedValues): void
     {
         foreach ($feedUrls as $key => $feedUrl) {
@@ -280,9 +262,6 @@ class HeraRssCrawlerTest extends TestCase
         }
     }
 
-    /**
-     * @covers Helper::replaceBaseUrl
-     */
     public function test_replace_base_url(): void
     {
         $newUrl = Helper::replaceBaseUrl('https://www.reddit.com/r/ns2/new/', 'https://www.reddit.com/', 'https://old.reddit.com/');
@@ -295,9 +274,6 @@ class HeraRssCrawlerTest extends TestCase
         static::assertEquals('https://www.google.com/?query=hello_world', $newUrl3);
     }
 
-    /**
-     * @covers Helper::replaceBaseUrls()
-     */
     public function test_replace_base_urls(): void
     {
         $urlReplacementMap = [
@@ -315,9 +291,6 @@ class HeraRssCrawlerTest extends TestCase
         static::assertEquals('https://www.google.com/?query=hello_world', $url3);
     }
 
-    /**
-     * @covers HeraRssCrawler::setFeedDiscoverers
-     */
     public function test_set_feed_discoverers(): void
     {
         $customFeedDiscoverer = new class implements FeedDiscoverer
@@ -344,9 +317,6 @@ class HeraRssCrawlerTest extends TestCase
         static::assertSame(['It works!'], $feedUrls->toArray());
     }
 
-    /**
-     * @covers HeraRssCrawler::setFeedDiscoverers
-     */
     public function test_set_invalid_feed_discoverer(): void
     {
         $invalidFeedDiscoverer = new class
@@ -426,7 +396,7 @@ class HeraRssCrawlerTest extends TestCase
                 [
                     'https://newsfeed.zeit.de/index',
                 ],
-                'https://static.zeit.de/p/zeit.web/icons/favicon.svg',
+                'https://static.zeit.de/p/zeit.web/icons/favicon-96x96.png',
             ],
             'FAZ' => [
                 'https://www.faz.net',
@@ -448,7 +418,7 @@ class HeraRssCrawlerTest extends TestCase
                     'https://byorgey.wordpress.com/feed',
                     'https://byorgey.wordpress.com/comments/feed',
                 ],
-                'https://s1.wp.com/i/favicon.ico',
+                'https://s1.wp.com/i/favicon.ico?m=1713425267i',
             ],
             'Echo JS' => [
                 'http://www.echojs.com/',
@@ -497,13 +467,12 @@ class HeraRssCrawlerTest extends TestCase
                 ],
                 'https://nutritionfacts.org/apple-touch-icon.png',
             ],
-            'JRock News' => [
-                'https://www.jrocknews.com/',
+            'Jeff Geerling' => [
+                'https://www.jeffgeerling.com/',
                 [
-                    'https://jrocknews.com/feed',
-                    'https://jrocknews.com/comments/feed',
+                    'https://www.jeffgeerling.com/blog.xml',
                 ],
-                'https://jrocknews.com/wp-content/uploads/2015/05/cropped-jrock-news-plain-symbol-favico-32x32.png',
+                '',
             ],
             'Non-existent website' => [
                 'https://www.nonexistent-website.dev',
@@ -520,7 +489,7 @@ class HeraRssCrawlerTest extends TestCase
     public static function feedProvider(): array
     {
         return [
-            'Grandma\'s World Of Skyrim' => [
+            "Grandma's World Of Skyrim" => [
                 [
                     'https://www.blogger.com/feeds/2146985069025381500/posts/default',
                 ],
@@ -617,10 +586,9 @@ class HeraRssCrawlerTest extends TestCase
                     true,
                 ],
             ],
-            'JRock News' => [
+            'Jeff Geerling' => [
                 [
-                    'https://jrocknews.com/feed',
-                    'https://jrocknews.com/comments/feed',
+                    'https://www.jeffgeerling.com/blog.xml',
                 ],
                 [
                     true,
