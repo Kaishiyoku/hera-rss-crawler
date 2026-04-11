@@ -3,6 +3,7 @@
 namespace Kaishiyoku\HeraRssCrawler\FeedDiscoverers;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Collection;
 use Kaishiyoku\HeraRssCrawler\Models\Feedly\Result;
 use Kaishiyoku\HeraRssCrawler\Models\Feedly\SearchResponse;
@@ -18,7 +19,7 @@ class FeedDiscovererByFeedly implements FeedDiscoverer
     /**
      * @return Collection<int, string>
      *
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     public function discover(Client $httpClient, ResponseContainer $responseContainer): Collection
     {
